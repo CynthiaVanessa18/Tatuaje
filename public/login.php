@@ -1,12 +1,24 @@
 <?php
 require_once __DIR__ . '/../app/bootstrap.php';
+
 $error = null;
+
 try {
-    if ($account = currentAccount()) redirectToRole($account);
+    if ($account = currentAccount()) {
+        redirectToRole($account);
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         verifyCsrf();
-        $username = is_string($_POST['usuario'] ?? null) ? trim($_POST['usuario']) : '';
-        $password = is_string($_POST['clave'] ?? null) ? $_POST['clave'] : '';
+
+        $username = is_string($_POST['usuario'] ?? null)
+            ? trim($_POST['usuario'])
+            : '';
+
+        $password = is_string($_POST['clave'] ?? null)
+            ? $_POST['clave']
+            : '';
+
         redirectToRole(authenticate($username, $password));
     }
 } catch (DomainException $ex) {
@@ -28,21 +40,50 @@ try {
 <main class="login-card">
     <p class="eyebrow">ESTUDIO TATTOO</p>
     <h1>Iniciar sesión</h1>
-    <p>Ingresa con tu cuenta. Te dirigiremos al espacio correspondiente a tu rol.</p>
+    <p>
+        Ingresa con tu cuenta. Te dirigiremos al espacio
+        correspondiente a tu rol.
+    </p>
+
     <?php if ($error): ?>
         <p class="notice error" role="alert"><?= e($error) ?></p>
     <?php endif ?>
+
     <form method="post">
         <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
-        <label>Usuario
-            <input name="usuario" autocomplete="username" required
-                   value="<?= e(is_string($_POST['usuario'] ?? null) ? $_POST['usuario'] : '') ?>">
+
+        <label>
+            Usuario
+            <input
+                name="usuario"
+                autocomplete="username"
+                required
+                value="<?= e(
+                    is_string($_POST['usuario'] ?? null)
+                        ? $_POST['usuario']
+                        : ''
+                ) ?>"
+            >
         </label>
-        <label>Contraseña
-            <input type="password" name="clave" autocomplete="current-password" required>
+
+        <label>
+            Contraseña
+            <input
+                type="password"
+                name="clave"
+                autocomplete="current-password"
+                required
+            >
         </label>
-        <button>Ingresar</button>
+
+        <button type="submit">Ingresar</button>
     </form>
+
+    <p class="password-recovery">
+        <a href="recuperar_contrasena.php">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </p>
 </main>
 </body>
 </html>
