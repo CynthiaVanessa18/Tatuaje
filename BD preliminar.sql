@@ -1,6 +1,6 @@
 /*
    TINTA VIVA - ESQUEMA COMPLETO PARA XAMPP
-   Compatible y validado con MariaDB 10.4.32.
+   Compatible y validado con MySQL 8.3 y MariaDB 10.4.32.
 
    Uso recomendado:
    1. Importar este archivo desde phpMyAdmin en una instalación nueva.
@@ -486,7 +486,7 @@ CREATE TABLE IF NOT EXISTS imagenes_tatuajes (
                 THEN id_tatuaje_realizado
                 ELSE NULL
             END
-        ) STORED,
+        ) VIRTUAL,
 
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -2243,5 +2243,4 @@ VALUES
         'numero',
         'Cantidad máxima de mensajes previos enviados al modelo'
     );
-
 
