@@ -7,6 +7,7 @@ Aplicación web en PHP 8.2 y PDO para la gestión y la experiencia pública de u
 1. Inicia MySQL 8.0.16+ o MariaDB 10.4+. XAMPP es opcional; también puedes usar PHP y MySQL instalados de forma independiente.
 2. Importa `database/db_preliminar.sql` en phpMyAdmin o MySQL Workbench para una instalación nueva. Crea la base **estudio_tatuajes** con sus tablas, relaciones, vistas, disparadores y datos iniciales. La copia usa `utf8mb4_unicode_ci` y es compatible con MySQL 8.3 y MariaDB/XAMPP 10.4.
 3. `config/database.php` conecta por defecto a `127.0.0.1:3306`, base `estudio_tatuajes` y usuario `root`. Configura `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` como variables de entorno del servidor cuando tus datos sean distintos. No se carga `.env` automáticamente.
+   Para habilitar la recuperación por correo, configura también `SMTP_USER` y `SMTP_PASSWORD`; nunca guardes esas credenciales en el repositorio.
 4. Para pruebas locales, importa `database/usuarios_demo.sql`. También puedes crear únicamente un administrador desde PowerShell:
 
    ```powershell

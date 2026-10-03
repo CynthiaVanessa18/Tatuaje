@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// No subir este archivo a Git ni colocarlo dentro de public.
+// Las credenciales deben configurarse en el entorno local, nunca en Git.
 return [
-    'usuario' => 'c328300@gmail.com',
-    'password' => 'zmmt kwzm sovw xhqc',
+    'usuario' => getenv('SMTP_USER') ?: '',
+    'password' => getenv('SMTP_PASSWORD') ?: '',
 ];
