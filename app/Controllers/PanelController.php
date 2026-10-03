@@ -18,7 +18,7 @@ try {
         if (!in_array($action,['create','update','delete'],true)) throw new DomainException('Acción inválida.');
         $key=$action==='create'?null:$repo->key(is_array($_POST['key']??null)?$_POST['key']:[]);
         $_SESSION['notice']=(new CrudService($repo))->execute($action,$_POST,$key);
-        header('Location: index.php?module='.urlencode($moduleId)); exit;
+        header('Location: administrador.php?module='.urlencode($moduleId)); exit;
     }
     if (in_array($mode,['edit','view'],true)) $record=$repo->find($repo->key($_GET));
 } catch (DomainException $ex) { $error=$ex->getMessage(); }

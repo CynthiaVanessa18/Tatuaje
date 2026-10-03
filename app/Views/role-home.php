@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?> · Estudio Tattoo</title>
-    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
 <aside>
@@ -13,7 +13,7 @@
     <nav aria-label="Navegación">
         <a href="<?= e(roleRoutes()[$requiredRole]) ?>" aria-current="page"><?= e($title) ?></a>
     </nav>
-    <form method="post" action="logout.php">
+    <form method="post" action="../auth/logout.php">
         <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
         <button class="secondary">Cerrar sesión</button>
     </form>

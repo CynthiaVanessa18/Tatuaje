@@ -5,10 +5,10 @@ declare(strict_types=1);
 function roleRoutes(): array
 {
     return [
-        'administrador' => 'index.php',
-        'secretaria' => 'secretaria.php',
-        'artista' => 'artista.php',
-        'cliente' => 'cliente.php',
+        'administrador' => '../panel/administrador.php',
+        'secretaria' => '../panel/secretaria.php',
+        'artista' => '../panel/artista.php',
+        'cliente' => '../panel/cliente.php',
     ];
 }
 
@@ -40,7 +40,7 @@ function requireRole(string $role): array
 {
     $account = currentAccount();
     if (!$account) {
-        header('Location: login.php', true, 303);
+        header('Location: ../auth/login.php', true, 303);
         exit;
     }
     if ($account['nombre_rol'] !== $role) redirectToRole($account);

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../app/bootstrap.php';
+require_once __DIR__ . '/../../app/Core/bootstrap.php';
 
 $error = null;
 
@@ -34,7 +34,7 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ingreso · Estudio Tattoo</title>
-    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body class="login">
 <main class="login-card">

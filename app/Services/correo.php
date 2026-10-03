@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use PHPMailer\PHPMailer\PHPMailer;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 function enviarCorreoRecuperacion(
     string $email,
@@ -21,7 +21,7 @@ function enviarCorreoRecuperacion(
         );
     }
 
-    $config = require __DIR__ . '/smtp_config.php';
+    $config = require __DIR__ . '/../../config/smtp.php';
 
     $password = preg_replace(
         '/\s+/',
@@ -35,7 +35,7 @@ function enviarCorreoRecuperacion(
     ) {
         throw new RuntimeException(
             'Configura la contraseña de aplicación de Gmail '
-            . 'en app/smtp_config.php.'
+            . 'en config/smtp.php.'
         );
     }
 

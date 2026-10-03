@@ -24,12 +24,14 @@ El esquema no incluye clientes, artistas ni citas de prueba. Esos registros pert
 
 | Carpeta | Responsabilidad |
 | --- | --- |
-| `config/` | Conexión y módulos autorizados |
+| `config/` | Conexión, módulos autorizados y configuración SMTP |
 | `app/Controllers/` | Solicitudes, filtros, mensajes |
+| `app/Core/` | Arranque de la aplicación, sesión, autenticación y roles |
 | `app/Models/` | Consultas preparadas y metadatos del esquema |
-| `app/Services/` | Validaciones y transacciones |
+| `app/Services/` | Validaciones, transacciones y servicios de correo |
 | `app/Views/` | Plantillas del panel |
-| `public/` | Entradas HTTP: index, login, logout |
+| `public/auth/` | Inicio y cierre de sesión, recuperación de contraseña |
+| `public/panel/` | Entradas de los paneles por rol |
 | `public/assets/css/` | Estilos |
 | `public/assets/js/` | Confirmaciones y prevención de doble envío |
 | `database/` | Esquema importable |
@@ -78,15 +80,15 @@ Prueba HTTP: con el servidor apuntando a esa base desechable, crea un administra
 
 ## Inicio de sesión por rol
 
-El mismo `public/login.php` admite cuentas activas de los cuatro roles. No se selecciona el rol en el formulario: se obtiene de la cuenta y se verifica nuevamente al abrir cada página.
+El mismo `public/auth/login.php` admite cuentas activas de los cuatro roles. No se selecciona el rol en el formulario: se obtiene de la cuenta y se verifica nuevamente al abrir cada página.
 
 | Rol | Destino | Acceso actual |
 | --- | --- | --- |
-| administrador | `public/index.php` | CRUD de Persona 2 |
-| secretaria | `public/secretaria.php` | Consulta de próximas citas del estudio |
-| artista | `public/artista.php` | Consulta de sus propias próximas citas |
-| cliente | `public/cliente.php` | Consulta de sus propias próximas citas |
+| administrador | `public/panel/administrador.php` | CRUD de Persona 2 |
+| secretaria | `public/panel/secretaria.php` | Consulta de próximas citas del estudio |
+| artista | `public/panel/artista.php` | Consulta de sus propias próximas citas |
+| cliente | `public/panel/cliente.php` | Consulta de sus propias próximas citas |
 
 Las páginas de artista y cliente necesitan un registro en `artistas` o `clientes` vinculado mediante `id_cuenta`. Si todavía no existe, la sesión funciona y se muestra un aviso para completar el perfil. Estas páginas no implementan edición de agenda ni otros CRUD de los demás integrantes.
 
-Las rutas se centralizan en `app/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.
+Las rutas se centralizan en `app/Core/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.

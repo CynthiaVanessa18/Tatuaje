@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title><?= e($module['title']) ?> · Estudio Tattoo</title>
-    <link rel="stylesheet" href="assets/css/app.css">
-    <script src="assets/js/app.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/app.css">
+    <script src="../assets/js/app.js" defer></script>
 </head>
 
 <body>
-    <aside><a class="brand" href="index.php">ESTUDIO<br><strong>TATTOO</strong></a>
+    <aside><a class="brand" href="administrador.php">ESTUDIO<br><strong>TATTOO</strong></a>
         <p class="eyebrow">GESTIÓN · PERSONA 2</p>
         <nav aria-label="Módulos">
             <?php $group = '';
@@ -19,9 +19,9 @@
                     $group = $item['group']; ?>
                     <p class="nav-group"><?= e($group) ?></p><?php endif ?>
                 <a <?= $id === $moduleId ? 'aria-current="page"' : '' ?>
-                    href="index.php?module=<?= e($id) ?>"><?= e($item['title']) ?></a><?php endforeach ?>
+                    href="administrador.php?module=<?= e($id) ?>"><?= e($item['title']) ?></a><?php endforeach ?>
         </nav>
-        <form method="post" action="logout.php"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><button
+        <form method="post" action="../auth/logout.php"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><button
                 class="secondary">Cerrar sesión</button></form>
     </aside>
     <main>
@@ -31,7 +31,7 @@
                 <h1><?= e($module['title']) ?></h1>
                 <p>Consulta y organiza los registros de tu estudio.</p>
             </div><?php if (empty($module['readonly'])): ?><a class="button"
-                    href="index.php?module=<?= e($moduleId) ?>&amp;mode=create">+ Crear registro</a><?php endif ?>
+                    href="administrador.php?module=<?= e($moduleId) ?>&amp;mode=create">+ Crear registro</a><?php endif ?>
         </header>
         <?php if ($notice): ?>
             <p class="notice" role="status"><?= e($notice) ?></p><?php endif ?>
@@ -53,7 +53,7 @@
                 <dl><?php foreach ($columns as $name => $c): ?>
                         <dt><?= e(label($name)) ?></dt>
                         <dd><?= e(choices($c, $refs)[$record[$name] ?? ''] ?? $record[$name] ?? '—') ?></dd><?php endforeach ?>
-                </dl><a href="index.php?module=<?= e($moduleId) ?>">Volver</a>
+                </dl><a href="administrador.php?module=<?= e($moduleId) ?>">Volver</a>
             </section><?php endif ?>
         <?php if (in_array($mode, ['create', 'edit'], true) && empty($module['readonly']) && ($mode === 'create' || $record)): ?>
             <section class="card">
@@ -90,7 +90,7 @@
                         <?php endforeach ?>
                     </div>
                     <div class="actions"><button>Guardar registro</button><a
-                            href="index.php?module=<?= e($moduleId) ?>">Cancelar</a></div>
+                            href="administrador.php?module=<?= e($moduleId) ?>">Cancelar</a></div>
                 </form>
             </section><?php endif ?>
         <section class="card">
@@ -103,7 +103,7 @@
                                 <option value="<?= e($v) ?>" <?= (string) ($filters[$name] ?? '') === (string) $v ? 'selected' : '' ?>>
                                     <?= e($caption) ?></option><?php endforeach ?>
                         </select></label><?php endforeach ?><button>Filtrar</button><a
-                    href="index.php?module=<?= e($moduleId) ?>">Limpiar</a></form>
+                    href="administrador.php?module=<?= e($moduleId) ?>">Limpiar</a></form>
             <p><?= e($list['total']) ?> registros · Página <?= e($list['page']) ?></p>
             <div class="table-scroll">
                 <table>
@@ -121,8 +121,8 @@
                                     <td><?= e(choices($c, $refs)[$row[$name] ?? ''] ?? $row[$name] ?? '—') ?></td><?php endforeach ?>
                                 <td>
                                     <div class="actions"><a
-                                            href="index.php?<?= e($query) ?>&amp;mode=view">Ver</a><?php if (empty($module['readonly'])): ?><a
-                                                href="index.php?<?= e($query) ?>&amp;mode=edit">Editar</a>
+                                            href="administrador.php?<?= e($query) ?>&amp;mode=view">Ver</a><?php if (empty($module['readonly'])): ?><a
+                                                href="administrador.php?<?= e($query) ?>&amp;mode=edit">Editar</a>
                                             <form method="post"
                                                 data-confirm="¿Eliminar este registro? Si tiene relaciones, la operación será rechazada.">
                                                 <input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden"
