@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../app/bootstrap.php';
+require_once __DIR__ . '/../../app/Core/bootstrap.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -100,7 +100,7 @@ try {
         $_SESSION['recuperacion_limite'] = $limite;
 
         if ($accion === 'enviar') {
-            require_once __DIR__ . '/../app/correo.php';
+            require_once __DIR__ . '/../../app/Services/correo.php';
         }
 
         $pdo = conectarBaseDatos();
@@ -394,7 +394,7 @@ $codigoEnviar = str_pad(
 
     <link
         rel="stylesheet"
-        href="assets/css/app.css"
+        href="../assets/css/app.css"
     >
 </head>
 

@@ -30,7 +30,7 @@ try {
             $_POST['_product_image']=$uploadedImage;
         }
         $_SESSION['notice']=(new CrudService($repo))->execute($action,$_POST,$key);
-        header('Location: index.php?module='.urlencode($moduleId)); exit;
+        header('Location: administrador.php?module='.urlencode($moduleId)); exit;
     }
     if (in_array($mode,['edit','view'],true)) $record=$repo->find($repo->key($_GET));
 } catch (DomainException $ex) { $error=$ex->getMessage(); }

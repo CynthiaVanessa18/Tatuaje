@@ -26,7 +26,7 @@ function tiendaIcono(string $nombre): string {
     <article class="indicador-tienda"><span class="icono-tienda"><?= tiendaIcono('stock') ?></span><div><p>Stock bajo o agotado</p><strong><?= e($resumenTienda['stock']) ?></strong></div></article>
 </div>
 <nav class="accesos-tienda" aria-label="Secciones de tienda">
-    <?php foreach ($tiendaIds as $id): if ($id==='imagenes') continue; ?><a href="index.php?module=<?= e($id) ?>" <?= $id === $moduloSeleccionado || ($id==='productos' && $moduloSeleccionado==='imagenes') ? 'aria-current="page"' : '' ?>><?= tiendaIcono($id) ?><?= e($tiendaTitulos[$id]) ?></a><?php endforeach ?>
+    <?php foreach ($tiendaIds as $id): if ($id==='imagenes') continue; ?><a href="administrador.php?module=<?= e($id) ?>" <?= $id === $moduloSeleccionado || ($id==='productos' && $moduloSeleccionado==='imagenes') ? 'aria-current="page"' : '' ?>><?= tiendaIcono($id) ?><?= e($tiendaTitulos[$id]) ?></a><?php endforeach ?>
 </nav>
 <?php foreach ($seccionesTienda as $seccion):
     if (in_array($moduloSeleccionado,['productos','imagenes'],true)) {
@@ -35,7 +35,7 @@ function tiendaIcono(string $nombre): string {
     extract($seccion,EXTR_OVERWRITE); ?>
     <section id="tienda-<?= e($moduleId) ?>" class="seccion-tienda" aria-labelledby="titulo-<?= e($moduleId) ?>">
         <header><h2 id="titulo-<?= e($moduleId) ?>"><?= tiendaIcono($moduleId) ?><?= e($tiendaTitulos[$moduleId]) ?></h2>
-            <a class="button" href="index.php?module=<?= e($moduleId) ?>&amp;mode=create">＋ <?= $moduleId==='productos' ? 'Agregar producto' : 'Crear registro' ?></a>
+            <a class="button" href="administrador.php?module=<?= e($moduleId) ?>&amp;mode=create">＋ <?= $moduleId==='productos' ? 'Agregar producto' : 'Crear registro' ?></a>
         </header>
         <?php require __DIR__.'/registros.php'; ?>
     </section>

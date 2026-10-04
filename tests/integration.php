@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli' || getenv('DB_NAME') !== 'tattoo_crud_test')
     exit("Solo se ejecuta con DB_NAME=tattoo_crud_test por consola.\n");
-require __DIR__ . '/../app/bootstrap.php';
+require __DIR__ . '/../app/Core/bootstrap.php';
 require __DIR__ . '/../app/Models/CrudRepository.php';
 require __DIR__ . '/../app/Services/CrudService.php';
 $db = conectarBaseDatos();

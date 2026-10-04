@@ -18,7 +18,7 @@
 <section class="card carrito-articulos col-12">
     <div class="carrito-lista-titulo"><h2>Tu carrito</h2><span><?= e($cartCount) ?> artículos</span></div>
     <?php foreach ($cartItems as $item): ?><div class="linea-carrito">
-        <?php if (isset($cartImages[$item['id_producto']])): ?><img class="foto-carrito" src="<?= e($cartImages[$item['id_producto']]) ?>" alt="<?= e($item['nombre']) ?>">
+        <?php if (isset($cartImages[$item['id_producto']])): ?><img class="foto-carrito" src="<?= e(imageUrl($cartImages[$item['id_producto']])) ?>" alt="<?= e($item['nombre']) ?>">
         <?php else: ?><div class="foto-carrito sin-foto-carrito" aria-hidden="true">▣</div><?php endif ?>
         <div class="carrito-articulo-info"><strong><?= e($item['nombre']) ?></strong><p>Precio por unidad: ₡<?= e(number_format((float)($item['precio']??0),2,',','.')) ?></p>
         <form method="post" action="cliente.php?section=carrito" class="actions cantidad-carrito">

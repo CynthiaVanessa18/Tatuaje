@@ -15,13 +15,13 @@
                         if (str_starts_with($name,'id_') && !isset($refs[$name])) continue; ?>
                         <dt><?= e(label($name)) ?></dt>
                         <dd><?= e(displayValue($name,$c,$refs,$record[$name]??null)) ?></dd><?php endforeach ?>
-                </dl><a href="index.php?module=<?= e($moduleId) ?>">Volver</a>
+                </dl><a href="administrador.php?module=<?= e($moduleId) ?>">Volver</a>
             </section><?php endif ?>
         <?php if (in_array($mode, ['create', 'edit'], true) && empty($module['readonly']) && ($mode === 'create' || $record)): ?>
             <section class="card">
                 <h2><?= $mode === 'create' ? 'Crear' : 'Editar' ?> registro</h2>
                 <p>Los campos con * son obligatorios. Fechas y horas en UTC.</p>
-                <form action="index.php?module=<?= e($moduleId) ?>" method="post" enctype="multipart/form-data" class="record-form"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input
+                <form action="administrador.php?module=<?= e($moduleId) ?>" method="post" enctype="multipart/form-data" class="record-form"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input
                         type="hidden" name="action" value="<?= $mode === 'create' ? 'create' : 'update' ?>">
                     <?php if ($mode === 'edit'):
                         foreach ($module['pk'] as $pk): ?><input type="hidden"
@@ -61,11 +61,11 @@
                         <?php endforeach ?>
                     </div>
                     <div class="actions"><button>Guardar registro</button><a
-                            href="index.php?module=<?= e($moduleId) ?>">Cancelar</a></div>
+                            href="administrador.php?module=<?= e($moduleId) ?>">Cancelar</a></div>
                 </form>
             </section><?php endif ?>
         <section class="card">
-            <form action="index.php" method="get" class="filters"><input type="hidden" name="module"
+            <form action="administrador.php" method="get" class="filters"><input type="hidden" name="module"
                     value="<?= e($moduleId) ?>"><label>Buscar<input name="q" placeholder="Nombre, descripción o código"
                         value="<?= e($search) ?>"></label>
                 <?php foreach ($filterable as $name => $c): ?><label><?= e(label($name)) ?><select
@@ -74,7 +74,7 @@
                                 <option value="<?= e($v) ?>" <?= (string) ($filters[$name] ?? '') === (string) $v ? 'selected' : '' ?>>
                                     <?= e($caption) ?></option><?php endforeach ?>
                         </select></label><?php endforeach ?><button>Filtrar</button><a
-                    href="index.php?module=<?= e($moduleId) ?>">Limpiar</a></form>
+                    href="administrador.php?module=<?= e($moduleId) ?>">Limpiar</a></form>
             <p><?= e($list['total']) ?> registros · Página <?= e($list['page']) ?></p>
             <div class="table-scroll">
                 <table>
@@ -95,7 +95,7 @@
                                     <td>
                                     <?php if ($esTienda && $moduleId === 'productos' && $name === 'nombre'): ?>
                                         <div class="producto-visual">
-                                            <?php if (isset($portadas[$row['id_producto']])): ?><img src="<?= e($portadas[$row['id_producto']]) ?>" alt="" loading="lazy">
+                                            <?php if (isset($portadas[$row['id_producto']])): ?><img src="<?= e(imageUrl($portadas[$row['id_producto']])) ?>" alt="" loading="lazy">
                                             <?php else: ?><span class="producto-sin-imagen" aria-hidden="true">▣</span><?php endif ?>
                                             <strong><?= e($row[$name]) ?></strong>
                                         </div>
@@ -108,9 +108,9 @@
                                     </td><?php endforeach ?>
                                 <td>
                                     <div class="actions"><a
-                                            href="index.php?<?= e($query) ?>&amp;mode=view"><?= $esTienda ? tiendaIcono('ver') : '' ?>Ver</a><?php if (empty($module['readonly'])): ?><a
-                                                href="index.php?<?= e($query) ?>&amp;mode=edit"><?= $esTienda ? tiendaIcono('editar') : '' ?>Editar</a>
-                                            <form action="index.php?module=<?= e($moduleId) ?>" method="post"
+                                            href="administrador.php?<?= e($query) ?>&amp;mode=view"><?= $esTienda ? tiendaIcono('ver') : '' ?>Ver</a><?php if (empty($module['readonly'])): ?><a
+                                                href="administrador.php?<?= e($query) ?>&amp;mode=edit"><?= $esTienda ? tiendaIcono('editar') : '' ?>Editar</a>
+                                            <form action="administrador.php?module=<?= e($moduleId) ?>" method="post"
                                                 data-confirm="¿Eliminar este registro? Si tiene relaciones, la operación será rechazada.">
                                                 <input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden"
                                                     name="action" value="delete"><?php foreach ($module['pk'] as $pk): ?><input

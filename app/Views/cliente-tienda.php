@@ -19,7 +19,7 @@
         <article class="producto-cliente">
             <?php $image=trim((string)($product['imagen']??''));
                 $safeImage=$image!=='' && (!preg_match('~^(?:[a-z][a-z0-9+.-]*:|//)~i',$image) || preg_match('~^https?://~i',$image)); ?>
-            <?php if ($safeImage): ?><img src="<?= e($image) ?>" alt="<?= e($product['nombre']) ?>" loading="lazy">
+            <?php if ($safeImage): ?><img src="<?= e(imageUrl($image)) ?>" alt="<?= e($product['nombre']) ?>" loading="lazy">
             <?php else: ?><div class="sin-foto-cliente" aria-label="Sin imagen disponible">▣</div><?php endif ?>
             <div class="producto-cliente-info">
                 <p class="eyebrow"><?= e($product['categoria']) ?></p>

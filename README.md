@@ -1,13 +1,14 @@
-# Estudio Tattoo · Persona 2
+# Tinta Viva · Estudio de tatuajes
 
-Panel administrativo PHP 8.2 y PDO para el esquema de `BD preliminar.sql`. Reemplaza el CRUD de prueba de Usuarios y el ingreso fijo admin/123. No requiere Composer ni Node.
+Aplicación web en PHP 8.2 y PDO para la gestión y la experiencia pública de un estudio de tatuajes. El esquema principal está en `database/db_preliminar.sql`. No requiere Node y las dependencias PHP necesarias están incluidas en `vendor/`.
 
 ## Instalación
 
-1. Inicia MySQL/MariaDB en XAMPP. Requiere MySQL 8.0.16+ o MariaDB 10.4+; MySQL 5.5 no soporta este esquema.
-2. Importa `database/db_preliminar.sql` en phpMyAdmin para una instalación nueva. Crea **db_preliminar**, el nombre solicitado para la base de datos. Si ya importaste ese esquema, no lo vuelvas a importar. La copia usa `utf8mb4_unicode_ci` para admitir MariaDB/XAMPP y conserva las tablas, relaciones, vistas y datos iniciales.
-3. `config/database.php` conecta por defecto a `127.0.0.1:3306`, base `db_preliminar`, usuario `root`, contraseña vacía. Puedes configurar `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` como variables de entorno del servidor. No se carga `.env` automáticamente.
-4. Crea un administrador desde PowerShell (sustituye los datos):
+1. Inicia MySQL 8.0.16+ o MariaDB 10.4+. XAMPP es opcional; también puedes usar PHP y MySQL instalados de forma independiente.
+2. Importa `database/db_preliminar.sql` en phpMyAdmin o MySQL Workbench para una instalación nueva. Crea la base **estudio_tatuajes** con sus tablas, relaciones, vistas, disparadores y datos iniciales. La copia usa `utf8mb4_unicode_ci` y es compatible con MySQL 8.3 y MariaDB/XAMPP 10.4.
+3. `config/database.php` conecta por defecto a `127.0.0.1:3306`, base `estudio_tatuajes` y usuario `root`. Configura `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` como variables de entorno del servidor cuando tus datos sean distintos. No se carga `.env` automáticamente.
+   Para habilitar la recuperación por correo, configura también `SMTP_USER` y `SMTP_PASSWORD`; nunca guardes esas credenciales en el repositorio.
+4. Para pruebas locales, importa `database/usuarios_demo.sql`. También puedes crear únicamente un administrador desde PowerShell:
 
    ```powershell
    $env:ADMIN_PASSWORD = 'elige-una-clave-larga'
@@ -23,12 +24,14 @@ El esquema no incluye clientes, artistas ni citas de prueba. Esos registros pert
 
 | Carpeta | Responsabilidad |
 | --- | --- |
-| `config/` | Conexión y módulos autorizados |
+| `config/` | Conexión, módulos autorizados y configuración SMTP |
 | `app/Controllers/` | Solicitudes, filtros, mensajes |
+| `app/Core/` | Arranque de la aplicación, sesión, autenticación y roles |
 | `app/Models/` | Consultas preparadas y metadatos del esquema |
-| `app/Services/` | Validaciones y transacciones |
+| `app/Services/` | Validaciones, transacciones y servicios de correo |
 | `app/Views/` | Plantillas del panel |
-| `public/` | Entradas HTTP: index, login, logout |
+| `public/auth/` | Inicio y cierre de sesión, recuperación de contraseña |
+| `public/panel/` | Entradas de los paneles por rol |
 | `public/assets/css/` | Estilos |
 | `public/assets/js/` | Confirmaciones y prevención de doble envío |
 | `database/` | Esquema importable |
@@ -77,15 +80,15 @@ Prueba HTTP: con el servidor apuntando a esa base desechable, crea un administra
 
 ## Inicio de sesión por rol
 
-El mismo `public/login.php` admite cuentas activas de los cuatro roles. No se selecciona el rol en el formulario: se obtiene de la cuenta y se verifica nuevamente al abrir cada página.
+El mismo `public/auth/login.php` admite cuentas activas de los cuatro roles. No se selecciona el rol en el formulario: se obtiene de la cuenta y se verifica nuevamente al abrir cada página.
 
 | Rol | Destino | Acceso actual |
 | --- | --- | --- |
-| administrador | `public/index.php` | CRUD de Persona 2 |
-| secretaria | `public/secretaria.php` | Consulta de próximas citas del estudio |
-| artista | `public/artista.php` | Consulta de sus propias próximas citas |
-| cliente | `public/cliente.php` | Consulta de sus propias próximas citas |
+| administrador | `public/panel/administrador.php` | CRUD de Persona 2 |
+| secretaria | `public/panel/secretaria.php` | Consulta de próximas citas del estudio |
+| artista | `public/panel/artista.php` | Consulta de sus propias próximas citas |
+| cliente | `public/panel/cliente.php` | Consulta de sus propias próximas citas |
 
 Las páginas de artista y cliente necesitan un registro en `artistas` o `clientes` vinculado mediante `id_cuenta`. Si todavía no existe, la sesión funciona y se muestra un aviso para completar el perfil. Estas páginas no implementan edición de agenda ni otros CRUD de los demás integrantes.
 
-Las rutas se centralizan en `app/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.
+Las rutas se centralizan en `app/Core/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.

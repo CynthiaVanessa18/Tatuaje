@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?> · Estudio Tattoo</title>
-    <?php if ($clientStore): ?><link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css"><script src="assets/vendor/bootstrap/bootstrap.bundle.min.js" defer></script><?php endif ?>
-    <link rel="stylesheet" href="assets/css/app.css">
-    <?php if ($clientStore): ?><link rel="stylesheet" href="assets/css/tienda.css"><link rel="stylesheet" href="assets/css/cliente-tienda.css"><?php endif ?>
-    <?php if ($clientStore): ?><script src="assets/js/cliente-tienda.js" defer></script><?php endif ?>
+    <?php if ($clientStore): ?><link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css"><script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js" defer></script><?php endif ?>
+    <link rel="stylesheet" href="../assets/css/app.css">
+    <?php if ($clientStore): ?><link rel="stylesheet" href="../assets/css/tienda.css"><link rel="stylesheet" href="../assets/css/cliente-tienda.css"><?php endif ?>
+    <?php if ($clientStore): ?><script src="../assets/js/cliente-tienda.js" defer></script><?php endif ?>
 </head>
 <body class="<?= $clientStore ? 'pagina-tienda tienda-cliente' : '' ?>" <?= $clientStore ? 'data-bs-theme="dark"' : '' ?>>
 <aside>
@@ -17,7 +17,7 @@
         <a href="<?= e(roleRoutes()[$requiredRole]) ?>" <?= !$clientStore ? 'aria-current="page"' : '' ?>><?= $requiredRole==='cliente' ? 'Mis citas' : e($title) ?></a>
         <?php if ($requiredRole==='cliente'): ?><a href="cliente.php?section=tienda" <?= $clientStore && !$clientCart ? 'aria-current="page"' : '' ?>>Tienda</a><a href="cliente.php?section=carrito" <?= $clientCart ? 'aria-current="page"' : '' ?>>Carrito<?= $clientStore ? ' ('.e($cartCount).')' : '' ?></a><?php endif ?>
     </nav>
-    <form method="post" action="logout.php">
+    <form method="post" action="../auth/logout.php">
         <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
         <button class="secondary">Cerrar sesión</button>
     </form>
