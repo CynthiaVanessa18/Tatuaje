@@ -1,0 +1,50 @@
+.pagina-tienda{--accent:#984354;--ink:#f3f4f6;--muted:#b8bec8;--line:#343941;color-scheme:dark;background:#14171b;color:var(--ink)}
+.pagina-tienda aside{background:#101216;border-right:1px solid #2c3037}
+.pagina-tienda .brand strong{color:var(--accent)}
+.pagina-tienda aside nav a:hover,.pagina-tienda aside nav a[aria-current]{background:#98435426;color:#ff8099}
+.pagina-tienda main{max-width:1800px;padding:30px}
+.pagina-tienda h1{font-size:clamp(26px,3vw,36px)}
+.resumen-tienda{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.indicador-tienda{display:flex;align-items:center;gap:16px;padding:20px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,#252a31,#1c2026)}
+.indicador-tienda p{margin:0 0 6px;font-size:13px}
+.indicador-tienda strong{font-size:28px;line-height:1.2;overflow-wrap:anywhere}
+.indicador-tienda .importe-tienda{display:block;font-size:20px;margin-top:5px}
+.icono-tienda{display:grid;place-items:center;flex:0 0 52px;height:56px;background:#98435420;border:1px solid #98435440;border-radius:12px;color:#ff6685}
+.pagina-tienda svg{width:24px;height:24px;flex-shrink:0}
+.icono-tienda svg{width:30px;height:30px}
+.pagina-tienda .accesos-tienda{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.pagina-tienda .accesos-tienda a{display:flex;align-items:center;gap:9px;padding:12px 16px;border:1px solid var(--line);border-radius:8px;background:#20242b;color:#f3f4f6;font-size:14px;text-decoration:none}
+.pagina-tienda .accesos-tienda a:hover{background:#98435425;border-color:#984354}
+.pagina-tienda .accesos-tienda a[aria-current="page"]{background:#98435425;border-color:#984354;color:#ff8099}
+.accesos-tienda svg,.seccion-tienda h2 svg{color:#ff6685}
+.seccion-tienda{margin-bottom:28px;padding:22px;background:#1c2026;border:1px solid var(--line);border-radius:12px;scroll-margin-top:24px}
+.seccion-tienda>header{margin-bottom:18px}
+.seccion-tienda h2{display:flex;align-items:center;gap:12px;margin:0}
+.pagina-tienda .card{background:#20252c;border-color:var(--line);box-shadow:none;margin:16px 0 0}
+.pagina-tienda input,.pagina-tienda select,.pagina-tienda textarea{background:#171b20;border-color:#4b535f;color:#f3f4f6}
+.pagina-tienda input::placeholder{color:#a4acb8}
+.pagina-tienda input:focus,.pagina-tienda select:focus,.pagina-tienda textarea:focus{outline-color:#ff5476}
+.pagina-tienda button,.pagina-tienda .button{background:#984354;color:white;border-radius:8px}
+.pagina-tienda a{color:#ff8099}
+.pagina-tienda .actions>a{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid #4b535f;border-radius:7px;text-decoration:none}
+.pagina-tienda .actions>a svg{width:16px;height:16px}
+.pagina-tienda .actions>a:hover{background:#98435420;border-color:#984354}
+.pagina-tienda .danger{background:#591d2b;color:#ffb8c6}
+.pagina-tienda th{background:#2a3039;color:#e7eaf0}
+.pagina-tienda td{border-color:#343941}
+.pagina-tienda tbody tr:hover{background:#ffffff04}
+.pagina-tienda .hint{background:#181c22;border-color:#414854}
+.pagina-tienda .notice{background:#17372b;color:#c1efd8}
+.pagina-tienda .notice.error{background:#481e2a;color:#ffd1dc;border-color:#984354}
+.pagina-tienda .secondary{background:#303641}
+.pagina-tienda .confirmation-dialog{background:#20252c;border-color:var(--line);color:var(--ink)}
+.producto-visual{display:flex;align-items:center;gap:12px;min-width:190px}
+.producto-visual img,.producto-sin-imagen{width:54px;height:54px;object-fit:cover;border-radius:8px;background:#303641;flex-shrink:0}
+.producto-sin-imagen{display:grid;place-items:center;color:#ff8099;font-size:24px}
+.estado-tienda{display:inline-block;border:1px solid;padding:4px 10px;border-radius:20px;white-space:nowrap;font-size:12px}
+.estado-activo,.estado-confirmada,.estado-completada{color:#8ee4b6;background:#18382a}
+.estado-bajo,.estado-pendiente{color:#ffda80;background:#3d331b}
+.estado-agotado,.estado-inactivo,.estado-cancelada{color:#ff9ab0;background:#461e2a}
+@media(min-width:851px){.pagina-tienda aside{position:sticky;top:0;height:100vh;overflow-y:auto}}
+@media(max-width:1200px){.resumen-tienda{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.pagina-tienda main{padding:16px}.resumen-tienda{grid-template-columns:1fr}.seccion-tienda{padding:14px}.pagina-tienda .accesos-tienda{display:grid;grid-template-columns:1fr}}

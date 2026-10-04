@@ -19,11 +19,27 @@ final class CrudRepository
     public function references(): array {
         $q=$this->db->prepare('SELECT COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND REFERENCED_TABLE_NAME IS NOT NULL');
         $q->execute([$this->module['table']]); $out=[];
-        foreach ($q as $r) {
+        $relations=$q->fetchAll();
+        // Las vistas no exponen metadatos de claves foráneas.
+        if ($this->module['table']==='vista_calificaciones_artistas') $relations[]=['COLUMN_NAME'=>'id_artista','REFERENCED_TABLE_NAME'=>'artistas','REFERENCED_COLUMN_NAME'=>'id_artista'];
+        if ($this->module['table']==='vista_saldo_tarjetas') $relations[]=['COLUMN_NAME'=>'id_tarjeta','REFERENCED_TABLE_NAME'=>'tarjetas_regalo','REFERENCED_COLUMN_NAME'=>'id_tarjeta'];
+        foreach ($relations as $r) {
             $table=$r['REFERENCED_TABLE_NAME']; $pk=$r['REFERENCED_COLUMN_NAME'];
-            $names=['artistas'=>"CONCAT(nombre, ' ', apellidos)", 'clientes'=>"CONCAT(nombre, ' ', apellidos)", 'citas'=>"CONCAT('Cita ', id_cita, ' · ', fecha_hora_inicio, ' · ', estado)", 'ventas'=>"CONCAT('Venta ', id_venta, ' · ', estado)", 'detalle_ventas'=>"CONCAT('Detalle ', id_detalle_venta, ' · ', tipo_item, ' · ', descripcion)", 'pagos'=>"CONCAT('Pago ', id_pago)", 'promociones'=>'titulo', 'cotizaciones'=>"CONCAT('Cotización ', id_cotizacion)", 'tarjetas_regalo'=>'nombre_destinatario'];
+            $client="COALESCE((SELECT CONCAT(cl.nombre,' ',cl.apellidos) FROM clientes cl WHERE cl.id_cliente=t.id_cliente),'Cliente no disponible')";
+            $names=[
+                'artistas'=>"COALESCE(NULLIF(t.nombre_artistico,''),CONCAT(t.nombre,' ',t.apellidos))",
+                'clientes'=>"CONCAT(t.nombre,' ',t.apellidos)",
+                'productos'=>"CONCAT(t.nombre,' · ',t.sku)",
+                'citas'=>"CONCAT($client,' · ',DATE_FORMAT(t.fecha_hora_inicio,'%d/%m/%Y %H:%i'),' UTC · ',t.estado)",
+                'ventas'=>"CONCAT($client,' · ',DATE_FORMAT(t.fecha,'%d/%m/%Y %H:%i:%s'),' UTC · ',t.moneda,' ',t.total,' · ',t.estado)",
+                'detalle_ventas'=>"CONCAT(t.descripcion,' · ',COALESCE((SELECT CONCAT(cl.nombre,' ',cl.apellidos,' · ',DATE_FORMAT(v.fecha,'%d/%m/%Y %H:%i:%s')) FROM ventas v JOIN clientes cl ON cl.id_cliente=v.id_cliente WHERE v.id_venta=t.id_venta),'Venta no disponible'),' · ',t.tipo_item,' · cantidad ',t.cantidad)",
+                'pagos'=>"CONCAT(t.metodo,' · ',t.moneda,' ',t.monto,' · ',t.estado)",
+                'promociones'=>'t.titulo',
+                'cotizaciones'=>"CONCAT(t.nombre_contacto,' · ',t.zona_cuerpo,' · ',LEFT(t.descripcion_idea,60),' · ',t.estado)",
+                'tarjetas_regalo'=>"CONCAT(t.nombre_destinatario,' · ',t.moneda,' ',t.monto_inicial,' · ',DATE_FORMAT(t.fecha_emision,'%d/%m/%Y %H:%i:%s'))",
+            ];
             $display=$names[$table] ?? 'nombre';
-            $out[$r['COLUMN_NAME']]=$this->db->query("SELECT `$pk` AS id, $display AS nombre FROM `$table` ORDER BY `$pk` DESC")->fetchAll();
+            $out[$r['COLUMN_NAME']]=$this->db->query("SELECT t.`$pk` AS id, $display AS nombre FROM `$table` t ORDER BY t.`$pk` DESC")->fetchAll();
         }
         return $out;
     }

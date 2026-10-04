@@ -29,7 +29,8 @@ final class CrudService
             }
             if (preg_match('/^(?:var)?char\((\d+)\)/',$type,$m) && mb_strlen($v)>(int)$m[1]) throw new DomainException('Texto demasiado largo: '.label($name));
             if (str_contains($name,'correo') && !filter_var($v,FILTER_VALIDATE_EMAIL)) throw new DomainException('Correo inválido.');
-            if (str_ends_with($name,'_url') && (!filter_var($v,FILTER_VALIDATE_URL) || !in_array(strtolower(parse_url($v,PHP_URL_SCHEME) ?: ''),['http','https'],true))) throw new DomainException('La imagen requiere una URL http o https válida.');
+            $localImage = $name==='imagen_url' && preg_match('~^uploads/productos/[a-f0-9]{32}\.(jpg|png|webp)$~D',$v);
+            if (str_ends_with($name,'_url') && !$localImage && (!filter_var($v,FILTER_VALIDATE_URL) || !in_array(strtolower(parse_url($v,PHP_URL_SCHEME) ?: ''),['http','https'],true))) throw new DomainException('La imagen requiere una URL http o https válida.');
             $data[$name]=$v;
         }
         return $data;
@@ -123,6 +124,13 @@ final class CrudService
             }
             if ($action==='delete') { $this->repo->delete($key); $message='Registro eliminado correctamente.'; }
             else $this->repo->save($d,$key);
+            if ($table==='productos' && $action!=='delete' && !empty($input['_product_image'])) {
+                $image=$input['_product_image'];
+                $this->check(is_string($image) && (bool)preg_match('~^uploads/productos/[a-f0-9]{32}\.(jpg|png|webp)$~D',$image),'Imagen inválida.');
+                $productId=$key['id_producto'] ?? $db->lastInsertId();
+                $db->prepare('UPDATE imagenes_productos SET es_portada=0 WHERE id_producto=?')->execute([$productId]);
+                $db->prepare('INSERT INTO imagenes_productos (id_producto,imagen_url,orden,es_portada) VALUES (?,?,0,1)')->execute([$productId,$image]);
+            }
             if ($table==='tarjetas_regalo' && !$old) {
                 $id=$db->lastInsertId();
                 $db->prepare("INSERT INTO movimientos_tarjetas_regalo (id_tarjeta,tipo,monto,referencia) VALUES (?,'carga_inicial',?,?)")->execute([$id,$d['monto_inicial'],'emision-'.bin2hex(random_bytes(16))]);

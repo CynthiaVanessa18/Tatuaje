@@ -36,3 +36,14 @@ $query = conectarBaseDatos()->prepare(
 );
 $query->execute($parameters);
 $appointments = $query->fetchAll();
+$clientStore=$requiredRole==='cliente' && in_array($_GET['section']??'',['tienda','carrito'],true);
+$clientCart=$clientStore && ($_GET['section']??'')==='carrito';
+if ($clientStore) {
+    require __DIR__.'/ClientCartController.php';
+    $title='Tienda del estudio';
+    $description='Descubre nuestros artículos y productos para cuidar tus tatuajes.';
+    require __DIR__.'/ClientStoreController.php';
+    if ($clientCart) { $title='Mi carrito';$description='Revisa tus artículos y elige cómo pagar. Retiro en el estudio.'; }
+    if ($clientCart && ($_GET['paso']??'')==='pago') { $title='Finalizar compra';$description='Selecciona tu método de pago y confirma el pedido.'; }
+    if ($clientCart && ($_GET['paso']??'')==='confirmacion') { $title='Confirmación de tu pedido';$description='Revisa el resultado de tu compra y las indicaciones para el retiro.'; }
+}
