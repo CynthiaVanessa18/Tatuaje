@@ -1,0 +1,68 @@
+.admin-tinta-viva .membership-workspace {color:#eee4d5;max-width:1150px;margin:0 auto}
+.admin-tinta-viva .membership-content > .tab-pane {display:none}
+.admin-tinta-viva .membership-content > .tab-pane.active {display:block}
+.admin-tinta-viva .membership-benefits tbody th {text-transform:none;letter-spacing:normal}
+.admin-tinta-viva .membership-intro {margin:8px 0 24px}
+.admin-tinta-viva .membership-intro h2 {font-size:26px;margin:8px 0 12px}
+.admin-tinta-viva .membership-intro p:last-child {color:#bcb4a8;font-size:14px}
+.admin-tinta-viva .membership-selector {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:22px}
+.admin-tinta-viva .membership-selector .membership-option {display:flex;align-items:center;gap:14px;width:100%;min-height:100px;padding:18px;text-align:left;white-space:normal;text-transform:none;letter-spacing:normal;background:#191919;color:#c8c0b4;border:1px solid #423a30;border-radius:12px;box-shadow:none}
+.admin-tinta-viva .membership-selector .membership-option:hover {background:#25211c;border-color:#a58b61}
+.admin-tinta-viva .membership-selector .membership-option.active {background:linear-gradient(120deg,#352c20,#211e19);border-color:#cfaf75;color:#f5e9d0;box-shadow:inset 0 0 0 1px #cfaf7540}
+.admin-tinta-viva .membership-option-icon {display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border-radius:12px;background:#c9a96e12;color:#d2b37b}
+.admin-tinta-viva .membership-option-icon svg {width:28px;height:28px}
+.admin-tinta-viva .membership-option-text {min-width:0;flex:1}
+.admin-tinta-viva .membership-option-text strong {display:block;font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.admin-tinta-viva .membership-option-text small {display:block;font-size:11px;margin-top:4px;color:#b2a38d}
+.admin-tinta-viva .membership-option-arrow {font-size:26px;color:#d2b37b}
+.admin-tinta-viva .membership-panel {border:1px solid #423a30;background:#171717;border-radius:14px;padding:26px}
+.admin-tinta-viva .membership-panel-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}
+.admin-tinta-viva .membership-panel-heading h3 {font-size:23px;color:#eee4d5;margin:6px 0 10px}
+.admin-tinta-viva .membership-panel-heading p:last-child {font-size:13px;line-height:1.7;color:#bcb4a8;margin:0}
+.admin-tinta-viva .membership-state {padding:8px 12px;color:#c5b79e;background:#322d24;border:1px solid #68583d;font-size:11px;font-weight:500;white-space:nowrap}
+.admin-tinta-viva .membership-state.enabled {color:#b8d8b1;background:#213324;border-color:#476c4d}
+.admin-tinta-viva .membership-fees {margin-bottom:24px}
+.admin-tinta-viva .membership-fee {padding:18px 20px;border:1px solid #3b352c;background:#201e1a;border-radius:10px;height:100%}
+.admin-tinta-viva .membership-fee span,.admin-tinta-viva .membership-fee small {display:block;color:#bdb3a3;font-size:12px}
+.admin-tinta-viva .membership-fee strong {display:block;color:#dfbf84;font-size:25px;line-height:1.5;margin:5px 0}
+.admin-tinta-viva .membership-benefits {--bs-table-bg:transparent;--bs-table-color:#e5ddd0;--bs-table-border-color:#36322b;--bs-table-hover-bg:#c9a96e08;--bs-table-hover-color:#fff0d9;width:100%;margin-bottom:0;font-size:13px}
+.admin-tinta-viva .membership-benefits th,.admin-tinta-viva .membership-benefits td {padding:16px 14px;white-space:normal;border-right:0}
+.admin-tinta-viva .membership-benefits thead th {background:#24211b;color:#cdb995;font-size:11px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #544632}
+.admin-tinta-viva .membership-benefits tbody th {font-weight:500;width:35%}
+.admin-tinta-viva .membership-benefits td:nth-child(2) {width:23%}
+.admin-tinta-viva .membership-benefits td:last-child {color:#aaa398;font-size:12px;line-height:1.7}
+.admin-tinta-viva .membership-rule-dot {display:inline-block;width:7px;height:7px;border-radius:50%;background:#59544c;margin-right:10px;vertical-align:middle}
+.admin-tinta-viva .membership-rule-dot.included {background:#cdb078}
+.admin-tinta-viva .membership-value {color:#e0c393;font-weight:600}
+.admin-tinta-viva .membership-not-included {color:#938c81;font-size:12px}
+.admin-tinta-viva .membership-period-note {color:#a89c86;font-size:12px;margin:18px 0 22px}
+.admin-tinta-viva .membership-fields {margin-bottom:26px}
+.admin-tinta-viva .membership-editor .form-label {font-size:12px;color:#c4b9a7;margin-bottom:8px}
+.admin-tinta-viva .membership-editor .form-control,.admin-tinta-viva .membership-editor .form-select {border-radius:8px;padding:11px 12px;font-size:13px}
+.admin-tinta-viva .membership-rules-heading {display:flex;align-items:center;justify-content:space-between;gap:16px;margin:12px 0 18px}
+.admin-tinta-viva .membership-rules-heading h4 {font-size:17px;margin:0;color:#dfc89f}
+.admin-tinta-viva .membership-rules-heading span {font-size:11px;color:#aca08d}
+.admin-tinta-viva .membership-edit-table td:first-child {width:75px}
+.admin-tinta-viva .membership-edit-table tbody th {width:auto}
+.admin-tinta-viva .membership-edit-table td:last-child {width:220px}
+.admin-tinta-viva .membership-edit-table th label {cursor:pointer;display:block;margin:0;font-weight:500;font-size:13px}
+.admin-tinta-viva .membership-edit-table th small {display:block;margin-top:6px;font-size:11px;color:#a79f92;font-weight:400;line-height:1.7}
+.admin-tinta-viva .membership-edit-table .form-check {margin:0;min-height:24px;padding-left:0}
+.admin-tinta-viva .membership-edit-table .form-check-input {appearance:none;float:none;margin:0;width:22px;height:22px;border-radius:5px;cursor:pointer;border-color:#6b6253;background-color:#37332b;padding:0}
+.admin-tinta-viva .membership-edit-table .form-check-input:checked {background-color:#b08b4d;border-color:#d7b77e;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12 4 4L19 6' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-position:center;background-repeat:no-repeat;background-size:18px 18px}
+.admin-tinta-viva .membership-edit-table .rule-selected {--bs-table-bg:#c9a96e07}
+.admin-tinta-viva .membership-rule-value {display:flex;align-items:center;gap:10px}
+.admin-tinta-viva .membership-rule-value input {max-width:100px;padding:9px 10px!important}
+.admin-tinta-viva .membership-rule-value input:disabled {opacity:.35}
+.admin-tinta-viva .membership-rule-value span {font-size:11px;white-space:nowrap}
+.admin-tinta-viva .membership-priority-note {font-size:12px;color:#cdb68d}
+.admin-tinta-viva .membership-savebar {position:sticky;bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 18px;background:#242019;border:1px solid #655338;border-radius:10px;z-index:2;box-shadow:0 8px 24px #0006}
+.admin-tinta-viva .membership-savebar span {font-size:12px;color:#c7b598}
+@media(max-width:650px) {.admin-tinta-viva .membership-rules-heading {align-items:flex-start;flex-direction:column;gap:8px}.admin-tinta-viva .membership-savebar {padding:12px;bottom:6px}.admin-tinta-viva .membership-savebar span {max-width:45%}.admin-tinta-viva .membership-edit-table {min-width:580px}}
+.admin-tinta-viva .membership-content .membership-card {border-top:1px solid #423a30;padding:0;border-radius:0;background:transparent}
+.admin-tinta-viva .membership-content .membership-card summary {padding:18px 0;font-size:14px}
+.admin-tinta-viva .membership-content .membership-card form {max-width:none}
+.admin-tinta-viva .membership-content .membership-card fieldset {border:1px solid #423a30;border-radius:10px;padding:18px;margin:22px 0}
+.admin-tinta-viva .membership-content .membership-card legend {float:none;width:auto;font-size:15px;padding:0 8px}
+@media(max-width:900px) {.admin-tinta-viva .membership-selector {gap:8px}.admin-tinta-viva .membership-selector .membership-option {padding:12px;gap:10px}.admin-tinta-viva .membership-option-arrow {display:none}}
+@media(max-width:650px) {.admin-tinta-viva .membership-selector {grid-template-columns:1fr}.admin-tinta-viva .membership-selector .membership-option {min-height:76px}.admin-tinta-viva .membership-panel {padding:16px}.admin-tinta-viva .membership-benefits {min-width:540px}.admin-tinta-viva .membership-panel-heading {flex-direction:column}.admin-tinta-viva .membership-panel-heading h3 {font-size:20px}}

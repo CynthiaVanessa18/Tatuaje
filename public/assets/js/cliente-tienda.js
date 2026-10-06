@@ -1,12 +1,77 @@
 'use strict';
+let checkoutBarObserver;
+function fitCheckoutBar() {
+  checkoutBarObserver?.disconnect();
+  const bar = document.querySelector('.barra-pago-carrito');
+  if (!bar) return;
+  const fit = () => document.documentElement.style.setProperty('--checkout-footer-height', `${Math.ceil(bar.getBoundingClientRect().height)}px`);
+  fit();
+  if (typeof ResizeObserver !== 'undefined') {
+    checkoutBarObserver = new ResizeObserver(fit);
+    checkoutBarObserver.observe(bar);
+  }
+}
 function preservePosition(change) {
   const x = window.scrollX, y = window.scrollY;
-  const main = document.querySelector('main');
-  main.style.minHeight = `${main.getBoundingClientRect().height}px`;
   change();
   window.scrollTo({ left: x, top: y, behavior: 'instant' });
 }
 function initializeClientStore() {
+fitCheckoutBar();
+const dialog = document.querySelector('[data-product-dialog]');
+if (dialog) {
+  let previousFocus;
+  const openProduct = (card) => {
+    const content = dialog.querySelector('[data-product-content]');
+    content.replaceChildren();
+    const image = card.querySelector(':scope > img, :scope > .sin-foto-cliente')?.cloneNode(true);
+    if (image) {
+      if (image.tagName === 'IMG') {
+        image.loading = 'eager';
+        image.title = 'Selecciona la imagen para ampliar';
+        image.addEventListener('click', () => image.classList.toggle('imagen-ampliada'));
+      }
+      content.append(image);
+    }
+    const info = card.querySelector('.producto-cliente-info').cloneNode(true);
+    const title = info.querySelector('h2');
+    title.textContent = card.querySelector('[data-product-open]').textContent;
+    title.id = 'producto-detalle-titulo';
+    const description = info.querySelector('details');
+    if (description) description.open = true;
+    content.append(info);
+    const related = dialog.querySelector('[data-product-related]');
+    related.replaceChildren();
+    document.querySelectorAll('.catalogo-cliente [data-product-card]').forEach((other) => {
+      if (other === card) return;
+      const button = document.createElement('button');
+      button.type = 'button';
+      const thumb = other.querySelector(':scope > img')?.cloneNode(true);
+      if (thumb) button.append(thumb);
+      const name = document.createElement('span');
+      name.textContent = other.querySelector('[data-product-open]').textContent;
+      const price = document.createElement('strong');
+      price.textContent = other.querySelector('.precio-cliente').textContent;
+      button.append(name, price);
+      button.addEventListener('click', () => { openProduct(other); dialog.scrollTop = 0; });
+      related.append(button);
+    });
+    if (!dialog.open) { previousFocus = document.activeElement; dialog.showModal(); }
+  };
+  document.querySelectorAll('.catalogo-cliente [data-product-card]').forEach((card) => {
+    card.querySelector('[data-product-open]').addEventListener('click', () => openProduct(card));
+    const image = card.querySelector(':scope > img, :scope > .sin-foto-cliente');
+    if (image) {
+      image.style.cursor = 'zoom-in';
+      image.addEventListener('click', () => openProduct(card));
+    }
+  });
+  dialog.querySelector('[data-product-close]').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => previousFocus?.focus({ preventScroll: true }));
+}
+document.querySelector('[data-dismiss-cart-notice]')?.addEventListener('click', (event) => {
+  event.target.closest('[data-cart-notice]').remove();
+});
 const continuePayment = document.querySelector('[data-continue-payment]');
 if (continuePayment) {
   const panel = document.querySelector('[data-payment-panel]');
@@ -74,14 +139,14 @@ function clientStoreUrl(url) {
   return url.origin === location.origin && url.pathname === location.pathname &&
     ['tienda', 'carrito'].includes(url.searchParams.get('section'));
 }
-async function updateClientStore(url, options = {}, push = true) {
+async function updateClientStore(url, options = {}, push = true, keepPosition = false) {
   if (clientLoading) return;
   clientLoading = true;
   const main = document.querySelector('main');
   const position = { x: window.scrollX, y: window.scrollY };
-  const height = main.getBoundingClientRect().height;
-  const sidebar = document.querySelector('aside');
-  const sidebarScroll = sidebar.scrollTop;
+  const navigation = document.querySelector('.client-navigation, aside');
+  const nav = navigation?.querySelector('nav');
+  const navScroll = nav?.scrollLeft ?? 0;
   main.setAttribute('aria-busy', 'true');
   try {
     const response = await fetch(url, { credentials: 'same-origin', ...options });
@@ -91,15 +156,17 @@ async function updateClientStore(url, options = {}, push = true) {
       if (response.redirected) { location.assign(response.url); return; }
       throw new Error('No se pudo actualizar la tienda.');
     }
-    nextMain.style.minHeight = `${height}px`;
     main.replaceWith(nextMain);
-    const nav = page.querySelector('aside nav');
-    if (nav) sidebar.querySelector('nav').replaceWith(nav);
-    sidebar.scrollTop = sidebarScroll;
+    document.body.classList.toggle('pagina-carrito', page.body.classList.contains('pagina-carrito'));
+    const nextNav = page.querySelector('.client-navigation nav, aside nav');
+    if (nav && nextNav) {
+      nav.replaceWith(nextNav);
+      nextNav.scrollLeft = navScroll;
+    }
     document.title = page.title;
     initializeClientStore();
     if (push) history.pushState(null, '', response.url);
-    window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
+    window.scrollTo({ left: keepPosition ? position.x : 0, top: keepPosition ? position.y : 0, behavior: 'instant' });
   } catch (error) {
     let notice = main.querySelector('[data-client-network-error]');
     if (!notice) {
@@ -111,7 +178,7 @@ async function updateClientStore(url, options = {}, push = true) {
     }
     notice.textContent = 'No se pudo actualizar. Revisa la conexión y vuelve a intentarlo.';
   } finally {
-    main.removeAttribute('aria-busy');
+    document.querySelector('main')?.removeAttribute('aria-busy');
     clientLoading = false;
   }
 }
@@ -136,7 +203,8 @@ document.addEventListener('submit', async (event) => {
   if (!post) url.search = new URLSearchParams(data).toString();
   const button = event.submitter;
   if (button) button.disabled = true;
-  try { await updateClientStore(url, post ? { method: 'POST', body: data } : {}); }
+  const keepPosition = post && data.get('cart_action') !== 'checkout';
+  try { await updateClientStore(url, post ? { method: 'POST', body: data } : {}, true, keepPosition); }
   finally { if (button) button.disabled = false; }
 });
 window.addEventListener('popstate', () => {

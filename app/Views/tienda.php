@@ -1,5 +1,6 @@
 <?php
-$tiendaTitulos=['productos'=>'Productos e inventario','ventas'=>'Ventas de la tienda','categorias_productos'=>'Categorías','imagenes'=>'Imágenes de artículos','detalle'=>'Detalle de ventas'];
+$tiendaTitulos=['productos'=>'Productos e inventario','ventas'=>'Ventas de la tienda','categorias_productos'=>'Categorías','imagenes'=>'Imágenes de artículos','detalle'=>'Detalle de ventas','promociones_tienda'=>'Promociones y ofertas','grupos_clientes'=>'Grupos de clientes','clientes_grupos'=>'Clientes por grupo'];
+$tiendaCrear=['productos'=>'Agregar producto','promociones_tienda'=>'Crear promoción','grupos_clientes'=>'Crear grupo','clientes_grupos'=>'Asignar cliente'];
 function tiendaIcono(string $nombre): string {
     $paths=[
         'productos'=>'<path d="m12 3 9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8M7 5.8l9 5"/>',
@@ -35,8 +36,8 @@ function tiendaIcono(string $nombre): string {
     extract($seccion,EXTR_OVERWRITE); ?>
     <section id="tienda-<?= e($moduleId) ?>" class="seccion-tienda" aria-labelledby="titulo-<?= e($moduleId) ?>">
         <header><h2 id="titulo-<?= e($moduleId) ?>"><?= tiendaIcono($moduleId) ?><?= e($tiendaTitulos[$moduleId]) ?></h2>
-            <a class="button" href="administrador.php?module=<?= e($moduleId) ?>&amp;mode=create">＋ <?= $moduleId==='productos' ? 'Agregar producto' : 'Crear registro' ?></a>
+            <a class="button" href="administrador.php?module=<?= e($moduleId) ?>&amp;mode=create">＋ <?= e($tiendaCrear[$moduleId] ?? 'Crear registro') ?></a>
         </header>
-        <?php require __DIR__.'/registros.php'; ?>
+        <?php require __DIR__.($moduleId==='promociones_tienda' ? '/promociones-tienda.php' : '/registros.php'); ?>
     </section>
 <?php endforeach ?>

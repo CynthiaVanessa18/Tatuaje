@@ -1,0 +1,211 @@
+/* La administración comparte colores y tipografías con el index. */
+html:has(.admin-tinta-viva) { scroll-behavior: auto; }
+.admin-tinta-viva [hidden] { display: none !important; }
+.admin-tinta-viva .promotion-picker { margin: 22px 0; padding: 18px; border: 1px solid var(--line); border-radius: 6px; }
+.admin-tinta-viva .promotion-picker legend { color: var(--gold); padding: 0 8px; font-weight: 600; }
+.admin-tinta-viva .promotion-options { max-height: 260px; overflow-y: auto; margin-top: 14px; display: grid; gap: 8px; }
+.admin-tinta-viva .promotion-choice { display: flex; flex-direction: row; align-items: center; gap: 10px; padding: 8px; background: var(--black-soft); border-radius: 4px; }
+.admin-tinta-viva .promotion-choice input { width: 18px; height: 18px; flex: 0 0 18px; }
+body.admin-tinta-viva {
+    --ink: var(--bone);
+    --muted: var(--bone-muted);
+    --accent: var(--blood-light);
+    --line: rgba(189, 146, 85, .28);
+    color-scheme: dark;
+    display: flex;
+    align-items: stretch;
+    color: var(--bone);
+    font: 14px/1.65 var(--sans);
+    background: radial-gradient(circle at 65% 15%, #21090f 0, transparent 38rem), var(--black);
+}
+.admin-tinta-viva aside {
+    position: sticky;
+    top: 0;
+    width: 258px;
+    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 28px 20px;
+    background: rgba(5, 3, 4, .97);
+    border-right: 1px solid var(--gold-dark);
+    color: var(--bone);
+    scrollbar-color: var(--gold-dark) var(--black-soft);
+}
+.admin-tinta-viva aside .brand {
+    display: block;
+    margin-bottom: 28px;
+    font-family: var(--title);
+    font-size: 17px;
+    letter-spacing: 3px;
+    line-height: 1.5;
+    color: var(--bone);
+}
+.admin-tinta-viva aside .brand strong { color: var(--gold); font-size: 27px; }
+.admin-tinta-viva .eyebrow, .admin-tinta-viva aside .eyebrow {
+    color: var(--gold);
+    font: 600 10px/1.6 var(--sans);
+    letter-spacing: 2px;
+}
+.admin-tinta-viva .eyebrow::before { content: none; }
+.admin-tinta-viva .nav-group { color: var(--gold); font-size: 10px; }
+.admin-tinta-viva aside nav a {
+    padding: 9px 12px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--bone-muted);
+    font-size: 12px;
+}
+.admin-tinta-viva aside nav a:hover,
+.admin-tinta-viva aside nav a[aria-current] {
+    color: var(--bone);
+    background: var(--surface-light);
+    border-color: var(--gold-dark);
+}
+.admin-tinta-viva main { max-width: 1700px; min-width: 0; padding: 32px; }
+.admin-tinta-viva main > header { padding-bottom: 24px; border-bottom: 1px solid var(--gold-dark); }
+.admin-tinta-viva h1, .admin-tinta-viva h2, .admin-tinta-viva h3 { color: var(--bone); font-family: var(--title); }
+.admin-tinta-viva h1 { font-size: clamp(23px, 2.6vw, 34px); line-height: 1.35; letter-spacing: 0; }
+.admin-tinta-viva h2 { font-size: 19px; line-height: 1.5; }
+.admin-tinta-viva p { color: var(--bone-muted); }
+.admin-tinta-viva a { color: var(--gold); }
+.admin-tinta-viva .card, .admin-tinta-viva .seccion-tienda {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 8px 28px #0002;
+}
+.admin-tinta-viva label, .admin-tinta-viva dt { color: var(--bone); }
+.admin-tinta-viva input, .admin-tinta-viva select, .admin-tinta-viva textarea {
+    background: var(--black-soft);
+    color: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: var(--sans);
+}
+.admin-tinta-viva input::placeholder, .admin-tinta-viva textarea::placeholder { color: var(--bone-muted); opacity: .85; }
+.admin-tinta-viva select option { background: var(--black-soft); color: var(--bone); }
+.admin-tinta-viva input:focus, .admin-tinta-viva select:focus, .admin-tinta-viva textarea:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
+.admin-tinta-viva input[type=checkbox], .admin-tinta-viva input[type=radio] { accent-color: var(--blood-light); }
+.admin-tinta-viva button, .admin-tinta-viva .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--blood), var(--blood-dark));
+    border: 1px solid var(--blood-light);
+    border-radius: 4px;
+    clip-path: none;
+    color: var(--bone);
+    font: 600 12px/1.5 var(--sans);
+    letter-spacing: .3px;
+    text-transform: none;
+    text-decoration: none;
+    transform: none;
+}
+.admin-tinta-viva button:hover, .admin-tinta-viva .button:hover { background: var(--blood); transform: none; filter: none; }
+.admin-tinta-viva button:disabled { opacity: .5; cursor: not-allowed; }
+.admin-tinta-viva .secondary { background: transparent; border-color: var(--gold-dark); }
+.admin-tinta-viva .danger { background: var(--blood-dark); color: #ffc2cf; }
+.admin-tinta-viva a:focus-visible, .admin-tinta-viva button:focus-visible, .admin-tinta-viva summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.admin-tinta-viva th { background: var(--surface-light); color: var(--gold); }
+.admin-tinta-viva td { color: var(--bone); border-color: var(--line); overflow-wrap: anywhere; }
+.admin-tinta-viva tbody tr:hover { background: #bd925508; }
+.admin-tinta-viva .hint { background: var(--black-soft); border-color: var(--line); }
+.admin-tinta-viva .notice { background: #14251d; color: #c9e6d4; border-color: #5a9470; }
+.admin-tinta-viva .notice.error { background: var(--blood-dark); color: #ffc2cf; border-color: var(--blood-light); }
+.admin-tinta-viva .confirmation-dialog { background: var(--surface); color: var(--bone); border-color: var(--gold-dark); }
+.admin-tinta-viva .confirmation-dialog::backdrop { background: #050304cc; }
+.admin-tinta-viva .indicador-tienda { background: linear-gradient(135deg, var(--surface-light), var(--surface)); border-color: var(--line); }
+.admin-tinta-viva .icono-tienda { background: var(--blood-dark); border-color: var(--blood); color: var(--gold); }
+.admin-tinta-viva .accesos-tienda a, .admin-tinta-viva .actions > a {
+    background: var(--black-soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--bone);
+    padding: 7px 11px;
+    text-decoration: none;
+}
+.admin-tinta-viva .accesos-tienda a:hover, .admin-tinta-viva .accesos-tienda a[aria-current], .admin-tinta-viva .actions > a:hover { background: var(--blood-dark); border-color: var(--blood-light); color: var(--bone); }
+.admin-tinta-viva .accesos-tienda svg, .admin-tinta-viva .seccion-tienda h2 svg { color: var(--gold); }
+.admin-tinta-viva .accesos-admin {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 24px 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+}
+.admin-tinta-viva .accesos-admin a {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--black-soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--bone);
+    font-size: 14px;
+    white-space: normal;
+    text-decoration: none;
+}
+.admin-tinta-viva .accesos-admin a:hover,
+.admin-tinta-viva .accesos-admin a[aria-current="page"] {
+    background: var(--blood-dark);
+    border-color: var(--blood-light);
+    color: var(--bone);
+}
+.admin-tinta-viva .producto-sin-imagen, .admin-tinta-viva .producto-visual img { background: var(--black-soft); color: var(--gold); }
+@media (max-width: 850px) {
+    body.admin-tinta-viva { display: block; }
+    .admin-tinta-viva aside { position: static; width: 100%; height: auto; min-height: 0; padding: 20px; border-right: 0; border-bottom: 1px solid var(--gold-dark); }
+    .admin-tinta-viva aside .brand { margin-bottom: 12px; }
+    .admin-tinta-viva main { padding: 20px 16px; }
+    .admin-tinta-viva main > header { align-items: flex-start; flex-direction: column; }
+    .admin-tinta-viva .card { padding: 16px; }
+}
+@media (max-width: 600px) {
+    .admin-tinta-viva dl { grid-template-columns: 1fr; gap: 6px; }
+    .admin-tinta-viva dd { margin-bottom: 12px; }
+    .admin-tinta-viva .form-grid { grid-template-columns: 1fr; }
+    .admin-tinta-viva h1 { font-size: 23px; }
+}
+
+.admin-tinta-viva .membership-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.admin-tinta-viva .membership-card {min-width:0;padding:22px}
+.admin-tinta-viva .membership-card summary {cursor:pointer;color:var(--gold,#c9a96e);padding:15px 0}
+.admin-tinta-viva .membership-card label {display:block;margin:12px 0}
+.admin-tinta-viva .membership-rule {padding:12px 0;border-bottom:1px solid #ffffff20}
+.admin-tinta-viva .membership-check {display:flex!important;gap:10px;align-items:center}
+.admin-tinta-viva .membership-check input {width:auto!important;flex:none}
+.admin-tinta-viva .membership-card li {margin:9px 0}
+@media(max-width:1200px) {.admin-tinta-viva .membership-grid {grid-template-columns:1fr}}
+
+/* Comparación de membresías */
+.admin-tinta-viva .membership-heading {display:flex;gap:18px;align-items:center;margin-bottom:24px}
+.admin-tinta-viva .membership-seal {display:grid;place-items:center;flex:none;width:64px;height:64px;border:1px solid var(--gold,#c9a96e);border-radius:50%;color:var(--gold,#c9a96e);font-size:32px;box-shadow:0 0 0 7px #c9a96e0b}
+.admin-tinta-viva .membership-table {width:100%;min-width:780px;table-layout:fixed;border-collapse:separate;border-spacing:0}
+.admin-tinta-viva .membership-table caption {text-align:left;color:var(--gold,#c9a96e);padding-bottom:14px}
+.admin-tinta-viva .membership-table th,.admin-tinta-viva .membership-table td {white-space:normal;padding:18px 14px;vertical-align:middle;border-right:1px solid #c9a96e20}
+.admin-tinta-viva .membership-table thead th {text-align:center;text-transform:none;letter-spacing:normal;background:#171717}
+.admin-tinta-viva .membership-table thead th:first-child {text-align:left;width:28%}
+.admin-tinta-viva .membership-table tbody td {text-align:center}
+.admin-tinta-viva .membership-table tbody th {font-weight:500;color:var(--bone,#eee4d2);text-align:left}
+.admin-tinta-viva .membership-table small {display:block;font-size:11px;font-weight:400;color:var(--ash,#b5aaa0);line-height:1.7;margin-top:6px}
+.admin-tinta-viva .membership-table .membership-tier strong {display:block;font-size:18px;color:var(--bone,#eee4d2);margin:8px 0;overflow-wrap:anywhere}
+.admin-tinta-viva .membership-emblem {display:block;font-size:36px;color:var(--gold,#c9a96e);line-height:1.5}
+.admin-tinta-viva .membership-table .tier-esencial {border-top:3px solid #928d84}
+.admin-tinta-viva .membership-table .tier-plus {border-top:3px solid #9e4242;background:linear-gradient(180deg,#381e22,#171717)}
+.admin-tinta-viva .membership-table .tier-premium {border-top:3px solid var(--gold,#c9a96e);background:linear-gradient(180deg,#352d20,#171717)}
+.admin-tinta-viva .membership-price-row strong {font-size:20px;color:var(--gold,#c9a96e)}
+.admin-tinta-viva .membership-included {color:#b5cf9b;font-size:18px}
+.admin-tinta-viva .membership-unavailable {color:#a29a90;font-size:12px}
+.admin-tinta-viva .membership-status {display:inline-block;border:1px solid #756c5f;border-radius:30px;padding:5px 12px;font-size:11px;color:#c6b9a7}
+.admin-tinta-viva .membership-status.is-active {color:#b5cf9b;border-color:#647b4d;background:#647b4d15}
+.admin-tinta-viva .membership-settings {display:grid;gap:16px;margin-top:24px}
+.admin-tinta-viva .membership-settings .membership-card {scroll-margin-top:20px}
+.admin-tinta-viva .membership-card summary small {margin-left:10px;color:var(--ash,#b5aaa0);font-size:12px}
+.admin-tinta-viva .membership-card:target {border-color:var(--gold,#c9a96e)}
+.admin-tinta-viva .membership-card form {max-width:850px;margin:10px auto}
+@media(max-width:600px) {.admin-tinta-viva .membership-heading {align-items:flex-start}.admin-tinta-viva .membership-seal {width:42px;height:42px;font-size:24px}.admin-tinta-viva .membership-card summary small {display:block;margin-left:0}}

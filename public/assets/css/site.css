@@ -322,6 +322,15 @@ a {
     background: rgba(189, 146, 85, 0.13);
 }
 
+.session-actions {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.session-actions button {
+    cursor: pointer;
+}
+
 .button--blood {
     min-width: 250px;
     border-color: var(--blood-light);

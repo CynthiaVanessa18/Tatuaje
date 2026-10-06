@@ -1,0 +1,289 @@
+/* El cliente comparte la identidad visual de la portada Tinta Viva. */
+html:has(.cliente-tinta-viva){scroll-behavior:auto}
+body.cliente-tinta-viva{display:block;--ink:var(--bone);--muted:var(--bone-muted);--accent:var(--blood-light);color:var(--bone);font-family:var(--sans);background:radial-gradient(circle at 50% 30%,#21090f 0,transparent 34rem),var(--black)}
+.cliente-tinta-viva aside{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:24px;width:100%;min-height:86px;height:auto;padding:14px max(24px,calc((100% - 1420px)/2));background:rgba(5,3,4,.97);border:0;border-bottom:1px solid var(--gold-dark)}
+.cliente-tinta-viva aside>.eyebrow{display:none}
+.cliente-tinta-viva aside .brand{display:block;margin:0;font-family:var(--title);color:var(--bone);font-size:13px;letter-spacing:3px;line-height:1.4}
+.cliente-tinta-viva aside .brand strong{font-size:20px}
+.cliente-tinta-viva aside nav{display:flex;flex:1;gap:12px;overflow-x:auto;margin:0}
+.cliente-tinta-viva aside nav a{white-space:nowrap;background:transparent;color:var(--bone-muted);border-radius:0;border-bottom:2px solid transparent;font-family:var(--serif);letter-spacing:1px;text-transform:uppercase}
+.cliente-tinta-viva aside nav a[aria-current],.cliente-tinta-viva aside nav a:hover{color:var(--bone);background:transparent;border-color:var(--blood-light)}
+.cliente-tinta-viva aside form{margin:0}
+.cliente-tinta-viva main{width:100%;max-width:1476px;margin:auto;padding:28px}
+.cliente-tinta-viva h1,.cliente-tinta-viva h2,.cliente-tinta-viva h3{font-family:var(--title);color:var(--bone)}
+.cliente-tinta-viva h1{font-size:clamp(24px,3vw,36px)}
+.cliente-tinta-viva .eyebrow{color:var(--gold);letter-spacing:2px}
+.cliente-tinta-viva .card,.cliente-tinta-viva .producto-cliente,.cliente-tinta-viva .checkout-frame .carrito-articulos,.cliente-tinta-viva .checkout-frame .pago-principal,.cliente-tinta-viva .checkout-frame .confirmacion-compra{background:var(--surface);color:var(--bone);border:1px solid var(--line);border-radius:8px}
+.cliente-tinta-viva input,.cliente-tinta-viva select,.cliente-tinta-viva textarea{background:var(--black-soft);color:var(--bone);border:1px solid var(--line)}
+.cliente-tinta-viva input[type=radio],.cliente-tinta-viva input[type=checkbox]{accent-color:var(--blood-light)}
+.cliente-tinta-viva button,.cliente-tinta-viva .button{background:linear-gradient(135deg,var(--blood),var(--blood-dark));border:1px solid var(--blood-light);color:var(--bone);border-radius:3px;font-family:var(--sans);letter-spacing:.5px;transform:none}
+.cliente-tinta-viva button:hover,.cliente-tinta-viva .button:hover{background:var(--blood);color:var(--bone);transform:none}
+.cliente-tinta-viva .secondary{background:transparent;border-color:var(--gold-dark)}
+.cliente-tinta-viva .btn-primary{--bs-btn-bg:var(--blood);--bs-btn-border-color:var(--blood-light);--bs-btn-hover-bg:var(--blood-light);--bs-btn-active-bg:var(--blood-dark)}
+.cliente-tinta-viva .tipos-articulos a,.cliente-tinta-viva .opcion-pago{background:var(--black-soft);color:var(--bone-muted);border-color:var(--line)}
+.cliente-tinta-viva .tipos-articulos a[aria-current],.cliente-tinta-viva .opcion-pago:has(input:checked){background:var(--blood-dark);border-color:var(--blood-light);color:var(--bone)}
+.cliente-tinta-viva .barra-pago-carrito{left:0;background:rgba(11,6,8,.98);border-top:1px solid var(--gold-dark)}
+.cliente-tinta-viva .barra-pago-contenido{max-width:1420px}
+.cliente-tinta-viva .notice,.cliente-tinta-viva .pago-resumen-compacto,.cliente-tinta-viva .tarjeta-demo{background:var(--surface-light);color:var(--bone);border-color:var(--line)}
+.cliente-tinta-viva th,.cliente-tinta-viva td{color:var(--bone);border-color:var(--line)}
+.cliente-tinta-viva th{background:var(--surface-light)}
+@media(max-width:700px){.cliente-tinta-viva aside{flex-wrap:wrap;gap:12px;padding:12px 16px}.cliente-tinta-viva aside nav{order:3;flex-basis:100%}.cliente-tinta-viva aside form{margin-left:auto}.cliente-tinta-viva main{padding:20px 12px}.cliente-tinta-viva aside nav a{padding:8px 10px;font-size:13px}}
+
+.cliente-tinta-viva .producto-cliente>img,.cliente-tinta-viva .sin-foto-cliente,.cliente-tinta-viva .foto-carrito{background:var(--black-soft)}
+.cliente-tinta-viva .sin-foto-cliente,.cliente-tinta-viva .producto-cliente summary{color:var(--gold)}
+.cliente-tinta-viva .ofertas-catalogo-lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.cliente-tinta-viva .oferta-catalogo{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid var(--gold-dark);border-radius:6px;background:var(--black-soft)}
+.cliente-tinta-viva .oferta-catalogo strong,.cliente-tinta-viva .oferta-producto strong{color:var(--gold)}
+.cliente-tinta-viva .oferta-catalogo small,.cliente-tinta-viva .oferta-producto small{display:block;color:var(--bone-muted);font-size:12px}
+.cliente-tinta-viva .oferta-catalogo p{margin:0;font-size:13px}
+.cliente-tinta-viva .oferta-producto{padding:10px;border:1px solid var(--line);border-radius:4px;background:var(--blood-dark);color:var(--bone);font-size:12px}
+.cliente-tinta-viva .resumen-promocion{border-color:var(--gold-dark)}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente{position:relative;border:0;background:transparent;box-shadow:none}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente>img,.cliente-tinta-viva .catalogo-cliente .sin-foto-cliente{height:auto;aspect-ratio:1 / 1;padding:0;border-radius:12px;object-fit:contain}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente-info{position:relative;padding:10px 48px 10px 2px;flex:initial}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente h2{font-size:13px;font-weight:500;margin:0 0 5px;line-height:1.4}
+.cliente-tinta-viva .catalogo-cliente .precio-cliente{font-size:16px;margin:0;font-weight:700}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente-info>.eyebrow,.cliente-tinta-viva .catalogo-cliente details,.cliente-tinta-viva .catalogo-cliente .estado-activo{display:none}
+.cliente-tinta-viva .catalogo-cliente .oferta-producto{padding:0;margin:5px 0;border:0;background:none;font-size:11px}
+.cliente-tinta-viva .catalogo-cliente .oferta-producto small{display:none}
+.cliente-tinta-viva .catalogo-cliente .agregar-carrito{position:absolute;right:0;top:10px;margin:0}
+.cliente-tinta-viva .agregar-carrito .producto-agregar-icono{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:8px;border-radius:50%;border:1px solid var(--line);background:var(--black-soft);color:var(--bone)}
+.cliente-tinta-viva .agregar-carrito .producto-agregar-icono:hover{color:var(--gold);border-color:var(--gold)}
+.cliente-tinta-viva .producto-detalle .agregar-carrito{margin-top:18px}
+.cliente-tinta-viva .descuento-linea{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-radius:8px;background:#173b2a;color:#b6efcd;margin:16px 0}
+.cliente-tinta-viva .producto-abrir{background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit;cursor:pointer}
+.cliente-tinta-viva .producto-detalle{width:min(1050px,94vw);max-height:90vh;overflow:auto;padding:32px;border:1px solid var(--gold-dark);border-radius:16px;background:var(--black-soft);color:var(--bone)}
+.producto-detalle::backdrop{background:#000b}
+.cliente-tinta-viva .producto-cerrar{position:sticky;top:0;float:right;z-index:2;border-radius:50%;font-size:24px;padding:4px 12px}
+.producto-detalle-contenido{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;clear:both}
+.producto-detalle-contenido>img{width:100%;height:420px;object-fit:contain;border-radius:12px;cursor:zoom-in;background:#fff}
+.producto-detalle-contenido>img.imagen-ampliada{height:auto;max-height:none;cursor:zoom-out;grid-column:1 / -1}
+.producto-relacionados{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:20px}
+.cliente-tinta-viva .producto-relacionados button{display:flex;flex-direction:column;gap:10px;text-align:left;padding:12px;background:var(--surface-light);color:var(--bone);border:1px solid var(--line);border-radius:10px}
+.producto-relacionados img{width:100%;height:150px;object-fit:contain;border-radius:8px;background:#fff}
+@media(max-width:650px){.producto-detalle-contenido{grid-template-columns:1fr}.producto-detalle-contenido>img{height:300px}.cliente-tinta-viva .producto-detalle{padding:18px}.producto-relacionados{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cliente-tinta-viva .carrito-aviso{position:fixed;top:20px;right:20px;z-index:1100;display:flex;align-items:center;gap:16px;max-width:calc(100vw - 40px);padding:16px 20px;background:var(--black-soft);border:1px solid var(--gold);box-shadow:0 8px 30px #0008;color:var(--bone)}
+.cliente-tinta-viva .carrito-aviso a{color:var(--gold);white-space:nowrap}
+.cliente-tinta-viva .carrito-aviso button{padding:4px 8px;background:transparent;color:var(--bone);border:0;font-size:22px}
+
+.cliente-tinta-viva .membership-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;align-items:start}
+.cliente-tinta-viva .membership-grid li {margin:10px 0}
+.cliente-tinta-viva .cuenta-acceso{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--gold-dark);border-radius:24px;padding:9px 14px;text-decoration:none;color:var(--gold);white-space:nowrap}
+.cliente-tinta-viva .cuenta-acceso:hover,.cliente-tinta-viva .cuenta-acceso[aria-current]{background:var(--surface-light)}
+.cliente-tinta-viva .cuenta-formulario{max-width:780px}
+.cliente-tinta-viva .cuenta-formulario form{display:grid;gap:18px}
+.cliente-tinta-viva .cuenta-formulario h3{margin:12px 0 0}
+.cliente-tinta-viva .cuenta-formulario p{margin:0}
+.cliente-tinta-viva .cuenta-cambiar-clave summary{cursor:pointer;color:var(--gold)}
+.cliente-tinta-viva .cuenta-cambiar-clave label,.cliente-tinta-viva .cuenta-cambiar-clave p{margin-top:14px}
+.cliente-tinta-viva .membership-checkout{max-width:720px}
+.cliente-tinta-viva .membership-total{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:18px}
+.cliente-tinta-viva .membership-owned{padding:14px 0;border-bottom:1px solid var(--line)}
+.cliente-tinta-viva .membership-grid form{margin:18px 0}
+.cliente-tinta-viva .membership-subscribe{width:100%;margin-top:12px}
+.cliente-tinta-viva .membership-intro{margin:18px 0}
+.cliente-tinta-viva .membership-history summary{cursor:pointer;color:var(--gold)}
+.cliente-tinta-viva .membership-current-notice{grid-column:1 / -1}
+.cliente-tinta-viva .membership-cancel{margin-top:14px}
+.cliente-tinta-viva .membership-cancel summary{cursor:pointer;color:var(--gold)}
+.cliente-tinta-viva .membership-cancel form{display:grid;gap:12px;max-width:600px;margin:12px 0}
+.cliente-tinta-viva .membership-cancel-confirm{display:flex;flex-direction:row;align-items:center;gap:10px}
+.cliente-tinta-viva .membership-cancel-confirm input{width:18px;height:18px;flex-shrink:0}
+.cliente-tinta-viva .membership-grid select,.cliente-tinta-viva .membership-checkout select{width:100%}
+.cliente-tinta-viva.pagina-membresias main{max-width:1200px;padding:16px 24px}
+.cliente-tinta-viva.pagina-membresias header{margin-bottom:12px}
+.cliente-tinta-viva.pagina-membresias header .eyebrow{margin:0 0 4px}
+.cliente-tinta-viva.pagina-membresias header h1{font-size:25px;margin:4px 0}
+.cliente-tinta-viva.pagina-membresias header p{margin:4px 0;font-size:13px}
+.cliente-tinta-viva .membership-comparison{padding:0;overflow:hidden;margin:12px 0}
+.cliente-tinta-viva .membership-comparison .table-scroll{margin:0}
+.cliente-tinta-viva .membership-table{width:100%;table-layout:fixed;border-collapse:collapse;margin:0;min-width:620px}
+.cliente-tinta-viva .membership-table caption{text-align:left;padding:10px 16px;color:var(--gold);font-family:var(--serif);font-size:17px}
+.cliente-tinta-viva .membership-table th,.cliente-tinta-viva .membership-table td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:center;white-space:normal;line-height:1.35}
+.cliente-tinta-viva .membership-table th:first-child{width:30%;text-align:left}
+.cliente-tinta-viva .membership-table thead th{vertical-align:top;background:var(--black-soft)}
+.cliente-tinta-viva .membership-plan-choice{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;margin:0;cursor:pointer;color:var(--gold);font-family:var(--title);font-size:16px}
+.cliente-tinta-viva .membership-plan-choice input{width:18px;height:18px;margin:0;flex-shrink:0;accent-color:var(--gold)}
+.cliente-tinta-viva .membership-plan-description{font-size:12px;font-weight:400;color:var(--bone-muted);line-height:1.5;margin:12px 0}
+.cliente-tinta-viva .membership-plan-price{margin:4px 0;font-size:14px}
+.cliente-tinta-viva .membership-plan-price small{font-size:12px;font-weight:400}
+.cliente-tinta-viva .membership-table tbody th{font-size:13px;background:transparent;font-weight:500}
+.cliente-tinta-viva .membership-table tbody th small{display:block;margin-top:5px;font-size:11px;font-weight:400;line-height:1.4;color:var(--bone-muted)}
+.cliente-tinta-viva .membership-check{display:inline-block;margin-right:6px;color:var(--gold);font-size:17px;line-height:1.2}
+.cliente-tinta-viva .membership-benefit-value{font-size:12px}
+.cliente-tinta-viva .membership-excluded{font-size:11px;color:var(--bone-muted)}
+.cliente-tinta-viva .membership-table .membership-selected{background:rgba(191,148,84,.09);box-shadow:inset 1px 0 rgba(191,148,84,.3),inset -1px 0 rgba(191,148,84,.3)}
+.cliente-tinta-viva .membership-purchase{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 16px;background:var(--black-soft)}
+.cliente-tinta-viva .membership-purchase label{margin:0;display:grid;gap:7px;font-size:13px;min-width:155px}
+.cliente-tinta-viva .membership-purchase select{width:100%;margin:0;padding:7px 10px}
+.cliente-tinta-viva .membership-selection{flex:1;color:var(--gold);margin:0;font-size:14px}
+.cliente-tinta-viva .membership-purchase button{margin:0;padding:9px 14px;font-size:13px;white-space:nowrap}
+.cliente-tinta-viva .membership-terms{padding:0 16px 8px;margin:0;background:var(--black-soft);color:var(--bone-muted);font-size:11px;line-height:1.5}
+.cliente-tinta-viva .membership-benefit-details{padding:0 16px 12px;background:var(--black-soft);font-size:12px;color:var(--bone-muted)}
+.cliente-tinta-viva .membership-benefit-details summary{cursor:pointer;color:var(--gold)}
+.cliente-tinta-viva .membership-benefit-details ul{padding-left:18px;margin:10px 0 0}
+.cliente-tinta-viva .membership-benefit-details li{margin:6px 0}
+.cliente-tinta-viva .gift-link form,.cliente-tinta-viva .gift-cart form{display:flex;align-items:end;gap:12px;flex-wrap:wrap}
+.cliente-tinta-viva .gift-link label,.cliente-tinta-viva .gift-cart label{flex:1;max-width:480px;min-width:200px}
+.cliente-tinta-viva .gift-card-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.cliente-tinta-viva .gift-card{margin:0;background:radial-gradient(ellipse at top right,#54341c66,transparent 70%),var(--surface);border-color:var(--gold-dark)}
+.cliente-tinta-viva .gift-balance{display:block;font-size:25px;color:var(--gold)}
+.cliente-tinta-viva .gift-cart{padding:16px;margin:12px 0}
+.cliente-tinta-viva .gift-cart h2{font-size:17px;margin-bottom:10px}
+.cliente-tinta-viva .gift-cart p,.cliente-tinta-viva .gift-cart a{font-size:13px}
+.cliente-tinta-viva .store-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cliente-tinta-viva .store-actions .button{font-size:13px;padding:10px 14px}
+.cliente-tinta-viva .buscador-cliente label:has(select){flex:0 1 230px;min-width:180px}
+.cliente-tinta-viva .buscador-cliente select{min-height:47px;border-radius:24px;padding:10px 15px}
+.cliente-tinta-viva.tienda-cliente main>header{align-items:center;gap:16px;flex-wrap:wrap}
+.cliente-tinta-viva.tienda-cliente main>header>div:first-child{flex:1;min-width:200px}
+.cliente-tinta-viva .store-actions{justify-content:flex-end}
+.cliente-tinta-viva .store-gifts{margin:0 0 18px;border:1px solid var(--gold-dark);border-radius:12px;padding:16px;background:linear-gradient(115deg,#3a251b66,var(--surface))}
+.cliente-tinta-viva .store-gifts-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}
+.cliente-tinta-viva .store-gifts-heading>div{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:8px;align-items:center}
+.cliente-tinta-viva .store-gifts-icon{grid-row:1 / 3;font-size:26px}
+.cliente-tinta-viva .store-gifts-heading h2{font-family:var(--sans);font-size:15px;margin:0;color:var(--gold);line-height:1.4}
+.cliente-tinta-viva .store-gifts-heading p{font-size:12px;margin:3px 0 0}
+.cliente-tinta-viva .store-gifts-heading>a{flex-shrink:0;font-size:12px;color:var(--gold)}
+.cliente-tinta-viva .store-gifts-list{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.cliente-tinta-viva .store-gift{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:1 0 270px;max-width:370px;padding:14px;background:var(--black-soft);border:1px dashed var(--gold-dark);border-radius:10px;scroll-snap-align:start}
+.cliente-tinta-viva .store-gift-selected{border-style:solid;border-color:var(--gold);background:#37241e}
+.cliente-tinta-viva .store-gift-value{display:grid;gap:4px;min-width:0}
+.cliente-tinta-viva .store-gift-value span,.cliente-tinta-viva .store-gift-value small{color:var(--bone-muted);font-size:10px}
+.cliente-tinta-viva .store-gift-value strong{font-size:21px;color:var(--gold);white-space:nowrap}
+.cliente-tinta-viva .store-gift form{margin:0;flex-shrink:0}
+.cliente-tinta-viva .store-gift button{font-size:11px;padding:9px 10px;white-space:normal;max-width:105px;line-height:1.4}
+.cliente-tinta-viva .store-gift-pending{font-size:11px;color:var(--bone-muted);max-width:95px}
+.cliente-tinta-viva .store-gifts-applied{margin:6px 0 0;font-size:12px;color:var(--gold)}
+.cliente-tinta-viva .buscador-cliente{display:grid;grid-template-columns:minmax(160px,220px) minmax(160px,1fr) auto auto;gap:12px;align-items:end}
+.cliente-tinta-viva .buscador-cliente label,.cliente-tinta-viva .buscador-cliente label:has(select){min-width:0;max-width:none}
+.cliente-tinta-viva .buscador-cliente input,.cliente-tinta-viva .buscador-cliente select{height:44px;min-height:44px;font-size:13px}
+.cliente-tinta-viva .buscador-cliente button{min-height:44px}
+.cliente-tinta-viva .buscador-cliente>a{font-size:12px;padding:12px 0}
+.cliente-tinta-viva .cabecera-resultados{gap:12px;flex-wrap:wrap}
+.cliente-tinta-viva .cabecera-resultados h2{font-size:19px;line-height:1.4}
+.cliente-tinta-viva .catalogo-cliente{grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente h2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:36px}
+.cliente-tinta-viva .catalogo-cliente .producto-cliente .producto-abrir{font-size:inherit;line-height:1.4;white-space:normal}
+.cliente-tinta-viva .ofertas-catalogo h2{font-size:17px;margin-bottom:6px}
+.cliente-tinta-viva .ofertas-catalogo>p{font-size:12px;margin:0 0 12px}
+@media(max-width:1100px){.cliente-tinta-viva .catalogo-cliente{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}
+@media(max-width:800px){.cliente-tinta-viva .catalogo-cliente{grid-template-columns:repeat(3,minmax(0,1fr))}.cliente-tinta-viva .buscador-cliente{grid-template-columns:minmax(0,1fr) auto auto}.cliente-tinta-viva .buscador-cliente label:has(input[type=search]){grid-column:1 / -1;grid-row:1}}
+@media(max-width:550px){.cliente-tinta-viva.tienda-cliente main{padding:14px 12px}.cliente-tinta-viva .catalogo-cliente{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}.cliente-tinta-viva .store-actions{width:100%;justify-content:stretch}.cliente-tinta-viva .store-actions .button{flex:1;text-align:center;font-size:11px;padding:9px}.cliente-tinta-viva .store-gifts{padding:12px}.cliente-tinta-viva .store-gifts-heading h2{font-size:13px}.cliente-tinta-viva .store-gifts-heading p{font-size:11px}.cliente-tinta-viva .store-gift{flex-basis:255px}.cliente-tinta-viva .buscador-cliente{grid-template-columns:minmax(0,1fr) auto;gap:10px}.cliente-tinta-viva .buscador-cliente>a{grid-column:1 / -1;padding:0;text-align:right}.cliente-tinta-viva .catalogo-cliente .producto-cliente-info{padding-right:40px}.cliente-tinta-viva .catalogo-cliente .precio-cliente{font-size:14px}.cliente-tinta-viva .catalogo-cliente .agregar-carrito .producto-agregar-icono{width:34px;height:34px;padding:6px}.cliente-tinta-viva .cabecera-resultados h2{font-size:16px}}
+@media(max-width:340px){.cliente-tinta-viva .catalogo-cliente{grid-template-columns:1fr}.cliente-tinta-viva .store-gift{flex-basis:230px;padding:10px}}
+@media(max-width:700px){.cliente-tinta-viva.pagina-membresias main{padding:12px}.cliente-tinta-viva .membership-table th,.cliente-tinta-viva .membership-table td{padding:7px 8px}.cliente-tinta-viva .membership-plan-choice{font-size:14px}.cliente-tinta-viva .membership-purchase{gap:12px;padding:12px}.cliente-tinta-viva .membership-purchase button{width:100%}}
+
+/* Comparación legible: la tabla se desplaza dentro de su área en pantallas pequeñas. */
+/* Carrito y pago: espacios y columnas que se adaptan al contenido real. */
+.cliente-tinta-viva.pagina-carrito main{max-width:1200px;min-width:0}
+.cliente-tinta-viva.pagina-carrito main:has(.barra-pago-carrito){padding-bottom:calc(var(--checkout-footer-height,220px) + 24px)}
+.pagina-carrito .checkout-frame{width:100%;max-width:1080px;min-width:0}
+.cliente-tinta-viva.pagina-carrito .gift-cart form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+.cliente-tinta-viva.pagina-carrito .gift-cart label{min-width:0;max-width:none}
+.pagina-carrito .gift-cart select{width:100%;text-overflow:ellipsis}
+.pagina-carrito .gift-cart p{margin:10px 0;font-size:13px;line-height:1.5}
+.cliente-tinta-viva.pagina-carrito .carrito-articulos{padding:20px}
+.cliente-tinta-viva.pagina-carrito .carrito-articulos .linea-carrito{display:grid;grid-template-columns:88px minmax(0,1fr) minmax(100px,auto);gap:18px;align-items:center;padding:18px 0}
+.cliente-tinta-viva.pagina-carrito .carrito-articulos .foto-carrito{width:88px;height:96px;grid-row:auto}
+.pagina-carrito .carrito-articulo-info{min-width:0}
+.pagina-carrito .carrito-articulo-info>strong{font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.pagina-carrito .carrito-articulo-info p{font-size:13px;line-height:1.5;margin:6px 0 10px}
+.cliente-tinta-viva.pagina-carrito .carrito-linea-precio{grid-column:auto;font-size:18px;white-space:normal;overflow-wrap:anywhere;line-height:1.4;margin:0;text-align:right}
+.pagina-carrito .cantidad-carrito{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.cliente-tinta-viva.pagina-carrito .selector-cantidad{height:42px;flex-shrink:0}
+.cliente-tinta-viva.pagina-carrito .selector-cantidad button{width:40px;height:40px}
+.cliente-tinta-viva.pagina-carrito .selector-cantidad input{height:40px;font-size:16px;width:42px!important}
+.cliente-tinta-viva.pagina-carrito .quitar-carrito{min-height:42px;padding:8px 4px;font-size:13px}
+.cliente-tinta-viva.pagina-carrito .descuento-linea{margin:12px 0;padding:12px 16px;font-size:13px;line-height:1.5;align-items:center}
+.pagina-carrito .descuento-linea strong{flex-shrink:0}
+.cliente-tinta-viva.pagina-carrito .barra-pago-carrito{left:0;padding:12px 24px calc(12px + env(safe-area-inset-bottom))}
+.pagina-carrito .barra-pago-contenido{display:grid;grid-template-columns:minmax(0,1fr) minmax(210px,auto) minmax(190px,auto);gap:20px;max-width:1080px}
+.pagina-carrito .barra-pago-info{min-width:0;margin:0;font-size:13px}
+.pagina-carrito .barra-pago-total{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;min-width:0;white-space:normal;align-items:center}
+.pagina-carrito .barra-pago-total small{grid-column:1 / -1;font-size:12px;line-height:1.4;overflow-wrap:anywhere;color:var(--bone-muted)}
+.pagina-carrito .barra-pago-total>span{font-size:13px;margin-top:4px}
+.pagina-carrito .barra-pago-total strong{font-size:22px;line-height:1.4;white-space:nowrap}
+.cliente-tinta-viva.pagina-carrito .barra-pago-carrito .continuar-pago{min-width:0;width:100%;min-height:44px;padding:12px 16px;font-size:14px;white-space:normal}
+.cliente-tinta-viva.pagina-carrito .pago-principal{padding:24px}
+.pagina-carrito .pago-encabezado{align-items:flex-start;gap:14px}
+.pagina-carrito .pago-encabezado>div{min-width:0}
+.pagina-carrito .pago-encabezado h2{font-size:23px;line-height:1.4}
+.pagina-carrito .pago-encabezado p,.pagina-carrito .pago-ayuda{font-size:14px;line-height:1.5}
+.pagina-carrito .opcion-pago{min-width:0;padding:14px;gap:12px}
+.pagina-carrito .opcion-pago>span:not(.opcion-pago-icono):not(.opcion-pago-check){min-width:0;overflow-wrap:anywhere}
+.pagina-carrito .opcion-pago strong{font-size:14px}
+.pagina-carrito .opcion-pago small{font-size:12px}
+.pagina-carrito .tarjeta-demo select{max-width:100%;white-space:normal}
+@media(max-width:750px){
+ .pagina-carrito .barra-pago-contenido{grid-template-columns:minmax(0,1fr) minmax(160px,auto);gap:14px}
+ .pagina-carrito .barra-pago-info{display:none}
+ .pagina-carrito .pasos-compra{gap:12px;justify-content:space-between;flex-wrap:wrap;padding:12px 0}
+ .pagina-carrito .pasos-compra li{font-size:12px;gap:6px}
+}
+@media(max-width:550px){
+ .cliente-tinta-viva.pagina-carrito main{padding:14px 12px}
+ .cliente-tinta-viva.pagina-carrito .carrito-articulos{padding:14px}
+ .cliente-tinta-viva.pagina-carrito .carrito-articulos .linea-carrito{grid-template-columns:64px minmax(0,1fr);gap:10px 12px;padding:16px 0;align-items:start}
+ .cliente-tinta-viva.pagina-carrito .carrito-articulos .foto-carrito{width:64px;height:76px;grid-row:1 / 3}
+ .cliente-tinta-viva.pagina-carrito .carrito-linea-precio{grid-column:2;text-align:left;font-size:16px}
+ .pagina-carrito .carrito-articulo-info>strong{font-size:14px}
+ .pagina-carrito .carrito-lista-titulo{align-items:start;gap:10px}
+ .pagina-carrito .carrito-lista-titulo h2{font-size:18px}
+ .pagina-carrito .carrito-lista-titulo>span{font-size:12px;white-space:nowrap}
+ .cliente-tinta-viva.pagina-carrito .gift-cart{padding:14px}
+ .cliente-tinta-viva.pagina-carrito .gift-cart form{grid-template-columns:minmax(0,1fr)}
+ .pagina-carrito .gift-cart button{width:100%;min-height:44px}
+ .pagina-carrito .gift-cart select,.pagina-carrito .formulario-pago select{font-size:16px;min-height:44px}
+ .cliente-tinta-viva.pagina-carrito .descuento-linea{gap:10px;padding:12px;flex-wrap:wrap}
+ .cliente-tinta-viva.pagina-carrito .barra-pago-carrito{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+ .pagina-carrito .barra-pago-contenido{grid-template-columns:minmax(0,1fr);gap:10px}
+ .pagina-carrito .barra-pago-total strong{font-size:21px}
+ .cliente-tinta-viva.pagina-carrito .barra-pago-carrito .continuar-pago{padding:11px 14px;font-size:14px}
+ .cliente-tinta-viva.pagina-carrito .pago-principal{padding:16px}
+ .pagina-carrito .pago-encabezado h2{font-size:20px}
+ .pagina-carrito .pago-icono{display:none}
+ .pagina-carrito .opcion-pago{padding:12px;gap:9px}
+ .pagina-carrito .opcion-pago-icono{width:30px;height:34px;font-size:19px}
+ .pagina-carrito .confirmacion-compra h2{font-size:21px;overflow-wrap:anywhere}
+ .pagina-carrito .pago-resumen-compacto{padding:14px;gap:12px;overflow-wrap:anywhere}
+ .pagina-carrito .pasos-compra span{width:24px;height:24px}
+}
+.cliente-tinta-viva.pagina-membresias main{width:100%;min-width:0}
+.pagina-membresias header h1,.pagina-membresias .card h2,.pagina-membresias .card h3{overflow-wrap:anywhere}
+.pagina-membresias .membership-scroll-hint{display:none}
+.cliente-tinta-viva.pagina-membresias .membership-comparison .table-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--gold-dark) var(--black-soft)}
+.pagina-membresias .membership-comparison .table-scroll:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.cliente-tinta-viva.pagina-membresias .membership-table{min-width:640px;font-size:14px}
+.cliente-tinta-viva.pagina-membresias .membership-table caption{font-size:19px;line-height:1.4;padding:12px 16px}
+.cliente-tinta-viva.pagina-membresias .membership-table th,.cliente-tinta-viva.pagina-membresias .membership-table td{padding:9px 12px;overflow-wrap:normal;line-height:1.45}
+.cliente-tinta-viva.pagina-membresias .membership-table th{text-transform:none;letter-spacing:0}
+.cliente-tinta-viva.pagina-membresias .membership-table tbody th{font-size:14px}
+.cliente-tinta-viva.pagina-membresias .membership-plan-choice{font-size:16px;min-height:44px;line-height:1.4}
+.cliente-tinta-viva.pagina-membresias .membership-plan-price{font-size:15px}
+.cliente-tinta-viva.pagina-membresias .membership-plan-price small,.cliente-tinta-viva.pagina-membresias .membership-benefit-value,.cliente-tinta-viva.pagina-membresias .membership-excluded{font-size:13px}
+.cliente-tinta-viva.pagina-membresias .membership-purchase{display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr) auto;gap:16px;align-items:center}
+.pagina-membresias .membership-selection{overflow-wrap:anywhere;line-height:1.5}
+.cliente-tinta-viva.pagina-membresias .membership-purchase button{min-height:44px;white-space:normal;font-size:14px}
+.cliente-tinta-viva.pagina-membresias .membership-terms,.cliente-tinta-viva.pagina-membresias .membership-benefit-details{font-size:13px;line-height:1.6}
+.pagina-membresias .membership-benefit-details summary{padding:8px 0;min-height:44px}
+.pagina-membresias .membership-benefit-details li{margin:10px 0}
+.pagina-membresias .membership-checkout form{display:grid;gap:14px;min-width:0}
+.pagina-membresias .membership-checkout form p{margin:0}
+.pagina-membresias .membership-owned li,.pagina-membresias .membership-checkout li{font-size:14px;line-height:1.6;margin:6px 0}
+@media(max-width:700px){
+ .cliente-tinta-viva.pagina-membresias main{padding:14px 12px}
+ .pagina-membresias .membership-scroll-hint{display:block;margin:0;padding:10px 12px 0;font-size:12px;line-height:1.5;color:var(--gold)}
+ .cliente-tinta-viva.pagina-membresias .membership-table{min-width:620px}
+ .cliente-tinta-viva.pagina-membresias .membership-table th:first-child{position:sticky;left:0;z-index:1;width:27%;background:var(--surface);box-shadow:2px 0 5px #0005}
+ .cliente-tinta-viva.pagina-membresias .membership-table thead th:first-child{background:var(--black-soft)}
+ .cliente-tinta-viva.pagina-membresias .membership-table th,.cliente-tinta-viva.pagina-membresias .membership-table td{padding:8px 10px}
+ .cliente-tinta-viva.pagina-membresias .membership-purchase{grid-template-columns:minmax(0,1fr);gap:12px;padding:14px}
+ .cliente-tinta-viva.pagina-membresias .membership-purchase label{min-width:0;font-size:14px}
+ .cliente-tinta-viva.pagina-membresias input,.cliente-tinta-viva.pagina-membresias select{font-size:16px;min-height:44px}
+ .cliente-tinta-viva.pagina-membresias .membership-plan-choice input{min-height:0;width:20px;height:20px}
+ .cliente-tinta-viva.pagina-membresias .membership-purchase button{width:100%}
+ .pagina-membresias .membership-checkout,.pagina-membresias .membership-confirmation{padding:18px 14px}
+ .pagina-membresias .membership-checkout h2,.pagina-membresias .membership-owned h3{font-size:19px;line-height:1.4}
+ .pagina-membresias .membership-cancel-confirm input{min-height:0}
+ .pagina-membresias .membership-cancel button{white-space:normal;width:100%;min-height:44px}
+}

@@ -1,5 +1,42 @@
 'use strict';
-const storeModules = new Set(['productos', 'ventas', 'categorias_productos', 'imagenes', 'detalle']);
+const accountRole = document.querySelector('[data-account-role]');
+if (accountRole) {
+  const updateAccountFields = () => {
+    const client = accountRole.value === 'cliente';
+    const fields = document.querySelector('[data-client-account-fields]');
+    fields.hidden = !client;
+    fields.querySelectorAll('[data-client-required]').forEach((input) => { input.required = client; });
+  };
+  accountRole.addEventListener('change', updateAccountFields);
+  updateAccountFields();
+}
+const storeModules = new Set(['productos', 'ventas', 'categorias_productos', 'imagenes', 'detalle', 'promociones_tienda', 'grupos_clientes', 'clientes_grupos']);
+function initializePromotionForms() {
+  document.querySelectorAll('[data-promotion-form]').forEach((form) => {
+    const scope = form.querySelector('[name=alcance]').value;
+    const audience = form.querySelector('[name=publico]').value;
+    const minimum = form.querySelector('[name=regla_minimo]').value;
+    form.querySelectorAll('[data-promotion-scope], [data-promotion-audience], [data-promotion-minimum]').forEach((section) => {
+      const visible = section.hasAttribute('data-promotion-scope') ? section.dataset.promotionScope === scope :
+        section.hasAttribute('data-promotion-audience') ? audience === 'grupo' : minimum === 'minimo';
+      section.hidden = !visible;
+      section.querySelectorAll('input, select').forEach((input) => { input.disabled = !visible; });
+    });
+    form.querySelector('[name=id_grupo]').required = audience === 'grupo';
+    form.querySelector('[name=minimo_compra]').required = minimum === 'minimo';
+  });
+}
+document.addEventListener('change', (event) => {
+  if (event.target.closest('[data-promotion-form]')) initializePromotionForms();
+});
+document.addEventListener('input', (event) => {
+  if (!event.target.matches('[data-promotion-search]')) return;
+  const search = event.target.value.toLocaleLowerCase();
+  event.target.closest('fieldset').querySelectorAll('.promotion-choice').forEach((choice) => {
+    choice.hidden = !choice.textContent.toLocaleLowerCase().includes(search);
+  });
+});
+initializePromotionForms();
 let storeLoading = false;
 function confirmAction(message) {
   return new Promise((resolve) => {
@@ -60,6 +97,7 @@ async function loadStore(url, options = {}, pushHistory = true) {
     }
     nextMain.style.minHeight = `${oldHeight}px`;
     main.replaceWith(nextMain);
+    initializePromotionForms();
     const nextNav = page.querySelector('aside nav');
     if (nextNav) sidebar.querySelector('nav').replaceWith(nextNav);
     sidebar.scrollTop = sidebarScroll;
@@ -119,12 +157,38 @@ document.addEventListener('submit', async (event) => {
     return;
   }
   if (method === 'post') {
-    const button = form.querySelector('button');
-    if (button) { button.disabled = true; button.textContent = 'Procesando…'; }
+    const button = event.submitter;
+    if (button) button.textContent = 'Procesando…';
   }
 });
 window.addEventListener('popstate', () => {
   const url = new URL(location.href);
   if (isStoreUrl(url)) loadStore(url, {}, false);
   else location.reload();
+});
+
+// Abre la configuración del plan elegido desde la tabla comparativa.
+document.addEventListener('click', event => {
+    const link = event.target.closest('a[href^="#configurar-membresia-"]');
+    if (!link) return;
+    const section = document.getElementById(link.getAttribute('href').slice(1));
+    const details = section?.querySelector('details');
+    if (details) details.open = true;
+});
+
+document.addEventListener('change', event => {
+    const toggle = event.target.closest('[data-membership-toggle]');
+    if (!toggle) return;
+    const row = toggle.closest('[data-membership-rule]');
+    row.classList.toggle('rule-selected', toggle.checked);
+    const value = row.querySelector('[data-membership-value]');
+    if (value) {
+        value.disabled = !toggle.checked;
+        value.required = toggle.checked;
+    }
+});
+document.addEventListener('input', event => {
+    const form = event.target.closest('[data-membership-editor]');
+    if (!form) return;
+    form.querySelector('[data-membership-save-status]').textContent = 'Tienes cambios sin guardar.';
 });

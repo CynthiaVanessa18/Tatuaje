@@ -38,6 +38,24 @@ $query->execute($parameters);
 $appointments = $query->fetchAll();
 $clientStore=$requiredRole==='cliente' && in_array($_GET['section']??'',['tienda','carrito'],true);
 $clientCart=$clientStore && ($_GET['section']??'')==='carrito';
+$clientMemberships=$requiredRole==='cliente' && ($_GET['section']??'')==='membresias';
+$clientAccount=$requiredRole==='cliente' && ($_GET['section']??'')==='cuenta';
+$clientGiftCards=$requiredRole==='cliente' && ($_GET['section']??'')==='tarjetas';
+if ($clientGiftCards) {
+    $title='Mis tarjetas de regalo';$description='Consulta tus regalos y usa su saldo en la tienda.';
+    require __DIR__.'/ClientGiftCardsController.php';
+}
+if ($clientAccount) {
+    $title='Mi cuenta';$description='Actualiza tus datos y tu contraseña.';
+    require __DIR__.'/ClientAccountController.php';
+}
+if ($clientMemberships) {
+    require_once __DIR__.'/../Services/MembershipPlans.php';
+    $membershipPlans=(new MembershipPlans(conectarBaseDatos()))->plans(true);
+    $title='Membresías';
+    $description='Compara las cuotas y los beneficios de nuestros planes.';
+    require __DIR__.'/ClientMembershipController.php';
+}
 if ($clientStore) {
     require __DIR__.'/ClientCartController.php';
     $title='Tienda del estudio';

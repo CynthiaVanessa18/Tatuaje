@@ -39,7 +39,10 @@ final class CrudRepository
                 'tarjetas_regalo'=>"CONCAT(t.nombre_destinatario,' · ',t.moneda,' ',t.monto_inicial,' · ',DATE_FORMAT(t.fecha_emision,'%d/%m/%Y %H:%i:%s'))",
             ];
             $display=$names[$table] ?? 'nombre';
-            $out[$r['COLUMN_NAME']]=$this->db->query("SELECT t.`$pk` AS id, $display AS nombre FROM `$table` t ORDER BY t.`$pk` DESC")->fetchAll();
+            $referenceWhere = $table==='promociones'
+                ? ' WHERE NOT EXISTS (SELECT 1 FROM promociones_reglas_tienda pr WHERE pr.id_promocion=t.id_promocion)'
+                : '';
+            $out[$r['COLUMN_NAME']]=$this->db->query("SELECT t.`$pk` AS id, $display AS nombre FROM `$table` t".$referenceWhere." ORDER BY t.`$pk` DESC")->fetchAll();
         }
         return $out;
     }

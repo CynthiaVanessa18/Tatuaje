@@ -8,7 +8,7 @@ function roleRoutes(): array
         'administrador' => '../panel/administrador.php',
         'secretaria' => '../panel/secretaria.php',
         'artista' => '../panel/artista.php',
-        'cliente' => '../panel/cliente.php',
+        'cliente' => '../index.php',
     ];
 }
 
@@ -32,7 +32,7 @@ function currentAccount(): ?array
 
 function redirectToRole(array $account): never
 {
-    header('Location: ' . roleRoutes()[$account['nombre_rol']], true, 303);
+    header('Location: ' . ($account['nombre_rol'] === 'cliente' ? ($GLOBALS['clientEndpoint'] ?? '../index.php') : (($GLOBALS['publicPrefix'] ?? '../') . 'panel/' . basename(roleRoutes()[$account['nombre_rol']]))), true, 303);
     exit;
 }
 
@@ -40,7 +40,7 @@ function requireRole(string $role): array
 {
     $account = currentAccount();
     if (!$account) {
-        header('Location: ../auth/login.php', true, 303);
+        header('Location: ' . ($GLOBALS['publicPrefix'] ?? '../') . 'auth/login.php', true, 303);
         exit;
     }
     if ($account['nombre_rol'] !== $role) redirectToRole($account);

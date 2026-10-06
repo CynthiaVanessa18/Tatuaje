@@ -122,9 +122,9 @@ updateTest('membresias', ['id_membresia' => $member], ['estado' => 'cancelada'])
 checkTest(true, 'Crear y cancelar membresía');
 $cardData = dataFor('tarjetas', ['id_cliente_comprador' => $client, 'id_detalle_venta' => $cardDetail, 'nombre_destinatario' => 'Prueba', 'correo_destinatario' => 'regalo@test.invalid', 'monto_inicial' => '500']);
 $message = (new CrudService(repository('tarjetas')))->execute('create', $cardData, null);
-preg_match('/código: ([A-F0-9]{32})/u', $message, $match);
+preg_match('/código: ([A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4})/u', $message, $match);
 $card = $db->query('SELECT * FROM tarjetas_regalo')->fetch();
-checkTest(isset($match[1]) && hash('sha256', $match[1], true) === $card['codigo_hash'], 'Código de tarjeta almacenado como hash');
+checkTest(isset($match[1]) && hash('sha256', str_replace('-','',$match[1]), true) === $card['codigo_hash'], 'Código de tarjeta almacenado como hash');
 checkTest($db->query('SELECT saldo_actual FROM vista_saldo_tarjetas')->fetchColumn() === '500.00', 'Carga inicial y saldo de tarjeta');
 rejectTest(fn() => (new CrudService(repository('tarjetas')))->execute('create', $cardData, null), 'Evitar doble emisión por detalle');
 checkTest((int) $db->query('SELECT COUNT(*) FROM movimientos_tarjetas_regalo')->fetchColumn() === 1, 'Sin carga duplicada tras error');

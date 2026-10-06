@@ -5,7 +5,9 @@
         <?php if ($moduleId === 'detalle'): ?>
             <p class="hint">Los precios de productos y planes se toman del catálogo al guardar. Si seleccionas una
                 promoción, el descuento se calcula sobre esta línea.</p><?php endif ?>
-        <?php if (in_array($moduleId, ['tarjetas', 'membresias'], true)): ?>
+        <?php if ($moduleId==='promociones'): ?><p class="hint">Para crear ofertas automáticas por artículos, categorías o grupos de clientes, entra en <a href="administrador.php?module=promociones_tienda">Tienda → Promociones y ofertas</a>. Este apartado conserva las promociones generales anteriores.</p><?php endif ?>
+        <?php if ($moduleId==='tarjetas'): ?><p class="hint">Crea la tarjeta indicando el cliente comprador, destinatario, monto y vencimiento opcional. No necesita un artículo ni una venta asociada. Verifica el cobro o la autorización del regalo antes de activarla.</p><?php endif ?>
+        <?php if ($moduleId==='membresias'): ?>
             <p class="hint">Selecciona un detalle de venta confirmado del tipo correspondiente. Las fechas se ingresan en
                 UTC. La activación es administrativa; verifica el cobro antes de activarlo.</p><?php endif ?>
         <?php if ($mode === 'view' && $record): ?>
@@ -28,6 +30,9 @@
                                 name="key[<?= e($pk) ?>]"
                                 value="<?= e($_POST['key'][$pk] ?? $record[$pk] ?? '') ?>"><?php endforeach; endif ?>
                     <div class="form-grid">
+                        <?php if ($moduleId==='tarjetas' && $mode==='create'): ?>
+                        <label>Notificación al destinatario<select name="enviar_correo"><option value="1" selected>Enviar aviso y código por correo</option><option value="0">Entregar el código personalmente</option></select><small>El correo solo avisa que recibió una tarjeta y muestra su código.</small></label>
+                        <?php endif ?>
                         <?php if ($moduleId === 'productos'): ?>
                             <label>Imagen del producto
                                 <input type="file" name="imagen_archivo" accept="image/jpeg,image/png,image/webp">

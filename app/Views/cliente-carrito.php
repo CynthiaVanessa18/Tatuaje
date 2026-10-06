@@ -5,13 +5,15 @@
 <?php else: ?>
 <?php if ($cartReceipt && !$cartItems): ?><section class="card">
     <h2>Resumen de tu último pedido</h2>
-    <p><?= e($cartReceipt['fecha']) ?> UTC · <?= e(['efectivo'=>'Efectivo al retirar','transferencia'=>'Transferencia','pasarela'=>'Tarjeta de prueba'][$cartReceipt['metodo']]??label($cartReceipt['metodo'])) ?></p>
+    <p><?= e($cartReceipt['fecha']) ?> UTC · <?= e(['efectivo'=>'Efectivo al retirar','transferencia'=>'Transferencia','pasarela'=>'Tarjeta de prueba','sin_cobro'=>'Cubierto por promoción'][$cartReceipt['metodo']]??label($cartReceipt['metodo'])) ?></p>
     <strong>₡<?= e(number_format((float)$cartReceipt['total'],2,',','.')) ?></strong>
     <p>Pago: <?= e(label($cartReceipt['estado'])) ?><?= $cartReceipt['proveedor']==='demo_tienda'?' · Demostración sin cobro real':'' ?></p>
 </section><?php endif ?>
-<?php if (!$cartItems): ?><section class="card carrito-vacio"><span aria-hidden="true">🛒</span><h2>Tu carrito está vacío</h2><p>Descubre los artículos del estudio y añade tus favoritos.</p><a class="button" href="cliente.php?section=tienda">Ver productos</a></section><?php else: ?>
+<?php if (!$cartItems): ?><section class="card carrito-vacio"><span aria-hidden="true">🛒</span><h2>Tu carrito está vacío</h2><p>Descubre los artículos del estudio y añade tus favoritos.</p><a class="button" href="<?= e($clientEndpoint ?? '../index.php') ?>?section=tienda">Ver productos</a></section><?php else: ?>
 <ol class="pasos-compra" aria-label="Proceso de compra"><li <?= !$cartPayment?'aria-current="step"':'' ?>><span>1</span> Carrito</li><li <?= $cartPayment?'aria-current="step"':'' ?>><span>2</span> Pago</li><li><span>3</span> Confirmación</li></ol>
+<?php require __DIR__.'/cliente-tarjeta-carrito.php'; ?>
 <?php if ($cartPayment): ?>
+    <?php require __DIR__.'/cliente-descuento.php'; ?>
     <?php require __DIR__.'/cliente-pago.php'; ?>
 <?php else: ?>
 <div class="carrito-layout carrito-sin-resumen row g-0">
@@ -21,7 +23,8 @@
         <?php if (isset($cartImages[$item['id_producto']])): ?><img class="foto-carrito" src="<?= e(imageUrl($cartImages[$item['id_producto']])) ?>" alt="<?= e($item['nombre']) ?>">
         <?php else: ?><div class="foto-carrito sin-foto-carrito" aria-hidden="true">▣</div><?php endif ?>
         <div class="carrito-articulo-info"><strong><?= e($item['nombre']) ?></strong><p>Precio por unidad: ₡<?= e(number_format((float)($item['precio']??0),2,',','.')) ?></p>
-        <form method="post" action="cliente.php?section=carrito" class="actions cantidad-carrito">
+        <?php if (($item['descuento_centavos']??0)>0): ?><p class="oferta-producto">Ahorras ₡<?= e(number_format($item['descuento_centavos']/100,2,',','.')) ?> con <?= e($cartPromotion['titulo']) ?></p><?php endif ?>
+        <form method="post" action="<?= e($clientEndpoint ?? '../index.php') ?>?section=carrito" class="actions cantidad-carrito">
             <input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="product" value="<?= e($item['id_producto']) ?>">
             <div class="selector-cantidad"><button type="button" data-quantity-change="-1" aria-label="Reducir cantidad de <?= e($item['nombre']) ?>" <?= $item['cantidad']<=1 ? 'disabled' : '' ?>>−</button>
             <label><span class="sr-only">Cantidad de <?= e($item['nombre']) ?></span><input type="number" name="quantity" value="<?= e($item['cantidad']) ?>" min="1" max="<?= e(max(1,min(99,(int)$item['stock_actual']))) ?>" required></label>
@@ -30,9 +33,10 @@
         </form>
         </div><strong class="carrito-linea-precio">₡<?= e(number_format($item['centavos']/100,2,',','.')) ?></strong>
     </div><?php endforeach ?>
-    <a class="seguir-comprando" href="cliente.php?section=tienda">← Seguir comprando</a>
+    <a class="seguir-comprando" href="<?= e($clientEndpoint ?? '../index.php') ?>?section=tienda">← Seguir comprando</a>
 </section>
 </div>
+<?php require __DIR__.'/cliente-descuento.php'; ?>
 <?php if ($profileMissing): ?><p class="notice error">Completa tu perfil de cliente con el administrador para comprar.</p><?php endif ?>
 <?php $checkoutBarStep='carrito';$checkoutBarTotal=$cartTotal/100;$checkoutBarInfo=$cartCount.' artículos';require __DIR__.'/cliente-compra-barra.php'; ?>
 <?php endif ?>

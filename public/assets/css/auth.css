@@ -1,0 +1,88 @@
+:root{color-scheme:dark}
+body.login{--auth-gold:#bd9255;--auth-bone:#eee3d0;--auth-muted:#b3a394;display:grid;place-items:center;min-height:100vh;min-height:100dvh;margin:0;padding:40px 20px;background:radial-gradient(ellipse at 15% 20%,#50112455,transparent 50%),radial-gradient(ellipse at 90% 85%,#bd925515,transparent 45%),#080507;color:var(--auth-bone);font-family:"Montserrat",Arial,sans-serif;line-height:1.6}
+body.login{position:relative;isolation:isolate;overflow-x:hidden}
+body.login::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:url('../images/auth-gothic-house.png') center / cover no-repeat}
+body.login::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#05030422 0%,#05030444 45%,#05030499 100%),linear-gradient(0deg,#05030466,transparent 60%)}
+.login .login-card{width:min(100%,460px);max-width:460px;margin:0;padding:38px;background:linear-gradient(145deg,#201017,#10090d);border:1px solid #bd925548;border-radius:18px;box-shadow:0 24px 80px #0008}
+.login .login-card{background:linear-gradient(145deg,#201017ef,#10090df5);box-shadow:0 24px 80px #000a,0 0 0 1px #bd925510;backdrop-filter:blur(12px)}
+.login .auth-brand{display:block;color:var(--auth-gold);text-decoration:none;font-family:"Cinzel Decorative",Georgia,serif;font-size:22px;letter-spacing:3px;margin-bottom:24px}
+.login .eyebrow{color:var(--auth-gold);font-size:10px;letter-spacing:2px;margin:0 0 8px}
+.login h1{font-family:Georgia,serif;font-size:32px;line-height:1.2;font-weight:500;margin:0 0 14px;color:var(--auth-bone)}
+.login p{color:var(--auth-muted);font-size:13px;margin:12px 0 20px}
+.login form{display:grid;gap:18px;margin:24px 0}
+.login label{display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:600;color:var(--auth-bone)}
+.login input:not([type=hidden]),.login select{width:100%;min-height:48px;padding:12px 14px;border:1px solid #bd925540;border-radius:8px;background:#0a0608;color:var(--auth-bone);font:400 15px "Montserrat",Arial,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+.login input:focus,.login select:focus{border-color:var(--auth-gold);box-shadow:0 0 0 3px #bd925522}
+.login input:-webkit-autofill{-webkit-text-fill-color:var(--auth-bone);box-shadow:0 0 0 1000px #0a0608 inset}
+.login button[type=submit]{width:100%;min-height:48px;padding:13px 20px;border:1px solid #bd9255;border-radius:8px;background:#bd9255;color:#150b08;font:700 13px "Montserrat",Arial,sans-serif;cursor:pointer;transition:background .15s}
+.login button[type=submit]:hover{background:#d3ab72}
+.login a{color:var(--auth-gold);text-underline-offset:4px}
+.login a:hover{color:#e3bc87}
+.login a:focus-visible,.login button:focus-visible{outline:2px solid #eee3d0;outline-offset:4px}
+.login .password-recovery{text-align:center;margin-top:12px}
+.login .auth-footer{text-align:center;border-top:1px solid #bd925526;padding-top:20px;margin-bottom:0}
+.login .auth-back{display:inline-block;margin-top:20px;font-size:12px;color:var(--auth-muted)}
+.login .notice{padding:13px 15px;border:1px solid #466b50;border-radius:8px;background:#16251d;color:#c7e5d1;font-size:13px}
+.login .notice.error{background:#3a101b;border-color:#923348;color:#f4c4cd}
+@media(max-width:480px){body.login{padding:24px 14px}.login .login-card{padding:28px 22px;border-radius:14px}.login h1{font-size:28px}}
+.login.registro{padding:24px 14px}
+.login.registro .login-card{padding:24px 28px}
+.login.registro .auth-brand{margin-bottom:10px;font-size:20px}
+.login.registro h1{margin-bottom:8px;font-size:28px}
+.login.registro .login-card>p{margin:8px 0 12px}
+.login.registro form{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin:12px 0;align-content:start;grid-auto-rows:auto}
+.login.registro form>*{grid-column:1 / -1}
+.login.registro form>.registro-medio{grid-column:auto}
+.login.registro .login-card form>label{gap:4px;min-width:0;margin:0;padding:0}
+.login.registro input:not([type=hidden]){min-height:38px;padding:7px 10px;font-size:14px}
+.login.registro button[type=submit]{min-height:42px;padding:10px 16px}
+.login.registro form>p{margin:-3px 0 0;font-size:11px}
+.login.registro .login-card>p:last-child{margin:12px 0 0}
+@media(max-width:480px){.login.registro .login-card{padding:24px 20px}}
+@media(max-width:360px){.login.registro form{grid-template-columns:1fr}.login.registro form>.registro-medio{grid-column:1 / -1}}
+@media(min-width:1000px){body.login{justify-items:end;padding-right:clamp(48px,8vw,150px)}}
+@media(max-width:600px){body.login::before{background-position:35% center}body.login::after{background:#05030466}}
+.login .login-card{position:relative;z-index:1}
+.login .auth-atmosphere{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.login .auth-fog{position:absolute;display:block;left:-30%;width:160%;height:50%;background:radial-gradient(ellipse at 15% 50%,#d6c9ad55,transparent 28%),radial-gradient(ellipse at 45% 65%,#b2b4b944,transparent 35%),radial-gradient(ellipse at 75% 35%,#e3d7be44,transparent 30%);filter:blur(35px);opacity:.2;will-change:transform;animation:auth-clouds 46s ease-in-out infinite alternate}
+.login .auth-fog-far{top:-12%;height:48%;opacity:.16}
+.login .auth-fog-near{bottom:-8%;height:48%;animation-duration:58s;animation-direction:alternate-reverse;opacity:.22}
+.login .auth-golden-light{position:absolute;inset:0;background:radial-gradient(ellipse at 34% 37%,#ffc56726,transparent 18%),radial-gradient(ellipse at 20% 53%,#e6a44a1a,transparent 15%);animation:auth-gold-glow 9s ease-in-out infinite alternate}
+@keyframes auth-clouds{from{transform:translate3d(-7%,0,0)}to{transform:translate3d(7%,3%,0)}}
+@keyframes auth-gold-glow{from{opacity:.45}to{opacity:.9}}
+@media(prefers-reduced-motion:reduce){.login .auth-fog,.login .auth-golden-light{animation:none;will-change:auto}}
+/* Acceso ornamental inspirado en la referencia de Tinta Viva. */
+body.login.login-artistic{justify-items:center;padding:28px 20px}
+body.login.login-artistic::before{background-image:url('../images/auth-tattoo-landscape.png');background-position:center}
+body.login.login-artistic::after{background:linear-gradient(0deg,#05030444,transparent 70%)}
+.login.login-artistic .login-card{width:min(100%,510px);max-width:510px;padding:190px 64px 155px;background:#13090c url('../images/auth-ornamental-frame.png') center / 100% 100% no-repeat;border:1px solid #bd925588;border-radius:22px;backdrop-filter:none;box-shadow:0 25px 80px #000b;animation:auth-frame-glow 10s ease-in-out infinite alternate}
+.login.login-artistic .auth-brand{text-align:center;font-family:Georgia,serif;font-size:30px;font-weight:500;letter-spacing:3px;margin-bottom:7px;color:#c89d61}
+.login.login-artistic .eyebrow{text-align:center;font-size:10px;letter-spacing:2px;margin-bottom:12px}
+.login.login-artistic h1{text-align:center;font-size:32px;margin:0 0 12px}
+.login.login-artistic .login-card>p:not(.eyebrow):not(.notice){font-size:12px;text-align:center;margin:10px 0 18px}
+.login.login-artistic form{gap:18px;margin:22px 0 15px}
+.login.login-artistic .login-card form>label{margin:0;gap:7px;font-size:12px}
+.login.login-artistic input:not([type=hidden]){min-height:46px;background:#070406c9;border-color:#b6a28e50}
+.login.login-artistic button[type=submit]{min-height:46px;background:linear-gradient(110deg,#af8248,#cca367);border-color:#d6b47d}
+.login.login-artistic .auth-footer{border:0;padding:0;font-size:11px!important;margin:12px 0 0!important}
+.login.login-artistic .auth-back{display:block;text-align:center;font-size:11px;margin-top:10px}
+.login.login-artistic .auth-golden-light{background:radial-gradient(ellipse at 72% 50%,#ffc56722,transparent 26%),radial-gradient(ellipse at 22% 40%,#e6a44a20,transparent 18%)}
+@keyframes auth-frame-glow{from{box-shadow:0 25px 80px #000b,0 0 15px #bd925508}to{box-shadow:0 25px 80px #000b,0 0 30px #bd925525}}
+@media(max-width:600px){body.login.login-artistic{padding:18px 12px}.login.login-artistic .login-card{padding:155px 36px 125px;border-radius:16px}.login.login-artistic .auth-brand{font-size:25px}.login.login-artistic h1{font-size:28px}body.login.login-artistic::before{background-position:35% center}}
+@media(prefers-reduced-motion:reduce){.login.login-artistic .login-card{animation:none}}
+/* Login completo dentro de la altura disponible. */
+body.login.login-artistic{padding:12px;min-height:100dvh}
+.login.login-artistic .login-card{width:min(100%,390px);max-width:390px;padding:125px 42px 105px;border-radius:14px}
+.login.login-artistic .auth-brand{font-size:23px;line-height:1.2;margin-bottom:4px}
+.login.login-artistic .eyebrow{font-size:8px;line-height:1.4;letter-spacing:1.5px;margin-bottom:7px}
+.login.login-artistic h1{font-size:25px;line-height:1.2;margin-bottom:7px}
+.login.login-artistic .login-card>p:not(.eyebrow):not(.notice){font-size:11px;line-height:1.4;margin:6px 0 10px}
+.login.login-artistic form{gap:11px;margin:12px 0 9px}
+.login.login-artistic .login-card form>label{font-size:11px;line-height:1.4;gap:4px}
+.login.login-artistic input:not([type=hidden]){min-height:36px;height:36px;padding:7px 10px;font-size:13px}
+.login.login-artistic button[type=submit]{min-height:36px;padding:8px 12px;font-size:12px}
+.login.login-artistic .auth-footer{font-size:10px!important;line-height:1.4;margin-top:8px!important}
+.login.login-artistic .auth-back{font-size:10px;line-height:1.4;margin-top:6px}
+.login.login-artistic .notice{margin:6px 0;padding:8px 10px;font-size:11px;line-height:1.3}
+@media(max-height:700px){.login.login-artistic .login-card{width:min(100%,350px);padding:100px 36px 82px}.login.login-artistic form{gap:9px;margin:9px 0 7px}.login.login-artistic h1{font-size:23px}}
+@media(max-height:560px){.login.login-artistic .login-card{padding:66px 32px 44px;background-size:100% 100%}.login.login-artistic .auth-brand{font-size:19px}.login.login-artistic .eyebrow{margin-bottom:4px}.login.login-artistic h1{font-size:21px;margin-bottom:4px}.login.login-artistic .login-card>p:not(.eyebrow):not(.notice){margin:4px 0 6px;font-size:10px}.login.login-artistic form{gap:7px;margin:7px 0}.login.login-artistic input:not([type=hidden]){height:32px;min-height:32px}.login.login-artistic button[type=submit]{min-height:32px;padding:6px 10px}}

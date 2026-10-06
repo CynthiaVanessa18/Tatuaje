@@ -1,0 +1,12 @@
+.client-navigation{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:18px;min-height:70px;padding:12px max(18px,calc((100% - 1420px)/2));background:rgba(5,3,4,.98);border-bottom:1px solid var(--gold-dark,#64492b);color:var(--bone,#eee2d0);box-sizing:border-box}
+.client-navigation a{text-decoration:none;color:inherit}
+.client-navigation-brand{white-space:nowrap;font-family:var(--title,serif);font-size:16px;letter-spacing:2px}
+.client-navigation-brand strong{color:var(--gold,#bf9454)}
+.client-navigation nav{display:flex;flex:1;align-items:center;gap:6px;overflow-x:auto;min-width:0;margin:0}
+.client-navigation nav a{display:block;padding:8px 10px;white-space:nowrap;font:14px var(--serif,serif);color:var(--bone-muted,#c0aca0);border-bottom:2px solid transparent;border-radius:0;background:transparent}
+.client-navigation nav a:hover,.client-navigation nav a[aria-current]{color:var(--gold,#bf9454);border-color:var(--gold,#bf9454);background:transparent}
+.client-navigation-account{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--gold-dark,#64492b);border-radius:50%;flex-shrink:0}
+.client-navigation-account:hover,.client-navigation-account[aria-current]{color:var(--gold,#bf9454)}
+.client-navigation form{margin:0;flex-shrink:0}
+.client-navigation button{font:12px var(--sans,sans-serif);padding:9px 12px;color:var(--bone,#eee2d0);background:transparent;border:1px solid var(--gold-dark,#64492b);border-radius:4px;white-space:nowrap;cursor:pointer}
+@media(max-width:850px){.client-navigation{flex-wrap:wrap;gap:10px;padding:10px 14px}.client-navigation nav{order:4;flex-basis:100%}.client-navigation-account{margin-left:auto}.client-navigation nav a{font-size:13px;padding:7px 9px}}

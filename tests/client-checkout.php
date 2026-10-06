@@ -5,10 +5,12 @@ require __DIR__.'/../app/Services/ClientCheckout.php';
 
 // Tablas temporales: nunca se insertan ni modifican datos operativos.
 $db=conectarBaseDatos();
+require __DIR__.'/temporary-store-promotions.php';
+temporaryStorePromotions($db);
 $db->exec('CREATE TEMPORARY TABLE categorias_productos (id_categoria_producto INT PRIMARY KEY,activo INT) ENGINE=InnoDB');
 $db->exec('CREATE TEMPORARY TABLE productos (id_producto INT PRIMARY KEY,id_categoria_producto INT,nombre VARCHAR(180),precio DECIMAL(12,2),stock_actual INT,activo INT) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE ventas (id_venta INT AUTO_INCREMENT PRIMARY KEY,id_cliente INT,estado VARCHAR(20),moneda CHAR(3),subtotal DECIMAL(12,2),total DECIMAL(12,2) AS (subtotal) STORED) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE detalle_ventas (id_detalle_venta INT AUTO_INCREMENT PRIMARY KEY,id_venta INT,tipo_item VARCHAR(30),id_producto INT,descripcion VARCHAR(255),cantidad INT,precio_unitario DECIMAL(12,2)) ENGINE=InnoDB');
+$db->exec('CREATE TEMPORARY TABLE ventas (id_venta INT AUTO_INCREMENT PRIMARY KEY,id_cliente INT,estado VARCHAR(20),moneda CHAR(3),subtotal DECIMAL(12,2),descuento_total DECIMAL(12,2) DEFAULT 0,total DECIMAL(12,2) AS (subtotal-descuento_total) STORED) ENGINE=InnoDB');
+$db->exec('CREATE TEMPORARY TABLE detalle_ventas (id_detalle_venta INT AUTO_INCREMENT PRIMARY KEY,id_venta INT,tipo_item VARCHAR(30),id_producto INT,descripcion VARCHAR(255),cantidad INT,precio_unitario DECIMAL(12,2),id_promocion BIGINT UNSIGNED,descuento DECIMAL(12,2) DEFAULT 0) ENGINE=InnoDB');
 $db->exec('CREATE TEMPORARY TABLE pagos (id_pago INT AUTO_INCREMENT PRIMARY KEY,id_venta INT,metodo VARCHAR(30),monto DECIMAL(12,2),moneda CHAR(3),estado VARCHAR(30),clave_idempotencia VARCHAR(128) UNIQUE,proveedor VARCHAR(80),referencia_externa VARCHAR(190),UNIQUE(proveedor,referencia_externa)) ENGINE=InnoDB');
 $db->exec('INSERT INTO categorias_productos VALUES (1,1)');
 $db->exec("INSERT INTO productos VALUES (1,1,'Artículo de prueba',1200.50,20,1)");

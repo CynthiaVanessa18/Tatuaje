@@ -1,5 +1,20 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__ . '/../app/Core/bootstrap.php';
+$clientEndpoint = 'index.php';
+$publicPrefix = '';
+if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias','cuenta','tarjetas'], true)) {
+    $requiredRole = 'cliente';
+    try {
+        require __DIR__ . '/../app/Controllers/RoleController.php';
+        require __DIR__ . '/../app/Views/role-home.php';
+    } catch (PDOException $ex) {
+        error_log($ex->getMessage());
+        http_response_code(503);
+        require __DIR__ . '/../app/Views/unavailable.php';
+    }
+    exit;
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -37,7 +52,9 @@ declare(strict_types=1);
         src="assets/js/site.js"
         defer
     ></script>
+<?php if (($_SESSION['role']??'')==='cliente'): ?><link rel="stylesheet" href="assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
 </head>
+<?php /* La cuenta de cliente comparte la misma navegación en todas las páginas. */ ?>
 
 <body>
 <div class="cursor-glow" aria-hidden="true"></div>
@@ -46,6 +63,7 @@ declare(strict_types=1);
     Saltar al contenido
 </a>
 
+<?php if (($_SESSION['role']??'')==='cliente'): require __DIR__.'/../app/Views/cliente-navegacion.php'; else: ?>
 <header class="site-header" id="siteHeader">
     <div class="nav-shell">
         <a class="brand" href="index.php" aria-label="Tinta Viva, inicio">
@@ -79,11 +97,24 @@ declare(strict_types=1);
             <a href="#artistas">Artistas</a>
             <a href="#galeria">Galería</a>
             <a href="#cuidados">Cuidados</a>
+            <a href="index.php?section=membresias">Membresía</a>
+            <a href="#calificaciones_artistas">Calificaciones de Artistas</a>
+
+            <a href="index.php?section=tienda">Tienda</a>
+            <a href="index.php?section=citas">Mis citas</a>
         </nav>
 
-        <a class="button button--login" href="auth/login.php">
-            Ingresar
-        </a>
+        <?php if (!empty($_SESSION['account'])): ?>
+            <?php if (($_SESSION['role']??'')==='cliente'): ?><a class="button button--login" href="index.php?section=cuenta" aria-label="Mi cuenta"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg> Mi cuenta</a><?php endif ?>
+            <form class="session-actions" method="post" action="auth/logout.php">
+                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                <button class="button button--login" type="submit">Cerrar sesión</button>
+            </form>
+        <?php else: ?>
+            <a class="button button--login" href="auth/login.php">
+                Ingresar
+            </a>
+        <?php endif ?>
     </div>
 
     <div class="blood-edge" aria-hidden="true">
@@ -93,6 +124,7 @@ declare(strict_types=1);
         <span></span>
     </div>
 </header>
+<?php endif ?>
 
 <main id="contenido">
     <section class="hero" id="inicio">

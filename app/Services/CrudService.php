@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/ClientGiftCards.php';
 
 final class CrudService
 {
-    public function __construct(private CrudRepository $repo) {}
+    public function __construct(private CrudRepository $repo,private ?Closure $giftEmailSender=null) {}
     public static function validate(array $columns, callable $editable, array $input): array {
         $data=[];
         foreach ($columns as $name=>$c) {
@@ -51,9 +52,14 @@ final class CrudService
             $old=$key?$this->repo->find($key,true):null;
             $d=$action==='delete'?[]:self::validate($this->repo->columns(),[$this->repo,'editable'],$input);
             $message='Registro guardado correctamente.';
+            if ($table==='promociones' && $old && $action!=='delete') {
+                $q=$db->prepare('SELECT COUNT(*) FROM promociones_reglas_tienda WHERE id_promocion=?');
+                $q->execute([$old['id_promocion']]);
+                $this->check(!(int)$q->fetchColumn(),'Edita esta oferta desde Tienda → Promociones y ofertas para conservar sus reglas.');
+            }
             if ($old && in_array($table,['membresias_clientes','tarjetas_regalo'],true)) {
                 if ($action==='delete') throw new DomainException('Este registro conserva historial. Utiliza el estado cancelada.');
-                $immutable=$table==='tarjetas_regalo'?['id_cliente_comprador','id_detalle_venta','monto_inicial','moneda']:['id_cliente','id_plan','id_detalle_venta'];
+                $immutable=$table==='tarjetas_regalo'?['id_cliente_comprador','monto_inicial','moneda']:['id_cliente','id_plan','id_detalle_venta'];
                 foreach ($immutable as $f) $this->check($f==='monto_inicial' ? self::cents($d[$f])===self::cents($old[$f]) : (string)$d[$f]===(string)$old[$f],'No se puede cambiar '.label($f).' después de emitir el registro.');
             }
             if ($table==='detalle_ventas') {
@@ -67,6 +73,9 @@ final class CrudService
                     if ($d['tipo_item']==='membresia') { $p=$this->row('planes_membresia','id_plan',$d['id_plan']); $this->check((bool)$p['activo'],'El plan está inactivo.'); $d['precio_unitario']=$p['precio']; }
                     $base=self::cents($d['precio_unitario'])*(int)$d['cantidad'];
                     if ($d['id_promocion']) {
+                        $q=$db->prepare('SELECT COUNT(*) FROM promociones_reglas_tienda WHERE id_promocion=?');
+                        $q->execute([$d['id_promocion']]);
+                        $this->check(!(int)$q->fetchColumn(),'Las ofertas automáticas se calculan en la compra del cliente. No se asignan manualmente a un detalle.');
                         $p=$this->row('promociones','id_promocion',$d['id_promocion']);
                         $this->check((bool)$p['activo'] && $p['fecha_inicio']<=gmdate('Y-m-d H:i:s') && $p['fecha_fin']>=gmdate('Y-m-d H:i:s'),'Promoción fuera de vigencia.');
                         $this->check(in_array($d['tipo_item'],['producto','tatuaje'],true) && ($p['aplica_a']==='ambos' || $p['aplica_a']===($d['tipo_item']==='producto'?'productos':'tatuajes')),'La promoción no aplica a este artículo.');
@@ -106,20 +115,19 @@ final class CrudService
                     $this->check($c['estado']==='finalizada','Solo se pueden calificar citas finalizadas.');
                     $this->check((int)$d['puntuacion']>=1 && (int)$d['puntuacion']<=5,'La puntuación debe estar entre 1 y 5.');
                 }
-                if (in_array($table,['membresias_clientes','tarjetas_regalo'],true)) {
+                if ($table==='membresias_clientes') {
                     $line=$this->row('detalle_ventas','id_detalle_venta',$d['id_detalle_venta']); $sale=$this->row('ventas','id_venta',$line['id_venta']);
-                    $isCard=$table==='tarjetas_regalo';
-                    $this->check($line['tipo_item']===($isCard?'tarjeta_regalo':'membresia'),'El detalle de venta no corresponde a este tipo de registro.');
-                    $this->check($sale['id_cliente']==$d[$isCard?'id_cliente_comprador':'id_cliente'],'El cliente no coincide con la venta.');
+                    $this->check($line['tipo_item']==='membresia','El detalle de venta no corresponde a una membresía.');
+                    $this->check($sale['id_cliente']==$d['id_cliente'],'El cliente no coincide con la venta.');
                     $this->check(in_array($sale['estado'],['confirmada','completada'],true),'La venta debe estar confirmada.');
-                    if (!$isCard) $this->check($line['id_plan']==$d['id_plan'],'El plan no coincide con el detalle vendido.');
-                    if ($isCard) {
-                        $this->check(self::cents($d['monto_inicial'])>0 && self::cents($d['monto_inicial'])===self::cents($line['precio_unitario']) && $d['moneda']===$sale['moneda'],'El importe y la moneda deben coincidir con el detalle vendido.');
+                    $this->check($line['id_plan']==$d['id_plan'],'El plan no coincide con el detalle vendido.');
+                }
+                if ($table==='tarjetas_regalo') {
+                        $this->check(self::cents($d['monto_inicial'])>0,'El monto inicial debe ser mayor que cero.');
                         $this->check(!$d['fecha_vencimiento'] || $d['fecha_vencimiento']>($old['fecha_emision']??gmdate('Y-m-d H:i:s')),'El vencimiento debe ser posterior a la emisión.');
                         $this->check(in_array($d['estado'],['pendiente','activa','cancelada'],true),'Agotada y vencida son estados reservados para el proceso de canje/vencimiento.');
                         if ($old && $old['estado']==='cancelada') $this->check($d['estado']==='cancelada','Una tarjeta cancelada no puede reactivarse.');
-                        if (!$old) { $code=strtoupper(bin2hex(random_bytes(16))); $d['codigo_hash']=hash('sha256',$code,true); $message='Tarjeta creada. Guarda el código: '.$code.'. Se muestra una sola vez.'; }
-                    }
+                        if (!$old) { $code=strtoupper(bin2hex(random_bytes(6))); $d['codigo_hash']=hash('sha256',$code,true); $message='Tarjeta creada. Guarda el código: '.implode('-',str_split($code,4)).'. Se muestra una sola vez.'; }
                 }
             }
             if ($action==='delete') { $this->repo->delete($key); $message='Registro eliminado correctamente.'; }
@@ -134,13 +142,21 @@ final class CrudService
             if ($table==='tarjetas_regalo' && !$old) {
                 $id=$db->lastInsertId();
                 $db->prepare("INSERT INTO movimientos_tarjetas_regalo (id_tarjeta,tipo,monto,referencia) VALUES (?,'carga_inicial',?,?)")->execute([$id,$d['monto_inicial'],'emision-'.bin2hex(random_bytes(16))]);
+                ClientGiftCards::assignRecipient($db,(int)$id,$d['correo_destinatario']);
             }
+            if ($table==='tarjetas_regalo' && $old && $action==='update') ClientGiftCards::assignRecipient($db,(int)$old['id_tarjeta'],$d['correo_destinatario']);
             if ($table==='detalle_ventas') {
                 foreach (array_unique(array_filter([$old['id_venta']??null,$d['id_venta']??null])) as $id) {
                     $db->prepare('UPDATE ventas SET subtotal=(SELECT COALESCE(SUM(cantidad*precio_unitario),0) FROM detalle_ventas WHERE id_venta=?), descuento_total=(SELECT COALESCE(SUM(descuento),0) FROM detalle_ventas WHERE id_venta=?), impuesto_total=(SELECT COALESCE(SUM(impuesto),0) FROM detalle_ventas WHERE id_venta=?) WHERE id_venta=?')->execute([$id,$id,$id,$id]);
                 }
             }
-            $db->commit(); return $message;
+            $db->commit();
+            if ($table==='tarjetas_regalo' && !$old && $this->giftEmailSender) {
+                try { $sent=($this->giftEmailSender)($d['correo_destinatario'],implode('-',str_split($code,4))); }
+                catch (Throwable $ex) { $sent=false;error_log('No se pudo enviar el aviso de tarjeta de regalo.'); }
+                $message.=$sent?' Aviso y código enviados al destinatario.':' No se pudo enviar el correo. La tarjeta quedó creada; entrega el código mostrado y revisa la configuración del correo.';
+            }
+            return $message;
         } catch (Throwable $e) { if ($db->inTransaction()) $db->rollBack(); throw $e; }
     }
     public static function cents($v): int { $parts=explode('.',(string)$v); return (int)$parts[0]*100+(int)str_pad($parts[1]??'',2,'0'); }

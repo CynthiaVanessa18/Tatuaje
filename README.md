@@ -42,6 +42,18 @@ Las rutas anteriores de `view/` y `controller/` son puentes al panel nuevo. Se c
 
 ## Alcance
 
+### Promociones automáticas de tienda
+
+En **Administrador → Tienda → Promociones y ofertas** se crean ofertas para toda la tienda, varios artículos o una o varias categorías. Permiten porcentaje (hasta 100%) o monto fijo en CRC por compra, público general o un grupo de clientes, compra mínima y fechas de inicio/vencimiento en hora de Costa Rica. Los grupos y sus integrantes se gestionan en los subapartados **Grupos de clientes** y **Clientes por grupo**.
+
+`database/db_preliminar.sql` incluye las relaciones nuevas. Para una instalación existente, ejecutar `php scripts/migrate_store_promotions.php`: agrega tablas sin eliminar o modificar registros existentes. No es necesario reimportar toda la base de datos.
+
+El cliente ve las ofertas vigentes que le corresponden. La compra mínima se calcula sobre todo el subtotal del carrito antes de descuentos; el descuento se aplica exclusivamente a los artículos elegibles. Se elige una sola promoción, la de mayor ahorro (en empate, la más antigua). El monto fijo se aplica una vez por pedido y se reparte entre sus líneas elegibles; no supera su importe. Las promociones anteriores sin reglas de tienda conservan su funcionamiento manual.
+
+Al confirmar se vuelven a validar precios, grupos, inventario y fechas. Si cambia el total mostrado, se solicita revisarlo antes de comprar. La venta, sus detalles y el pago guardan el descuento calculado por el servidor. Los pedidos cubiertos al 100% se registran sin crear un pago de monto cero y mantienen la protección contra reintentos duplicados.
+
+Validación: `php tests/store-promotions.php` y `php tests/client-checkout.php` usan exclusivamente tablas temporales, sin insertar compras o promociones en los datos operativos.
+
 | Requisito | Módulos |
 | --- | --- |
 | 3 · Categorías / filtros | Categorías, especialidades y filtros por estado, actividad y relaciones |
@@ -92,3 +104,10 @@ El mismo `public/auth/login.php` admite cuentas activas de los cuatro roles. No 
 Las páginas de artista y cliente necesitan un registro en `artistas` o `clientes` vinculado mediante `id_cuenta`. Si todavía no existe, la sesión funciona y se muestra un aviso para completar el perfil. Estas páginas no implementan edición de agenda ni otros CRUD de los demás integrantes.
 
 Las rutas se centralizan en `app/Core/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.
+
+### Membresías configurables
+En Administración → Membresías → Planes de membresía se configuran los tres tipos Esencial, Plus y Premium. Cada uno admite cuotas mensuales y anuales independientes y beneficios seleccionados del catálogo precargado. Las cantidades de sesiones y kits corresponden al período contratado, no se renuevan mensualmente en un contrato anual. El importe anual se cobra como cuota anual total. Los planes se instalan inactivos y requieren cuotas positivas antes de activarse. Los clientes consultan los planes activos en index.php?section=membresias.
+Instalación en otra base: ejecutar `php scripts/migrate_memberships.php` después de importar db_preliminar.sql; el script es idempotente y conserva los registros existentes. Verificación: `php tests/membership-plans.php`.
+Este apartado configura el catálogo; la contratación, el cobro recurrente y el uso automático de descuentos, citas o regalos no forman parte de este módulo. Los beneficios se validan con el personal del estudio.
+
+Las tarjetas de regalo se emiten sin seleccionar un detalle de venta. Para bases existentes, ejecutar `php scripts/migrate_gift_cards.php`: permite una relación de venta vacía y conserva las relaciones anteriores. El monto inicial y el comprador permanecen protegidos después de emitir la tarjeta; la carga inicial sigue registrada en sus movimientos. Verificación: `php tests/gift-cards.php`.

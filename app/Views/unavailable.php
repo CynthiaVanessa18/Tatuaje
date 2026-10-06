@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="../assets/css/app.css">
+    <link rel="stylesheet" href="<?= e($publicPrefix ?? '../') ?>assets/css/app.css">
     <title>Conexión pendiente</title>
 </head>
 

@@ -3,18 +3,46 @@ declare(strict_types=1);
 require_once __DIR__.'/../Models/CrudRepository.php';
 require_once __DIR__.'/../Services/CrudService.php';
 require_once __DIR__.'/../Services/ProductImageUpload.php';
+require_once __DIR__.'/../Services/RatingModeration.php';
 
 $modules=require __DIR__.'/../../config/modules.php';
 $moduleId=is_string($_GET['module']??null)?$_GET['module']:'categorias';
 if (!isset($modules[$moduleId])) { http_response_code(404); exit('Módulo no encontrado.'); }
 $module=$modules[$moduleId];
 $repo=new CrudRepository(conectarBaseDatos(),$module);
-$columns=$repo->columns(); $refs=$repo->references(); $error=null; $record=null;
+$columns=$repo->columns(); $refs=$moduleId==='cuentas'?[]:$repo->references(); $error=null; $record=null;
 $notice=$_SESSION['notice']??null; unset($_SESSION['notice']);
 $mode=is_string($_GET['mode']??null)?$_GET['mode']:'list';
 $uploadedImage=null;
+$ratingModerator = new RatingModeration(conectarBaseDatos());
+
+if ($moduleId === 'calificaciones'
+    && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        if (($_POST['action'] ?? '') !== 'moderate') {
+            throw new DomainException(
+                'Las calificaciones solo pueden aprobarse u ocultarse.'
+            );
+        }
+
+        $_SESSION['notice'] = $ratingModerator->moderate($_POST);
+
+        header(
+            'Location: administrador.php?module=calificaciones',
+            true,
+            303
+        );
+        exit;
+    } catch (DomainException $ex) {
+        $error = $ex->getMessage();
+    } catch (PDOException $ex) {
+        error_log($ex->getMessage());
+        $error = 'No se pudo guardar la moderación. Intenta nuevamente.';
+    }
+}
 try {
-    if ($_SERVER['REQUEST_METHOD']==='POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && !in_array($moduleId,['calificaciones','promociones_tienda','planes','cuentas'],true)) {
         verifyCsrf();
         $action=$_POST['action']??'';
         if (!in_array($action,['create','update','delete'],true)) throw new DomainException('Acción inválida.');
@@ -29,10 +57,15 @@ try {
             $uploadedImage=ProductImageUpload::save(is_array($_FILES['imagen_archivo']??null)?$_FILES['imagen_archivo']:null);
             $_POST['_product_image']=$uploadedImage;
         }
-        $_SESSION['notice']=(new CrudService($repo))->execute($action,$_POST,$key);
+        $giftEmailSender=null;
+        if ($moduleId==='tarjetas' && $action==='create' && ($_POST['enviar_correo']??'')==='1') {
+            require_once __DIR__.'/../Services/GiftCardEmail.php';
+            $giftEmailSender=static fn(string $email,string $code):bool=>GiftCardEmail::send($email,$code);
+        }
+        $_SESSION['notice']=(new CrudService($repo,$giftEmailSender))->execute($action,$_POST,$key);
         header('Location: administrador.php?module='.urlencode($moduleId)); exit;
     }
-    if (in_array($mode,['edit','view'],true)) $record=$repo->find($repo->key($_GET));
+    if (!in_array($moduleId,['promociones_tienda','planes','cuentas'],true) && in_array($mode,['edit','view'],true)) $record=$repo->find($repo->key($_GET));
 } catch (DomainException $ex) { $error=$ex->getMessage(); }
 catch (PDOException $ex) {
     error_log($ex->getMessage());
@@ -42,13 +75,19 @@ if ($error && $uploadedImage!==null) {
     ProductImageUpload::discard($uploadedImage);
     unset($_POST['imagen_url']);
 }
-if ($_SERVER['REQUEST_METHOD']==='POST' && $error && ($_POST['action']??'')!=='delete') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST'
+    && !in_array($moduleId,['calificaciones','promociones_tienda','planes','cuentas'],true)
+    && $error
+    && ($_POST['action'] ?? '') !== 'delete') {
     $mode=($_POST['action']??'')==='create'?'create':'edit'; $record=$_POST;
 }
 $search=is_string($_GET['q']??null)?trim($_GET['q']):'';
 $filterable=array_filter($columns,fn($c)=>isset($refs[$c['Field']]) || str_starts_with($c['Type'],'enum(') || $c['Field']==='activo');
 $filters=array_filter(array_intersect_key(is_array($_GET['filter']??null)?$_GET['filter']:[],$filterable),'is_string');
-$list=$repo->listing($search,$filters,max(1,(int)($_GET['page']??1)));
+$list=in_array($moduleId,['promociones_tienda','cuentas'],true) ? ['rows'=>[],'total'=>0,'page'=>1] : $repo->listing($search,$filters,max(1,(int)($_GET['page']??1)));
+if ($moduleId==='promociones_tienda') require __DIR__.'/StorePromotionController.php';
+if ($moduleId==='planes') require __DIR__.'/MembershipController.php';
+if ($moduleId==='cuentas') require __DIR__.'/AdminAccountsController.php';
 function choices(array $c, array $refs): ?array {
     if (isset($refs[$c['Field']])) return array_column($refs[$c['Field']],'nombre','id');
     if ($c['Type']==='tinyint(1)') return ['0'=>'No','1'=>'Sí'];
@@ -62,7 +101,7 @@ function displayValue(string $name, array $column, array $refs, mixed $value): s
     return (string)($options[$value] ?? $value);
 }
 
-$tiendaIds=['productos','ventas','categorias_productos','imagenes','detalle'];
+$tiendaIds=['productos','ventas','categorias_productos','imagenes','detalle','promociones_tienda','grupos_clientes','clientes_grupos'];
 $esTienda=in_array($moduleId,$tiendaIds,true);
 $moduloSeleccionado=$moduleId;
 $seccionesTienda=[];
