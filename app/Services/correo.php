@@ -28,14 +28,17 @@ function enviarCorreoRecuperacion(
         '',
         (string) ($config['password'] ?? '')
     );
+    $username = trim((string) ($config['usuario'] ?? ''));
+    $from = trim((string) ($config['remitente'] ?? $username));
 
     if (
+        $username === '' ||
+        $from === '' ||
         $password === '' ||
         $password === 'PEGA_AQUI_TU_NUEVA_CLAVE_DE_APLICACION'
     ) {
         throw new RuntimeException(
-            'Configura la contraseña de aplicación de Gmail '
-            . 'en config/smtp.php.'
+            'Configura SMTP_USER y SMTP_PASSWORD en el entorno del servidor.'
         );
     }
 
@@ -43,27 +46,29 @@ function enviarCorreoRecuperacion(
 
     try {
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = (string) $config['host'];
         $mail->SMTPAuth = true;
-        $mail->Username = $config['usuario'];
+        $mail->Username = $username;
         $mail->Password = $password;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
+        $mail->SMTPSecure = strtolower((string) $config['encryption']) === 'ssl'
+            ? PHPMailer::ENCRYPTION_SMTPS
+            : PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = (int) $config['port'];
         $mail->CharSet = 'UTF-8';
 
         $mail->Timeout = 10;
         $mail->getSMTPInstance()->Timelimit = 10;
 
         $mail->setFrom(
-            $config['usuario'],
-            'EclipseTATTO'
+            $from,
+            (string) $config['nombre_remitente']
         );
 
         $mail->addAddress($email);
 
         $mail->isHTML(true);
         $mail->Subject =
-            'Tu código de recuperación · EclipseTATTO';
+            'Tu código de recuperación · Tinta Viva';
 
         $mail->Body = <<<HTML
 <!doctype html>
@@ -103,7 +108,7 @@ function enviarCorreoRecuperacion(
                             <p style="margin:0; color:#d4af37;
                                       font-size:28px; font-weight:bold;
                                       letter-spacing:3px;">
-                                ECLIPSETATTO
+                                TINTA VIVA
                             </p>
 
                             <p style="margin:10px 0 0; color:#aaaaaa;
@@ -136,7 +141,7 @@ function enviarCorreoRecuperacion(
                                 Recibimos una solicitud para cambiar la
                                 contraseña de tu cuenta en
                                 <strong style="color:#d4af37;">
-                                    EclipseTATTO
+                                    Tinta Viva
                                 </strong>.
                                 Ingresa este código en la página de recuperación
                                 para continuar.
@@ -206,7 +211,7 @@ function enviarCorreoRecuperacion(
                                                   font-size:18px;
                                                   font-weight:bold;
                                                   letter-spacing:1px;">
-                                            Equipo EclipseTATTO
+                                            Equipo Tinta Viva
                                         </p>
 
                                         <p style="margin:7px 0 0; color:#aaaaaa;
@@ -242,7 +247,7 @@ function enviarCorreoRecuperacion(
 HTML;
 
         $mail->AltBody =
-            "ECLIPSETATTO\n"
+            "TINTA VIVA\n"
             . "Arte que deja huella\n\n"
             . "Recupera tu acceso\n\n"
             . "Recibimos una solicitud para cambiar "
@@ -253,7 +258,7 @@ HTML;
             . "No compartas este código. "
             . "Si no solicitaste el cambio, ignora este correo.\n\n"
             . "Con dedicación,\n"
-            . "Equipo EclipseTATTO\n"
+            . "Equipo Tinta Viva\n"
             . "Arte, identidad y pasión en cada trazo.";
 
         return $mail->send();

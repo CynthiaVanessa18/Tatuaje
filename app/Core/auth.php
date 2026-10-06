@@ -6,10 +6,27 @@ function roleRoutes(): array
 {
     return [
         'administrador' => '../panel/administrador.php',
-        'secretaria' => '../panel/secretaria.php',
-        'artista' => '../panel/artista.php',
-        'cliente' => '../index.php',
+        'cliente' => '../panel/cliente.php',
     ];
+}
+
+/** Devuelve el acceso visible adecuado para cada sesión en el sitio público. */
+function accountAreaLink(?array $account, string $prefix = ''): array
+{
+    return match ($account['nombre_rol'] ?? null) {
+        'administrador' => [
+            'label' => 'Administrar',
+            'url' => $prefix . 'panel/administrador.php',
+        ],
+        'cliente' => [
+            'label' => 'Mi cuenta',
+            'url' => $prefix . 'panel/cliente.php',
+        ],
+        default => [
+            'label' => 'Ingresar',
+            'url' => $prefix . 'auth/login.php',
+        ],
+    };
 }
 
 function currentAccount(): ?array
@@ -32,14 +49,15 @@ function currentAccount(): ?array
 
 function redirectToRole(array $account): never
 {
-    header('Location: ' . ($account['nombre_rol'] === 'cliente' ? ($GLOBALS['clientEndpoint'] ?? '../index.php') : (($GLOBALS['publicPrefix'] ?? '../') . 'panel/' . basename(roleRoutes()[$account['nombre_rol']]))), true, 303);
+    header('Location: ' . ($GLOBALS['publicPrefix'] ?? '../') . 'panel/' . basename(roleRoutes()[$account['nombre_rol']]), true, 303);
     exit;
 }
 
-function requireRole(string $role): array
+function requireRole(string $role, ?string $returnAfterLogin = null): array
 {
     $account = currentAccount();
     if (!$account) {
+        if ($returnAfterLogin !== null) $_SESSION['return_after_login']=$returnAfterLogin;
         header('Location: ' . ($GLOBALS['publicPrefix'] ?? '../') . 'auth/login.php', true, 303);
         exit;
     }

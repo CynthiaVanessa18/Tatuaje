@@ -9,4 +9,6 @@
 .client-navigation-account:hover,.client-navigation-account[aria-current]{color:var(--gold,#bf9454)}
 .client-navigation form{margin:0;flex-shrink:0}
 .client-navigation button{font:12px var(--sans,sans-serif);padding:9px 12px;color:var(--bone,#eee2d0);background:transparent;border:1px solid var(--gold-dark,#64492b);border-radius:4px;white-space:nowrap;cursor:pointer}
+body.client-shared-layout{display:block;min-width:0}
+.client-shared-layout .admin-main{margin:0 auto;max-width:1450px}
 @media(max-width:850px){.client-navigation{flex-wrap:wrap;gap:10px;padding:10px 14px}.client-navigation nav{order:4;flex-basis:100%}.client-navigation-account{margin-left:auto}.client-navigation nav a{font-size:13px;padding:7px 9px}}

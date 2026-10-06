@@ -61,7 +61,7 @@
                 <?php foreach ($appointments as $appointment): ?>
                     <tr>
                         <?php foreach (['fecha_hora_inicio', 'fecha_hora_fin'] as $dateField): ?>
-                            <td><?= e((new DateTimeImmutable($appointment[$dateField], new DateTimeZone('UTC')))
+                            <td><?= e((new DateTimeImmutable($appointment[$dateField], new DateTimeZone('America/Costa_Rica')))
                                 ->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i')) ?></td>
                         <?php endforeach ?>
                         <td><?= e($appointment['cliente']) ?></td>

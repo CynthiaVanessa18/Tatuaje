@@ -34,6 +34,9 @@ $activeGroup = $module['group'];
     <aside><a class="brand" href="administrador.php">ESTUDIO<br><strong>TATTOO</strong></a>
         <p class="eyebrow">GESTIÓN · PERSONA 2</p>
         <nav aria-label="Apartados de administración">
+            <a href="artistas.php">Perfiles de artistas</a>
+            <a href="galeria.php">Galería fotográfica</a>
+            <a href="cotizaciones.php">Cotizaciones y citas</a>
             <?php foreach ($adminGroups as $groupName => $group): ?>
                 <a <?= $groupName === $activeGroup ? 'aria-current="page"' : '' ?>
                     href="administrador.php?module=<?= e($group['entry']) ?>"><?= e($group['title']) ?></a>

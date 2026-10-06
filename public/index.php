@@ -15,6 +15,12 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
     }
     exit;
 }
+try {
+    $account=currentAccount();
+} catch (PDOException $exception) {
+    error_log('Sesión del sitio público: '.$exception->getMessage());$account=null;
+}
+$accountLink=accountAreaLink($account);
 ?>
 <!doctype html>
 <html lang="es">
@@ -94,8 +100,9 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
 
         <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
             <a href="#inicio" aria-current="page">Inicio</a>
-            <a href="#artistas">Artistas</a>
-            <a href="#galeria">Galería</a>
+            <a href="artistas/">Artistas</a>
+            <a href="galeria/">Galería</a>
+            <a href="cotizaciones/">Cotizar</a>
             <a href="#cuidados">Cuidados</a>
             <a href="index.php?section=membresias">Membresía</a>
             <a href="#calificaciones_artistas">Calificaciones de Artistas</a>
@@ -105,7 +112,7 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
         </nav>
 
         <?php if (!empty($_SESSION['account'])): ?>
-            <?php if (($_SESSION['role']??'')==='cliente'): ?><a class="button button--login" href="index.php?section=cuenta" aria-label="Mi cuenta"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg> Mi cuenta</a><?php endif ?>
+            <a class="button button--login" href="<?= e($accountLink['url']) ?>"><?= e($accountLink['label']) ?></a>
             <form class="session-actions" method="post" action="auth/logout.php">
                 <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
                 <button class="button button--login" type="submit">Cerrar sesión</button>
@@ -161,12 +168,12 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
             </p>
 
             <div class="hero__actions">
-                <a class="button button--blood" href="#cotizar">
+                <a class="button button--blood" href="cotizaciones/">
                     Cotiza tu ritual
                     <span aria-hidden="true">†</span>
                 </a>
 
-                <a class="ghost-link" href="#galeria">
+                <a class="ghost-link" href="galeria/">
                     Explorar trabajos
                 </a>
             </div>
@@ -312,7 +319,7 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
                 <li>Experiencia y certificaciones</li>
             </ul>
 
-            <a class="ghost-link" href="#cotizar">
+            <a class="ghost-link" href="artistas/">
                 Descubrir artistas →
             </a>
         </div>
@@ -364,12 +371,12 @@ if (in_array($_GET['section'] ?? '', ['citas', 'tienda', 'carrito','membresias',
         <h2>¿Te atreves a llevarla contigo?</h2>
 
         <p>
-            Muy pronto conectaremos aquí el formulario real de cotización
-            con artistas, estilos y disponibilidad.
+            Cuéntanos la idea, el estilo y el lugar de la piel.
+            El estudio convertirá tu visión en una propuesta real.
         </p>
 
-        <a class="button button--blood" href="auth/login.php">
-            Entrar al estudio
+        <a class="button button--blood" href="cotizaciones/">
+            Comenzar el pacto
             <span aria-hidden="true">†</span>
         </a>
     </section>

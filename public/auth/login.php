@@ -2,9 +2,21 @@
 require_once __DIR__ . '/../../app/Core/bootstrap.php';
 
 $error = null;
+$returnAfterLogin = $_SESSION['return_after_login'] ?? null;
+
+if ($returnAfterLogin !== '../cotizaciones/') {
+    $returnAfterLogin = null;
+    unset($_SESSION['return_after_login']);
+}
 
 try {
     if ($account = currentAccount()) {
+        if ($account['nombre_rol'] === 'cliente' && $returnAfterLogin !== null) {
+            unset($_SESSION['return_after_login']);
+            header('Location: ' . $returnAfterLogin, true, 303);
+            exit;
+        }
+
         redirectToRole($account);
     }
 
@@ -19,7 +31,14 @@ try {
             ? $_POST['clave']
             : '';
 
-        redirectToRole(authenticate($username, $password));
+        $account = authenticate($username, $password);
+
+        if ($account['nombre_rol'] === 'cliente' && $returnAfterLogin !== null) {
+            header('Location: ' . $returnAfterLogin, true, 303);
+            exit;
+        }
+
+        redirectToRole($account);
     }
 } catch (DomainException $ex) {
     $error = $ex->getMessage();
@@ -47,6 +66,12 @@ try {
     <p>
         Ingresa para acceder a tu cuenta y seguir explorando.
     </p>
+
+    <?php if ($returnAfterLogin !== null): ?>
+        <p class="notice" role="status">
+            Inicia sesión como cliente para continuar con tu cotización.
+        </p>
+    <?php endif ?>
 
     <?php if ($error): ?>
         <p class="notice error" role="alert"><?= e($error) ?></p>

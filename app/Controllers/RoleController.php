@@ -30,7 +30,7 @@ $query = conectarBaseDatos()->prepare(
      FROM citas c
      JOIN clientes cl ON cl.id_cliente = c.id_cliente
      JOIN artistas a ON a.id_artista = c.id_artista
-     WHERE c.fecha_hora_fin >= UTC_TIMESTAMP()
+     WHERE c.fecha_hora_fin >= CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00')
        AND c.estado NOT IN ('cancelada', 'no_asistio') $where
      ORDER BY c.fecha_hora_inicio LIMIT 50"
 );
