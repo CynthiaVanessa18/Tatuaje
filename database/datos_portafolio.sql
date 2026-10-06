@@ -163,7 +163,7 @@ SELECT
     datos.biografia,
     datos.slug,
     datos.instagram_url,
-    NULL,
+    'https://example.com',
     TRUE
 FROM cuentas c
 INNER JOIN (
@@ -175,7 +175,7 @@ INNER JOIN (
         '8888-0001' AS telefono,
         'Especialista en blackwork, símbolos ocultos y composiciones de alto contraste.' AS biografia,
         'ink-demo' AS slug,
-        'https://instagram.com/inkdemo' AS instagram_url
+        CAST(NULL AS CHAR(1024)) AS instagram_url
 
     UNION ALL
 
@@ -187,7 +187,7 @@ INNER JOIN (
         '8888-0101',
         'Crea piezas inspiradas en terror victoriano, vampirismo, lunas rojas y arquitectura gótica.',
         'nocturna',
-        'https://instagram.com/nocturna.tattoo'
+        NULL
 
     UNION ALL
 
@@ -199,7 +199,7 @@ INNER JOIN (
         '8888-0102',
         'Especialista en cráneos, grabado oscuro, blackwork y obras inspiradas en la mortalidad.',
         'memento',
-        'https://instagram.com/memento.ink'
+        NULL
 
     UNION ALL
 
@@ -211,7 +211,7 @@ INNER JOIN (
         '8888-0103',
         'Trabaja línea fina, rosas negras, cuervos y símbolos delicados con una estética sobrenatural.',
         'raven',
-        'https://instagram.com/raven.tinta'
+        NULL
 
     UNION ALL
 
@@ -223,7 +223,7 @@ INNER JOIN (
         '8888-0104',
         'Fusiona realismo oscuro, criaturas de pesadilla y contrastes rojos para crear piezas dramáticas.',
         'umbra',
-        'https://instagram.com/umbra.tattoo'
+        NULL
 ) datos
     ON datos.usuario = c.usuario
 WHERE NOT EXISTS (
@@ -254,10 +254,8 @@ SET
         NULLIF(a.slug, ''),
         'ink-demo'
     ),
-    a.instagram_url = COALESCE(
-        NULLIF(a.instagram_url, ''),
-        'https://instagram.com/inkdemo'
-    ),
+    a.instagram_url = NULL,
+    a.sitio_web_url = 'https://example.com',
     a.activo = TRUE
 WHERE c.usuario = 'artista_demo';
 
@@ -2388,3 +2386,66 @@ UNION ALL
 
 SELECT 'retroalimentacion_chatbot', COUNT(*)
 FROM retroalimentacion_chatbot;
+
+
+/* ============================================================
+   17. FOTOGRAFÍAS DE LOS ARTISTAS
+   Los archivos físicos están en:
+   public/assets/images/artistas/
+   ============================================================ */
+
+UPDATE artistas
+SET foto_url = CASE slug
+    WHEN 'ink-demo'
+        THEN 'assets/images/artistas/ink-demo.png'
+    WHEN 'nocturna'
+        THEN 'assets/images/artistas/nocturna.png'
+    WHEN 'memento'
+        THEN 'assets/images/artistas/memento.png'
+    WHEN 'raven'
+        THEN 'assets/images/artistas/raven.png'
+    WHEN 'umbra'
+        THEN 'assets/images/artistas/umbra.png'
+    ELSE foto_url
+END
+WHERE slug IN (
+    'ink-demo',
+    'nocturna',
+    'memento',
+    'raven',
+    'umbra'
+);
+
+/*
+    Los perfiles son ficticios. No se enlazan cuentas reales de
+    redes sociales; se utiliza únicamente el dominio reservado
+    example.com como muestra de un portafolio externo.
+*/
+UPDATE artistas
+SET
+    instagram_url = NULL,
+    sitio_web_url = 'https://example.com'
+WHERE slug IN (
+    'ink-demo',
+    'nocturna',
+    'memento',
+    'raven',
+    'umbra'
+);
+
+SELECT
+    id_artista,
+    nombre_artistico,
+    slug,
+    foto_url,
+    instagram_url,
+    sitio_web_url
+FROM artistas
+WHERE slug IN (
+    'ink-demo',
+    'nocturna',
+    'memento',
+    'raven',
+    'umbra'
+)
+ORDER BY id_artista;

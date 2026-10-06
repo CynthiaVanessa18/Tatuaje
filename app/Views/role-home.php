@@ -12,6 +12,10 @@
     <p class="eyebrow"><?= e(label($requiredRole)) ?></p>
     <nav aria-label="Navegación">
         <a href="<?= e(roleRoutes()[$requiredRole]) ?>" aria-current="page"><?= e($title) ?></a>
+        <?php if ($requiredRole === 'cliente'): ?>
+            <a href="mis-cotizaciones.php">Mis cotizaciones</a>
+            <a href="../cotizaciones/">Nueva cotización</a>
+        <?php endif ?>
     </nav>
     <form method="post" action="../auth/logout.php">
         <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">

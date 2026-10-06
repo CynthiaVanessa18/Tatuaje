@@ -1633,6 +1633,7 @@ CREATE TABLE IF NOT EXISTS correos_salida (
     id_correo BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     id_cuenta BIGINT UNSIGNED,
     id_plantilla BIGINT UNSIGNED,
+    clave_evento VARCHAR(190),
 
     destinatario VARCHAR(254) NOT NULL,
     asunto VARCHAR(255) NOT NULL,
@@ -1659,6 +1660,8 @@ CREATE TABLE IF NOT EXISTS correos_salida (
 
     FOREIGN KEY (id_plantilla)
         REFERENCES plantillas_correo(id_plantilla),
+
+    UNIQUE KEY uq_correos_clave_evento (clave_evento),
 
     INDEX idx_correos_pendientes (
         estado,
