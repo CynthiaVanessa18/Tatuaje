@@ -13,6 +13,10 @@
     <aside><a class="brand" href="administrador.php">ESTUDIO<br><strong>TATTOO</strong></a>
         <p class="eyebrow">GESTIÓN · PERSONA 2</p>
         <nav aria-label="Módulos">
+            <p class="nav-group">Artistas</p>
+            <a href="artistas.php">Perfiles de artistas</a>
+            <a href="galeria.php">Galería fotográfica</a>
+            <a href="cotizaciones.php">Cotizaciones</a>
             <?php $group = '';
             foreach ($modules as $id => $item):
                 if ($group !== $item['group']):

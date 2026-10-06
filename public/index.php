@@ -1,5 +1,16 @@
 <?php
 declare(strict_types=1);
+
+require_once __DIR__ . '/../app/Core/bootstrap.php';
+
+try {
+    $account = currentAccount();
+} catch (PDOException $exception) {
+    error_log('Sesión del sitio público: ' . $exception->getMessage());
+    $account = null;
+}
+
+$accountLink = accountAreaLink($account);
 ?>
 <!doctype html>
 <html lang="es">
@@ -76,13 +87,14 @@ declare(strict_types=1);
 
         <nav class="main-nav" id="mainNav" aria-label="Navegación principal">
             <a href="#inicio" aria-current="page">Inicio</a>
-            <a href="#artistas">Artistas</a>
-            <a href="#galeria">Galería</a>
+            <a href="artistas/">Artistas</a>
+            <a href="galeria/">Galería</a>
+            <a href="cotizaciones/">Cotizar</a>
             <a href="#cuidados">Cuidados</a>
         </nav>
 
-        <a class="button button--login" href="auth/login.php">
-            Ingresar
+        <a class="button button--login" href="<?= e($accountLink['url']) ?>">
+            <?= e($accountLink['label']) ?>
         </a>
     </div>
 
@@ -129,12 +141,12 @@ declare(strict_types=1);
             </p>
 
             <div class="hero__actions">
-                <a class="button button--blood" href="#cotizar">
+                <a class="button button--blood" href="cotizaciones/">
                     Cotiza tu ritual
                     <span aria-hidden="true">†</span>
                 </a>
 
-                <a class="ghost-link" href="#galeria">
+                <a class="ghost-link" href="galeria/">
                     Explorar trabajos
                 </a>
             </div>
@@ -280,7 +292,7 @@ declare(strict_types=1);
                 <li>Experiencia y certificaciones</li>
             </ul>
 
-            <a class="ghost-link" href="#cotizar">
+            <a class="ghost-link" href="artistas/">
                 Descubrir artistas →
             </a>
         </div>
@@ -332,12 +344,12 @@ declare(strict_types=1);
         <h2>¿Te atreves a llevarla contigo?</h2>
 
         <p>
-            Muy pronto conectaremos aquí el formulario real de cotización
-            con artistas, estilos y disponibilidad.
+            Cuéntanos la idea, el estilo y el lugar de la piel.
+            El estudio convertirá tu visión en una propuesta real.
         </p>
 
-        <a class="button button--blood" href="auth/login.php">
-            Entrar al estudio
+        <a class="button button--blood" href="cotizaciones/">
+            Comenzar el pacto
             <span aria-hidden="true">†</span>
         </a>
     </section>

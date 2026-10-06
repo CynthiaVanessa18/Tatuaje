@@ -1,0 +1,192 @@
+.admin-quotes .admin-heading h1 { max-width: 900px; }
+.quote-admin-heading { align-items: center; }
+
+.quote-admin-stats {
+    margin: 0 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    background: rgba(8, 4, 6, 0.82);
+}
+
+.quote-admin-stats article { min-height: 115px; padding: 1.4rem; display: flex; align-items: center; gap: 1rem; }
+.quote-admin-stats article + article { border-left: 1px solid var(--line); }
+.quote-admin-stats span { color: var(--blood-light); font-family: var(--serif); font-size: 2.2rem; font-style: italic; }
+.quote-admin-stats p { margin: 0; color: var(--bone-muted); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.quote-admin-stats b { display: block; color: var(--gold); font-family: var(--title); font-size: 1.8rem; }
+
+.quote-status { display: inline-flex; width: fit-content; padding: 0.35rem 0.55rem; border: 1px solid var(--line); color: var(--bone-muted); font-size: 0.5rem; font-style: normal; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; }
+.quote-status--solicitada { border-color: rgba(160, 24, 53, 0.7); color: #e8a8b4; background: rgba(112, 13, 33, 0.2); }
+.quote-status--en_revision { border-color: rgba(189, 146, 85, 0.7); color: #ddba84; }
+.quote-status--enviada { border-color: rgba(89, 132, 164, 0.7); color: #a9ccdf; }
+.quote-status--aceptada { border-color: rgba(95, 154, 104, 0.7); color: #acd4b2; }
+.quote-status--rechazada,
+.quote-status--cancelada,
+.quote-status--vencida { color: #8e8177; opacity: 0.8; }
+
+.quote-dossier { min-width: 0; margin: 0 0 2rem; overflow: hidden; border: 1px solid var(--line); background: linear-gradient(145deg, rgba(112, 13, 33, 0.09), transparent 34%), rgba(9, 4, 6, 0.94); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38); }
+.quote-dossier__header { padding: clamp(1.4rem, 3vw, 2.5rem); display: flex; justify-content: space-between; gap: 2rem; align-items: flex-start; border-bottom: 1px solid var(--line); }
+.quote-dossier__header h2 { margin: 0.3rem 0 0.8rem; font-family: var(--title); font-size: clamp(2rem, 4vw, 4rem); line-height: 1; }
+.quote-dossier__header > a { color: var(--bone-muted); font-size: 0.7rem; }
+.quote-dossier__grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr); }
+.quote-dossier__story,
+.quote-response-form { padding: clamp(1.4rem, 3vw, 2.5rem); }
+.quote-dossier__story,
+.quote-response-form,
+.quote-response-fields,
+.quote-response-fields label { min-width: 0; }
+.quote-response-form { border-left: 1px solid var(--line); }
+.quote-dossier__label { margin: 0 0 1rem; color: var(--gold); font-size: 0.56rem; font-weight: 700; letter-spacing: 0.17em; text-transform: uppercase; }
+.quote-dossier blockquote { max-width: 100%; margin: 0 0 2rem; overflow-wrap: anywhere; word-break: break-word; color: var(--bone); font-family: var(--serif); font-size: clamp(1.3rem, 2vw, 1.75rem); line-height: 1.45; }
+.quote-dossier__story dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.quote-dossier__story dl div { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.quote-dossier__story dl div:nth-child(even) { padding-left: 1rem; border-left: 1px solid var(--line); }
+.quote-dossier dt { color: var(--bone-muted); font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.quote-dossier dd { margin: 0.3rem 0 0; font-family: var(--serif); font-size: 1.05rem; }
+.quote-contact-card { margin-top: 1.5rem; padding: 1.2rem; display: grid; gap: 0.3rem; border: 1px solid rgba(160, 24, 53, 0.35); background: rgba(112, 13, 33, 0.08); }
+.quote-contact-card p { margin-bottom: 0.4rem; }
+.quote-contact-card a { color: var(--bone); font-family: var(--serif); font-size: 1.2rem; }
+.quote-contact-card span,
+.quote-contact-card small { color: var(--bone-muted); }
+.quote-contact-card a,
+.quote-contact-card span,
+.quote-contact-card small,
+.quote-dossier dd { overflow-wrap: anywhere; word-break: break-word; }
+
+.quote-response-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.quote-response-fields label { display: grid; gap: 0.45rem; }
+.quote-response-fields label > span { color: var(--bone-muted); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-response-fields input,
+.quote-response-fields select,
+.quote-response-fields textarea { width: 100%; min-height: 46px; padding: 0.75rem 0.8rem; border: 1px solid var(--line); border-radius: 0; outline: none; background: #070405; color: var(--bone); }
+.quote-response-fields input:focus,
+.quote-response-fields select:focus,
+.quote-response-fields textarea:focus { border-color: var(--gold); }
+.quote-response-fields select { color-scheme: dark; }
+.quote-response-fields textarea { resize: vertical; line-height: 1.6; }
+.quote-response-fields__wide { grid-column: 1 / -1; }
+.quote-flow-hint { margin: -0.25rem 0 1.2rem; padding: 0.75rem 0.85rem; border-left: 2px solid var(--gold); background: rgba(189, 146, 85, 0.06); color: var(--bone-muted); font-size: 0.66rem; line-height: 1.55; }
+.quote-flow-hint strong { color: var(--gold); }
+.quote-artist-availability { margin: 1.2rem 0 1.5rem; padding: 1.25rem; border: 1px solid rgba(189, 146, 85, 0.32); background: linear-gradient(135deg, rgba(112, 13, 33, 0.12), rgba(5, 3, 4, 0.72)); }
+.quote-artist-availability > script { display: none; }
+.quote-artist-availability__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.quote-artist-availability__heading small { color: var(--gold); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.14em; }
+.quote-artist-availability__heading h4 { margin: 0.25rem 0 0; color: var(--bone); font-family: var(--serif); font-size: 1.45rem; }
+.quote-artist-availability__heading > span { color: var(--bone-muted); font-size: 0.54rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-schedule-list { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.65rem; }
+.quote-schedule-list article { min-width: 155px; padding: 0.75rem 0.85rem; display: grid; gap: 0.2rem; border: 1px solid var(--line); background: rgba(3, 2, 2, 0.66); }
+.quote-schedule-list b { color: var(--bone); font-family: var(--serif); font-size: 1rem; }
+.quote-schedule-list span { color: var(--gold); font-size: 0.62rem; letter-spacing: 0.08em; }
+.quote-availability-note,
+.quote-availability-empty { margin: 0.85rem 0 0; color: var(--bone-muted); font-size: 0.64rem; line-height: 1.55; }
+.quote-availability-empty { padding: 0.85rem; border-left: 2px solid var(--blood-light); background: rgba(112, 13, 33, 0.1); color: #d3a1ab; }
+.quote-slot-feedback { margin-top: 1rem; padding: 0.9rem 1rem; display: flex; align-items: center; gap: 0.8rem; border: 1px solid var(--line); background: rgba(4, 2, 3, 0.62); transition: border-color 160ms ease, background 160ms ease; }
+.quote-slot-feedback > span { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 50%; color: var(--gold); }
+.quote-slot-feedback b { color: var(--bone); font-family: var(--serif); font-size: 1rem; }
+.quote-slot-feedback p { margin: 0.15rem 0 0; color: var(--bone-muted); font-size: 0.62rem; line-height: 1.5; }
+.quote-slot-feedback.is-valid { border-color: rgba(95, 154, 104, 0.55); background: rgba(95, 154, 104, 0.07); }
+.quote-slot-feedback.is-valid > span { color: #acd4b2; }
+.quote-slot-feedback.is-invalid { border-color: rgba(160, 24, 53, 0.62); background: rgba(112, 13, 33, 0.12); }
+.quote-slot-feedback.is-invalid > span { color: #e8a8b4; }
+.quote-slot-feedback.is-invalid p { color: #d4a8b0; }
+.quote-response-form__actions { margin-top: 1.4rem; display: flex; align-items: center; gap: 1rem; }
+.quote-response-form__actions > a { color: var(--bone-muted); font-size: 0.7rem; }
+
+.quote-history { padding: clamp(1.4rem, 3vw, 2.5rem); border-top: 1px solid var(--line); background: rgba(3, 2, 2, 0.24); }
+.quote-history__heading { display: flex; justify-content: space-between; gap: 1rem; }
+.quote-history__heading span { color: var(--bone-muted); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-history__empty { margin: 0; color: var(--bone-muted); font-size: 0.72rem; }
+.quote-history__list { display: grid; }
+.quote-history__item { position: relative; padding: 0 0 1.35rem 1.9rem; }
+.quote-history__item:last-child { padding-bottom: 0; }
+.quote-history__item::before { content: ''; position: absolute; top: 0.7rem; bottom: -0.65rem; left: 0.3rem; width: 1px; background: var(--line); }
+.quote-history__item:last-child::before { display: none; }
+.quote-history__item > span { position: absolute; top: 0.25rem; left: 0; width: 0.65rem; height: 0.65rem; border: 1px solid var(--gold); border-radius: 50%; background: #080405; }
+.quote-history__item--client > span { border-color: var(--blood-light); box-shadow: 0 0 12px rgba(160, 24, 53, 0.55); }
+.quote-history__item > div { display: flex; justify-content: space-between; gap: 1rem; }
+.quote-history__item b { color: var(--bone); font-family: var(--serif); font-size: 1rem; }
+.quote-history__item small { color: var(--bone-muted); font-size: 0.55rem; }
+.quote-history__item p { margin: 0.2rem 0 0; color: var(--gold); font-size: 0.54rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.quote-history__item blockquote { margin: 0.55rem 0 0; padding: 0.75rem; overflow-wrap: anywhere; word-break: break-word; border-left: 2px solid var(--blood-light); background: rgba(112, 13, 33, 0.08); color: var(--bone-muted); font-family: inherit; font-size: 0.72rem; line-height: 1.55; }
+
+.quote-appointments { padding: clamp(1.4rem, 3vw, 2.5rem); border-top: 1px solid var(--line); background: linear-gradient(145deg, rgba(189, 146, 85, 0.05), transparent 42%); }
+.quote-appointments__heading { margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.quote-appointments__heading h3,
+.quote-appointment-form h3 { margin: 0.25rem 0 0; font-family: var(--serif); font-size: 1.8rem; }
+.quote-appointments__heading > span { color: var(--bone-muted); font-size: 0.55rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-appointment-list { margin: 1.5rem 0; display: grid; gap: 0.75rem; }
+.quote-appointment-card { display: grid; grid-template-columns: 70px minmax(230px, 1fr) 130px minmax(180px, auto); align-items: center; gap: 1.2rem; padding: 1rem; border: 1px solid var(--line); background: rgba(4, 2, 3, 0.62); }
+.quote-appointment-card--confirmada { border-color: rgba(95, 154, 104, 0.45); }
+.quote-appointment-card--cancelada { opacity: 0.58; }
+.quote-appointment-card__date { min-height: 62px; display: grid; place-items: center; align-content: center; border: 1px solid var(--line); }
+.quote-appointment-card__date b { color: var(--gold); font-family: var(--title); font-size: 1.6rem; line-height: 1; }
+.quote-appointment-card__date span { color: var(--bone-muted); font-size: 0.5rem; letter-spacing: 0.12em; }
+.quote-appointment-card__details { min-width: 0; }
+.quote-appointment-card__details small { color: var(--gold); font-size: 0.5rem; letter-spacing: 0.1em; }
+.quote-appointment-card__details h4 { margin: 0.3rem 0; font-family: var(--serif); font-size: 1.25rem; }
+.quote-appointment-card__details p { margin: 0; overflow-wrap: anywhere; color: var(--bone-muted); font-size: 0.65rem; }
+.quote-appointment-card__status { display: grid; gap: 0.35rem; }
+.quote-appointment-card__status > span { width: fit-content; padding: 0.35rem 0.55rem; border: 1px solid var(--line); color: var(--bone); font-size: 0.52rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-appointment-card__status small { color: var(--bone-muted); font-size: 0.52rem; }
+.quote-appointment-card__actions { display: grid; justify-items: stretch; gap: 0.5rem; }
+.quote-appointment-card__actions form { margin: 0; }
+.quote-appointment-card__actions .admin-button { width: 100%; justify-content: center; padding: 0.65rem 0.8rem; font-size: 0.55rem; }
+.quote-appointment-card__actions > small { max-width: 260px; overflow-wrap: anywhere; color: #d09aa5; font-size: 0.58rem; line-height: 1.45; }
+.quote-appointment-form { margin-top: 1.5rem; padding: 1.4rem; border: 1px solid rgba(189, 146, 85, 0.32); background: rgba(189, 146, 85, 0.04); }
+.quote-appointment-form > .quote-response-fields { margin: 1.2rem 0; }
+
+.quote-references { padding: clamp(1.4rem, 3vw, 2.5rem); border-top: 1px solid var(--line); }
+.quote-references > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.quote-references a { position: relative; display: block; overflow: hidden; border: 1px solid var(--line); text-decoration: none; }
+.quote-references img { width: 100%; aspect-ratio: 16 / 10; display: block; object-fit: cover; filter: saturate(0.68) contrast(1.08) brightness(0.86); transition: transform 350ms ease, filter 350ms ease; }
+.quote-references a:hover img { transform: scale(1.03); filter: saturate(0.9) brightness(0.98); }
+.quote-references a span { position: absolute; right: 0.7rem; bottom: 0.7rem; padding: 0.45rem 0.6rem; background: rgba(5, 3, 4, 0.85); color: var(--bone); font-size: 0.55rem; }
+.quote-references__empty { color: var(--bone-muted); }
+
+.quote-archive { margin-top: 0; }
+.quote-search { grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.35fr) auto auto; }
+.quote-list { border-top: 1px solid var(--line); }
+.quote-list-card { display: grid; grid-template-columns: 150px minmax(260px, 1fr) minmax(310px, 0.75fr) 170px; align-items: center; gap: 1.3rem; padding: 1.3rem 1.5rem; border-bottom: 1px solid var(--line); transition: background 180ms ease; }
+.quote-list-card:hover { background: rgba(112, 13, 33, 0.075); }
+.quote-list-card__number { display: grid; gap: 0.45rem; }
+.quote-list-card__number small { color: var(--bone-muted); font-size: 0.48rem; letter-spacing: 0.12em; }
+.quote-list-card__number b { color: var(--gold); font-family: var(--title); font-size: 1.35rem; }
+.quote-list-card__idea { min-width: 0; }
+.quote-list-card__idea > p { margin: 0; color: var(--gold); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; }
+.quote-list-card__idea h2 { margin: 0.25rem 0; font-family: var(--serif); font-size: 1.5rem; }
+.quote-list-card__idea blockquote { margin: 0; overflow: hidden; color: var(--bone-muted); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.quote-list-card dl { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.quote-list-card dl div { padding: 0 0.7rem; }
+.quote-list-card dl div + div { border-left: 1px solid var(--line); }
+.quote-list-card dt { color: var(--bone-muted); font-size: 0.48rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.quote-list-card dd { margin: 0.2rem 0 0; overflow: hidden; font-family: var(--serif); font-size: 0.95rem; text-overflow: ellipsis; white-space: nowrap; }
+.quote-list-card__action { display: grid; justify-items: end; gap: 0.7rem; }
+.quote-list-card__action time { color: var(--bone-muted); font-size: 0.54rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+@media (max-width: 1280px) {
+    .quote-list-card { grid-template-columns: 130px minmax(240px, 1fr) 150px; }
+    .quote-list-card dl { display: none; }
+}
+
+@media (max-width: 980px) {
+    .quote-admin-stats { grid-template-columns: repeat(2, 1fr); }
+    .quote-admin-stats article:nth-child(3) { border-top: 1px solid var(--line); border-left: 0; }
+    .quote-admin-stats article:nth-child(4) { border-top: 1px solid var(--line); }
+    .quote-dossier__grid { grid-template-columns: 1fr; }
+    .quote-response-form { border-top: 1px solid var(--line); border-left: 0; }
+    .quote-appointment-card { grid-template-columns: 60px minmax(0, 1fr) 130px; }
+    .quote-appointment-card__actions { grid-column: 2 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+    .quote-list-card { grid-template-columns: 1fr; }
+    .quote-list-card__action { justify-items: start; }
+    .quote-response-fields { grid-template-columns: 1fr; }
+    .quote-response-fields__wide { grid-column: auto; }
+    .quote-references > div { grid-template-columns: 1fr; }
+    .quote-appointment-card { grid-template-columns: 1fr; }
+    .quote-appointment-card__date { width: 70px; }
+    .quote-appointment-card__actions { grid-column: auto; grid-template-columns: 1fr; }
+    .quote-artist-availability__heading { display: grid; }
+    .quote-schedule-list { display: grid; grid-template-columns: 1fr; }
+}
