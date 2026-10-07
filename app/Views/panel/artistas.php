@@ -64,62 +64,12 @@ $formImage = $form !== null
     >
 
     <link rel="stylesheet" href="../assets/css/admin-artistas.css">
+    <link rel="stylesheet" href="../assets/css/admin-navegacion.css">
+<?php responsiveAssets(); ?>
 </head>
 
 <body class="admin-artists">
-<aside class="admin-sidebar">
-    <a class="admin-brand" href="administrador.php">
-        <span class="admin-brand__sigil">✦</span>
-        <span>
-            <strong>TINTA VIVA</strong>
-            <small>ADMINISTRACIÓN</small>
-        </span>
-    </a>
-
-    <p class="admin-sidebar__label">GESTIÓN DEL ESTUDIO</p>
-
-    <nav aria-label="Navegación administrativa">
-        <a href="administrador.php">
-            <span>⌂</span> Panel general
-        </a>
-
-        <a href="artistas.php" aria-current="page">
-            <span>✦</span> Perfiles de artistas
-        </a>
-
-        <a href="galeria.php">
-            <span>▧</span> Galería fotográfica
-        </a>
-
-        <a href="cotizaciones.php">
-            <span>◆</span> Cotizaciones
-        </a>
-
-        <a href="administrador.php?module=especialidades">
-            <span>◇</span> Especialidades
-        </a>
-
-        <a href="administrador.php?module=calificaciones">
-            <span>★</span> Calificaciones
-        </a>
-    </nav>
-
-    <div class="admin-sidebar__bottom">
-        <p>
-            Sesión de
-            <strong><?= e($account['usuario'] ?? 'administrador') ?></strong>
-        </p>
-
-        <a href="../index.php" target="_blank" rel="noopener">
-            Ver sitio público ↗
-        </a>
-
-        <form method="post" action="../auth/logout.php">
-            <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
-            <button type="submit">Cerrar sesión</button>
-        </form>
-    </div>
-</aside>
+<?php require __DIR__.'/../admin-navegacion.php'; ?>
 
 <main class="admin-main">
     <header class="admin-heading">

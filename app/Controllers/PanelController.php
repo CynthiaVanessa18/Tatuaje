@@ -9,6 +9,14 @@ $modules=require __DIR__.'/../../config/modules.php';
 $moduleId=is_string($_GET['module']??null)?$_GET['module']:'categorias';
 if (!isset($modules[$moduleId])) { http_response_code(404); exit('Módulo no encontrado.'); }
 $module=$modules[$moduleId];
+if ($moduleId === 'beneficios') {
+    require __DIR__.'/BenefitsOverviewController.php';
+    return;
+}
+if ($moduleId === 'saldos_tarjetas') {
+    require __DIR__.'/GiftCardBalancesController.php';
+    return;
+}
 $repo=new CrudRepository(conectarBaseDatos(),$module);
 $columns=$repo->columns(); $refs=$moduleId==='cuentas'?[]:$repo->references(); $error=null; $record=null;
 $notice=$_SESSION['notice']??null; unset($_SESSION['notice']);

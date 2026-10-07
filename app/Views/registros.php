@@ -12,16 +12,18 @@
                 UTC. La activación es administrativa; verifica el cobro antes de activarlo.</p><?php endif ?>
         <?php if ($mode === 'view' && $record): ?>
             <section class="card">
-                <h2>Detalle del registro</h2>
+                <h2><?= adminIcon($moduleId) ?> Detalle del registro</h2>
                 <dl><?php foreach ($columns as $name => $c):
                         if (str_starts_with($name,'id_') && !isset($refs[$name])) continue; ?>
                         <dt><?= e(label($name)) ?></dt>
                         <dd><?= e(displayValue($name,$c,$refs,$record[$name]??null)) ?></dd><?php endforeach ?>
-                </dl><a href="administrador.php?module=<?= e($moduleId) ?>">Volver</a>
+                </dl><div class="actions"><a href="administrador.php?module=<?= e($moduleId) ?>">Volver</a><?php if (empty($module['readonly'])): ?><a href="administrador.php?<?= e(http_build_query(['module'=>$moduleId,'mode'=>'edit']+array_intersect_key($record,array_flip($module['pk'])))) ?>">Editar</a><?php endif ?></div>
             </section><?php endif ?>
+        <?php if ($mode==='view' && $record) return; ?>
         <?php if (in_array($mode, ['create', 'edit'], true) && empty($module['readonly']) && ($mode === 'create' || $record)): ?>
             <section class="card">
-                <h2><?= $mode === 'create' ? 'Crear' : 'Editar' ?> registro</h2>
+                <p class="eyebrow"><?= $mode === 'create' ? 'NUEVO REGISTRO' : 'ACTUALIZAR INFORMACIÓN' ?></p>
+                <h2><?= adminIcon($mode==='create'?'crear':'editar') ?> <?= $mode === 'create' ? 'Crear' : 'Editar' ?> · <?= e($module['title']) ?></h2>
                 <p>Los campos con * son obligatorios. Fechas y horas en UTC.</p>
                 <form action="administrador.php?module=<?= e($moduleId) ?>" method="post" enctype="multipart/form-data" class="record-form"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input
                         type="hidden" name="action" value="<?= $mode === 'create' ? 'create' : 'update' ?>">
@@ -65,7 +67,7 @@
                                         <?php endif ?>><?php endif ?></label>
                         <?php endforeach ?>
                     </div>
-                    <div class="actions"><button>Guardar registro</button><a
+                    <div class="actions"><button><?= adminIcon('activo') ?> Guardar registro</button><a
                             href="administrador.php?module=<?= e($moduleId) ?>">Cancelar</a></div>
                 </form>
             </section><?php endif ?>
@@ -82,12 +84,11 @@
                     href="administrador.php?module=<?= e($moduleId) ?>">Limpiar</a></form>
             <p><?= e($list['total']) ?> registros · Página <?= e($list['page']) ?></p>
             <div class="table-scroll">
-                <table>
+                <table data-server-paginated>
                     <thead>
-                        <tr><?php $visible = array_slice(array_filter($columns,fn($c)=>!str_starts_with($c['Field'],'id_') || isset($refs[$c['Field']])), 0, 7, true);
-                        if ($esTienda && $moduleId === 'productos') {
-                            $visible = array_intersect_key(array_replace(array_flip(['nombre','id_categoria_producto','precio','stock_actual','activo']),$columns),array_flip(['nombre','id_categoria_producto','precio','stock_actual','activo']));
-                        }
+                        <tr><?php $listColumns=require __DIR__.'/../../config/list-columns.php';
+                        $visible=[];
+                        foreach ($listColumns[$moduleId]??[] as $field) if (isset($columns[$field])) $visible[$field]=$columns[$field];
                         foreach ($visible as $name => $c): ?>
                                 <th scope="col"><?= e(label($name)) ?></th><?php endforeach ?>
                             <th scope="col">Acciones</th>
@@ -97,7 +98,7 @@
                         <?php foreach ($list['rows'] as $row):
                             $query = http_build_query(array_merge(['module' => $moduleId], array_intersect_key($row, array_flip($module['pk'])))); ?>
                             <tr><?php foreach ($visible as $name => $c): ?>
-                                    <td>
+                                    <td class="list-value">
                                     <?php if ($esTienda && $moduleId === 'productos' && $name === 'nombre'): ?>
                                         <div class="producto-visual">
                                             <?php if (isset($portadas[$row['id_producto']])): ?><img src="<?= e(imageUrl($portadas[$row['id_producto']])) ?>" alt="" loading="lazy">
@@ -107,6 +108,10 @@
                                     <?php elseif ($esTienda && $moduleId === 'productos' && $name === 'activo'):
                                         $estadoProducto = !$row['activo'] ? 'inactivo' : ((int)$row['stock_actual'] === 0 ? 'agotado' : ((int)$row['stock_actual'] <= (int)$row['stock_minimo'] ? 'bajo' : 'activo')); ?>
                                         <span class="estado-tienda estado-<?= e($estadoProducto) ?>"><?= e(['inactivo'=>'Inactivo','agotado'=>'Agotado','bajo'=>'Stock bajo','activo'=>'Activo'][$estadoProducto]) ?></span>
+                                    <?php elseif (in_array($name,['id_venta','id_tarjeta'],true)): ?>
+                                        <?= e(($name==='id_venta'?'Venta #':'Tarjeta #').($row[$name]??'—')) ?>
+                                    <?php elseif (in_array($name,['monto_inicial','monto','total'],true) && isset($row['moneda'])): ?>
+                                        <?= e($row['moneda']) ?> <?= e(displayValue($name,$c,$refs,$row[$name]??null)) ?>
                                     <?php elseif ($esTienda && $name === 'estado'): ?>
                                         <span class="estado-tienda estado-<?= e($row[$name]) ?>"><?= e(label($row[$name])) ?></span>
                                     <?php else: ?><?= e(displayValue($name,$c,$refs,$row[$name]??null)) ?><?php endif ?>
@@ -133,9 +138,5 @@
                     </tbody>
                 </table>
             </div>
-            <div class="actions pagination"><?php if ($list['page'] > 1): ?><a
-                        href="?<?= e(http_build_query(['module' => $moduleId, 'q' => $search, 'filter' => $filters, 'page' => $list['page'] - 1])) ?>">←
-                        Anterior</a><?php endif ?><?php if ($list['page'] * 20 < $list['total']): ?><a
-                        href="?<?= e(http_build_query(['module' => $moduleId, 'q' => $search, 'filter' => $filters, 'page' => $list['page'] + 1])) ?>">Siguiente
-                        →</a><?php endif ?></div>
-        </section>
+            <?php renderPagination((int)$list['total'], (int)$list['page'], array_replace($_GET, ['module'=>$moduleId])); ?>
+</section>

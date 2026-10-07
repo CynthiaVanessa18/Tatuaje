@@ -20,7 +20,7 @@ $hasCurrentMembership=(bool)$currentMemberships;
 <p class="eyebrow">CONFIRMAR MEMBRESÍA</p><h2><?= e($membershipQuote['plan']['nombre']) ?></h2>
 <p><?= e($membershipQuote['plan']['descripcion']) ?></p>
 <?php foreach ($membershipPlans as $selectedPlan): if ((int)$selectedPlan['id_plan']!==(int)$membershipQuote['plan']['id_plan']) continue; ?>
-<ul><?php foreach ($selectedPlan['reglas'] as $code=>$value): if (!isset(MembershipPlans::RULES[$code])) continue; ?><li><?= e(MembershipPlans::describe($code,(string)$value)) ?></li><?php endforeach ?></ul>
+<ul><?php foreach ($selectedPlan['reglas'] as $code=>$value): if (!isset(MembershipPlans::RULES[$code])) continue; ?><li><?= e(MembershipPlans::describe($code,(string)$value,$selectedPlan['textos'][$code]['nombre']??null)) ?><?php if (isset($selectedPlan['textos'][$code]['descripcion'])): ?><small><?= e($selectedPlan['textos'][$code]['descripcion']) ?></small><?php endif ?></li><?php endforeach ?></ul>
 <?php endforeach ?>
 <p>Modalidad: <strong><?= e(ucfirst($membershipQuote['mode'])) ?></strong> · Duración: <?= e($membershipQuote['days']) ?> días</p>
 <p class="membership-total">Total a pagar: <strong>₡<?= e(number_format($membershipQuote['total']/100,2,',','.')) ?></strong></p>
@@ -37,24 +37,7 @@ $hasCurrentMembership=(bool)$currentMemberships;
 <a href="<?= e($clientEndpoint) ?>?section=membresias">Volver a los planes</a>
 </form></section>
 <?php else: ?>
-<?php if ($hasCurrentMembership): ?><section class="card"><p class="eyebrow">MI MEMBRESÍA</p><h2>Tu membresía actual</h2>
-<?php foreach ($currentMemberships as $membership):
-    $expired=$membership['estado']==='activa' && $membership['fecha_fin']<=gmdate('Y-m-d H:i:s'); ?>
-<article class="membership-owned"><h3><?= e($membership['descripcion']) ?></h3><p>Estado: <strong><?= e(label($expired?'vencida':$membership['estado'])) ?></strong> · Pago: <?= e(label($membership['pago_estado'])) ?></p>
-<?php if ($membership['estado']==='activa'): ?><p>Del <?= e((new DateTimeImmutable($membership['fecha_inicio'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y')) ?> al <?= e((new DateTimeImmutable($membership['fecha_fin'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y')) ?></p>
-<?php elseif ($membership['estado']==='pendiente'): ?><p>Coordina el pago con el estudio para activar tus beneficios.</p><?php endif ?>
-<?php if ($membership['reglas']??[]): ?><h4>Beneficios de tu plan</h4><ul><?php foreach ($membership['reglas'] as $code=>$value): if (!isset(MembershipPlans::RULES[$code])) continue; ?><li><?= e(MembershipPlans::describe($code,(string)$value)) ?></li><?php endforeach ?></ul><?php endif ?>
-<?php if ($membership['metodo']==='pasarela'): ?><small>Pago de demostración: no se realizó un cobro real.</small><?php endif ?>
-<?php if (!$expired && in_array($membership['estado'],['activa','pendiente'],true)): ?>
-<details class="membership-cancel"><summary>Cancelar membresía</summary>
-<p>La cancelación desactiva los beneficios de inmediato y permite elegir otro plan. Los pagos aprobados conservan su historial; no se genera un reembolso automático.</p>
-<form method="post" action="<?= e($clientEndpoint) ?>?section=membresias">
-<input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="membership_action" value="cancel"><input type="hidden" name="id_membresia" value="<?= e($membership['id_membresia']) ?>">
-<label class="membership-cancel-confirm"><input type="checkbox" name="confirm_cancel" value="1" required> Confirmo que quiero cancelar esta membresía.</label>
-<button type="submit" class="secondary">Confirmar cancelación</button>
-</form></details>
-<?php endif ?></article>
-<?php endforeach ?></section>
+<?php if ($hasCurrentMembership): require __DIR__.'/cliente-membresia-actual.php'; ?>
 <?php else: ?>
 <?php if ($profileMissing): ?><p class="notice">Puedes revisar los planes. Antes de pagar, <a href="<?= e($clientEndpoint) ?>?section=cuenta">completa los datos de tu cuenta</a>.</p><?php endif ?>
 <?php require __DIR__.'/cliente-membresias-comparacion.php'; ?>

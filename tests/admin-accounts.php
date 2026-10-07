@@ -24,6 +24,10 @@ accountCheck($service->find($other)['rol']==='administrador','Crea administrador
 accountCheck($service->listing('','cliente','bloqueado',1)['total']===1,'Filtros');
 accountCheck($service->listing('editado','','',1)['total']===1,'Búsqueda');
 accountCheck($service->listing('','','',1)['total']===3,'Lista solo dos roles');
+$summary=$service->summary();
+accountCheck((int)$summary['total']===3 && (int)$summary['activos']===2 && (int)$summary['bloqueados']===1,'Resumen cuenta estados sin incluir artistas');
+accountCheck((int)$summary['clientes']===1 && (int)$summary['administradores']===2 && (int)$summary['inactivos']===0,'Resumen cuenta roles y estados vacíos');
+accountReject(fn()=>(new AdminAccounts($db,$id))->summary(),'Cliente no consulta dashboard administrativo');
 accountCheck(!array_key_exists('contrasena_hash',$service->find($id)),'No expone hash');
 accountReject(fn()=>$service->find(2),'No administra otros roles');
 accountReject(fn()=>$service->save(array_replace($data,['rol'=>'artista'])),'Rechaza rol no permitido');

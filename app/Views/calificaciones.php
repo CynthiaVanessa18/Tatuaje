@@ -8,7 +8,7 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
 <p class="hint">Aprueba las calificaciones u oculta contenido inapropiado y registra el motivo. Una opinión negativa sobre el servicio no es motivo para ocultarla.</p>
 <?php if ($record && in_array($mode, ['edit', 'view'], true)): ?>
 <section class="card">
-    <h2><?= $mode === 'edit' ? 'Moderar calificación' : 'Historial de moderación' ?></h2>
+    <h2><?= $mode === 'edit' ? 'Moderar calificación' : 'Detalle e historial de la calificación' ?></h2>
     <dl>
         <dt>Cita</dt><dd><?= e(displayValue('id_cita', $columns['id_cita'], $refs, $record['id_cita'])) ?></dd>
         <dt>Puntuación</dt><dd><?= e($record['puntuacion']) ?>/5</dd>
@@ -45,8 +45,8 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
         </div>
         <div class="actions"><button type="submit">Guardar moderación</button><a href="administrador.php?module=calificaciones">Cancelar</a></div>
     </form>
-    <?php else: $history = $ratingModerator->history((int)$record['id_calificacion']); ?>
-    <div class="table-scroll"><table>
+    <?php else: $historyList=$ratingModerator->historyListing((int)$record['id_calificacion'],max(1,(int)($_GET['history_page']??1))); $history=$historyList['rows']; ?>
+    <div class="table-scroll"><table data-server-paginated>
         <thead><tr><th scope="col">Fecha · Costa Rica</th><th scope="col">Administrador</th><th scope="col">Estado</th><th scope="col">Categoría</th><th scope="col">Motivo</th></tr></thead>
         <tbody>
         <?php foreach ($history as $event):
@@ -58,10 +58,11 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
         <?php if (!$history): ?><tr><td colspan="5" class="empty">Sin decisiones registradas.</td></tr><?php endif ?>
         </tbody>
     </table></div>
-    <p>Se muestran las últimas 20 decisiones.</p><a href="administrador.php?module=calificaciones">Volver</a>
+    <?php renderPagination($historyList['total'],$historyList['page'],$_GET,'history_page'); ?><a href="administrador.php?module=calificaciones">Volver</a>
     <?php endif ?>
 </section>
 <?php endif ?>
+<?php if ($record && $mode==='view') return; ?>
 <section class="card">
     <form method="get" action="administrador.php" class="filters">
         <input type="hidden" name="module" value="calificaciones">
@@ -77,23 +78,18 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
         <button type="submit">Filtrar</button><a href="administrador.php?module=calificaciones">Limpiar</a>
     </form>
     <p><?= e($list['total']) ?> registros · Página <?= e($list['page']) ?></p>
-    <div class="table-scroll"><table>
-        <thead><tr><th scope="col">Cita</th><th scope="col">Puntuación</th><th scope="col">Comentario</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
+    <div class="table-scroll"><table data-server-paginated>
+        <thead><tr><th scope="col">Cita</th><th scope="col">Puntuación</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
         <tbody>
         <?php foreach ($list['rows'] as $rating): $query = http_build_query(['module'=>'calificaciones', 'id_calificacion'=>$rating['id_calificacion']]); ?>
         <tr>
-            <td><?= e(displayValue('id_cita', $columns['id_cita'], $refs, $rating['id_cita'])) ?></td>
-            <td><?= e($rating['puntuacion']) ?>/5</td><td><?= nl2br(e($rating['comentario'] ?? 'Sin comentario.')) ?></td><td><?= e($states[$rating['estado_publicacion']]) ?></td>
-            <td><div class="actions"><a href="administrador.php?<?= e($query) ?>&amp;mode=edit">Moderar</a><a href="administrador.php?<?= e($query) ?>&amp;mode=view">Ver historial</a></div></td>
+            <td>Cita #<?= e($rating['id_cita']) ?></td>
+            <td><?= e($rating['puntuacion']) ?>/5</td><td><?= e($states[$rating['estado_publicacion']]) ?></td>
+            <td><div class="actions"><a href="administrador.php?<?= e($query) ?>&amp;mode=view">Ver</a><a href="administrador.php?<?= e($query) ?>&amp;mode=edit">Moderar</a></div></td>
         </tr>
         <?php endforeach ?>
-        <?php if (!$list['rows']): ?><tr><td colspan="5" class="empty">No hay calificaciones con estos filtros.</td></tr><?php endif ?>
+        <?php if (!$list['rows']): ?><tr><td colspan="4" class="empty">No hay calificaciones con estos filtros.</td></tr><?php endif ?>
         </tbody>
     </table></div>
-    <div class="actions pagination">
-        <?php foreach ([$list['page']-1=>'Anterior', $list['page']+1=>'Siguiente'] as $page=>$text): ?>
-            <?php if ($page < 1 || ($page-1)*20 >= $list['total']) continue; ?>
-            <a href="administrador.php?<?= e(http_build_query(['module'=>'calificaciones', 'q'=>$search, 'filter'=>$filters, 'page'=>$page])) ?>"><?= e($text) ?></a>
-        <?php endforeach ?>
-    </div>
+    <?php renderPagination((int)$list['total'], (int)$list['page'], array_replace($_GET, ['module'=>$moduleId])); ?>
 </section>

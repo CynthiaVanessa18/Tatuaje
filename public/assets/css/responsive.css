@@ -1,0 +1,77 @@
+/* Reglas compartidas por las pantallas públicas y los paneles. */
+html {min-width:320px}
+body {min-width:320px}
+main,section,article,header,aside,form,fieldset,.row>*,.admin-main,.membership-panel {min-width:0}
+img,video,canvas {max-width:100%;height:auto}
+input,select,textarea {max-width:100%;min-width:0}
+textarea {resize:vertical}
+input[type=checkbox],input[type=radio] {flex-shrink:0}
+.table-scroll,.table-responsive,.responsive-table-scroll {max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.responsive-table-scroll {margin:16px 0}
+.table-scroll:focus-visible,.table-responsive:focus-visible,.responsive-table-scroll:focus-visible {outline:2px solid var(--gold,#bd9255);outline-offset:3px}
+table {max-width:100%}
+table[data-server-paginated] {min-width:640px}
+.account-status,.account-role {white-space:nowrap}
+td,th {overflow-wrap:anywhere}
+h1,h2,h3 {overflow-wrap:anywhere}
+.pagination,.table-pagination {display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:20px}
+.pagination a,.pagination button,.pagination span,.table-pagination button,.table-pagination span {min-height:40px;padding:8px 12px}
+.pagination a,.table-pagination button {border:1px solid var(--line,#62421f);text-decoration:none;border-radius:4px}
+.pagination [aria-current],.table-pagination [aria-current] {background:var(--blood,#700d21);color:var(--bone,#eee3d0);border-color:var(--gold,#bd9255)}
+.pagination-summary,.table-pagination-status {color:var(--bone-muted,#a99887);font-size:12px;flex-basis:100%;padding-left:0!important}
+.table-pagination button {font:inherit;cursor:pointer;background:var(--surface,#13090c);color:var(--bone,#eee3d0)}
+.table-pagination button:disabled {opacity:.4;cursor:default}
+.table-pagination [hidden],tbody tr[hidden] {display:none!important}
+.table-pagination-size {display:flex;align-items:center;gap:8px;font-size:12px;flex-direction:row}
+.table-pagination-size select {width:auto;min-height:40px;padding:6px 10px}
+.table-scroll-hint {color:var(--bone-muted,#a99887);font-size:11px;margin:0 0 8px}
+@media(max-width:1100px) {
+    .admin-tinta-viva main,.admin-main {padding:24px}
+    .filters,.actions,.artist-search {flex-wrap:wrap}
+    .admin-heading,.quote-admin-heading {gap:18px;flex-wrap:wrap}
+    .admin-artist-grid,.admin-gallery-grid,.quote-grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+}
+@media(max-width:900px) {
+    body.admin-tinta-viva,body.admin-artists {display:block}
+    body .admin-sidebar {position:relative;width:100%;height:auto;min-height:0;max-width:100%;overflow:visible}
+    body .admin-sidebar nav {overflow-x:auto;max-width:100%;padding-bottom:8px}
+    body .admin-sidebar nav a {flex:0 0 auto}
+    .client-navigation {flex-wrap:wrap;max-width:100%}
+    .client-navigation nav {width:100%;max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+    .admin-tinta-viva main,.admin-main {width:100%;max-width:100%}
+    .membership-selector,.resumen-tienda,.client-summary-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px) {
+    .hero h1 {font-size:clamp(2rem,10vw,3.5rem);line-height:.95;letter-spacing:-.04em}
+    .directory-hero h1,.gallery-hero h1,.profile-hero h1,.quote-hero__copy h1 {font-size:clamp(2rem,10vw,3.5rem);line-height:1.1}
+    .hero__content {width:calc(100% - 2rem)}
+    .admin-tinta-viva main,.admin-main,body>main {padding:16px}
+    .admin-tinta-viva main>header h1,.admin-heading h1 {font-size:clamp(25px,7vw,36px);line-height:1.25}
+    .admin-heading,.artist-editor__heading,.artist-management__summary,.gallery-heading,.membership-panel-heading,.seccion-tienda>header {flex-direction:column;align-items:flex-start;gap:14px}
+    .form-grid,.field-grid,.artist-form,.gallery-form,.quote-form,.client-account-grid {grid-template-columns:1fr!important}
+    .field-grid__wide,.form-grid>fieldset {grid-column:1/-1}
+    .filters,.accounts-filters,.artist-search {display:grid;grid-template-columns:1fr!important;gap:14px}
+    .filters label,.accounts-filters label {min-width:0;max-width:none!important;width:100%}
+    .actions {gap:10px}
+    .actions a,.actions button,.admin-button {white-space:normal;max-width:100%}
+    .accesos-admin,.accesos-tienda {display:flex;overflow-x:auto;max-width:100%;flex-wrap:nowrap;padding-bottom:8px}
+    .accesos-admin a,.accesos-tienda a {flex:0 0 auto}
+    .accounts-dashboard,.module-overview,.membership-selector,.resumen-tienda,.membership-grid,.benefit-grid,.client-summary-grid {grid-template-columns:1fr!important}
+    .dashboard-guide {grid-column:1}
+    .card,.artist-editor,.gallery-editor,.quote-editor,.membership-panel {max-width:100%}
+    .membership-rule-caption {gap:8px}
+    .membership-rule-text-editor {padding:12px!important}
+    .membership-savebar {position:static!important;flex-wrap:wrap}
+    .membership-savebar span {max-width:100%!important}
+    .membership-savebar button {width:100%}
+    .artist-form__portrait {width:100%;max-width:360px}
+    .admin-artist-card {grid-template-columns:1fr}
+    .account-identity {min-width:140px}
+    .dashboard-shortcuts {flex-direction:column}
+    .pagination,.table-pagination {gap:6px}
+    .pagination a,.pagination span,.table-pagination button {padding:8px 10px}
+    .benefit-tabs a {min-width:0}
+    .client-navigation-account {margin-left:auto}
+    body.login {padding:16px}
+    .login-card {width:100%;max-width:480px;margin-inline:auto}
+}

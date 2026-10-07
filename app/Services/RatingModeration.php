@@ -123,6 +123,15 @@ final class RatingModeration
 
     public function history(int $id): array
     {
+        return $this->historyListing($id,1)['rows'];
+    }
+
+    public function historyListing(int $id, int $page): array
+    {
+        $count=$this->db->prepare("SELECT COUNT(*) FROM auditoria_sistema WHERE evento='moderacion_calificacion' AND entidad='calificaciones_artistas' AND id_entidad=?");
+        $count->execute([(string)$id]); $total=(int)$count->fetchColumn();
+        $page=max(1,min($page,max(1,(int)ceil($total/20))));
+        $offset=($page-1)*20;
         $query = $this->db->prepare(
             "SELECT a.fecha, a.detalle, c.usuario
              FROM auditoria_sistema a
@@ -131,10 +140,10 @@ final class RatingModeration
                AND a.entidad = 'calificaciones_artistas'
                AND a.id_entidad = ?
              ORDER BY a.fecha DESC, a.id_evento DESC
-             LIMIT 20"
+             LIMIT 20 OFFSET $offset"
         );
         $query->execute([(string) $id]);
 
-        return $query->fetchAll();
+        return ['rows'=>$query->fetchAll(),'total'=>$total,'page'=>$page];
     }
 }

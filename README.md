@@ -20,6 +20,10 @@ Aplicación web en PHP 8.2 y PDO para la gestión y la experiencia pública de u
 
 Si actualizas una base existente, ejecuta una vez `database/migracion_flujo_citas_correo.sql`. La migración es repetible y evita duplicar el correo de confirmación de una cita.
 
+Para editar el nombre y la descripción de las reglas dentro de la tabla de membresías en una instalación existente, ejecuta `php scripts/migrate_membership_texts.php`. El lápiz abre el editor en la misma fila; los textos se guardan por plan con **Guardar cambios**. Los valores y el cálculo de cada regla se mantienen en sus campos originales.
+
+Las pantallas comparten ajustes para celular, tableta y escritorio. Las tablas anchas se desplazan dentro de su contenedor. Los listados de registros, cuentas, promociones, calificaciones y citas paginan desde el servidor, conservando sus filtros; el historial de moderación permite recorrer todas las decisiones. Las tablas de comparación y edición usan controles de filas por página en el navegador, conservando los campos de todas las páginas al guardar. `php tests/pagination.php` verifica paginación, filtros e historial con tablas temporales.
+
 ### Flujo de cotización y cita
 
 1. El cliente inicia sesión y envía una solicitud; el sistema utiliza el correo de su cuenta.

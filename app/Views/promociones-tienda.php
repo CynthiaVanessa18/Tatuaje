@@ -3,7 +3,23 @@ $scopeLabels=['tienda'=>'Toda la tienda','productos'=>'Artículos seleccionados'
 $form=$promotionForm;
 ?>
 <p class="hint">Las promociones se aplican automáticamente. Si coinciden varias, se usa la que dé mayor ahorro sin acumularlas. El monto fijo se descuenta una vez por compra sobre los artículos elegibles. La compra mínima se calcula sobre el subtotal completo antes de descuentos.</p>
-<?php if (in_array($mode,['create','edit','view'],true)): ?>
+<?php if ($mode==='view' && !$error): ?>
+<section class="card"><h2>Detalle de la promoción</h2><dl>
+<dt>Nombre</dt><dd><?= e($form['titulo']) ?></dd>
+<dt>Descripción</dt><dd><?= nl2br(e($form['descripcion']?:'Sin descripción')) ?></dd>
+<dt>Estado</dt><dd><?= $form['activo']?'Activa':'Inactiva' ?></dd>
+<dt>Descuento</dt><dd><?= e(StorePromotions::benefit($form)) ?></dd>
+<dt>Alcance</dt><dd><?= e($scopeLabels[$form['alcance']]) ?></dd>
+<dt>Clientes</dt><dd><?php if ($form['publico']==='todos'): ?>Todos los clientes<?php else: foreach ($promotionGroups as $group) if ((string)$group['id_grupo']===(string)$form['id_grupo']) echo e($group['nombre']); endif ?></dd>
+<dt>Compra mínima</dt><dd><?= $form['regla_minimo']==='siempre'?'Sin compra mínima':'₡'.e(number_format((float)$form['minimo_compra'],2,',','.')) ?></dd>
+<dt>Inicio · Costa Rica</dt><dd><?= e(str_replace('T',' ',$form['fecha_inicio'])) ?></dd>
+<dt>Vencimiento · Costa Rica</dt><dd><?= e(str_replace('T',' ',$form['fecha_fin'])) ?></dd>
+<?php foreach (['productos'=>[$promotionProducts,'id_producto','Artículos'],'categorias'=>[$promotionCategories,'id_categoria_producto','Categorías']] as $target=>[$items,$key,$caption]): if ($form['alcance']!==$target) continue; ?>
+<dt><?= e($caption) ?></dt><dd><ul><?php foreach ($items as $item): if (!in_array((string)$item[$key],array_map('strval',$form[$target]),true)) continue; ?><li><?= e($item['nombre']) ?></li><?php endforeach ?></ul></dd>
+<?php endforeach ?>
+</dl><div class="actions"><a href="administrador.php?module=promociones_tienda">Volver</a><a href="administrador.php?module=promociones_tienda&amp;mode=edit&amp;id_promocion=<?= e($promotionId) ?>">Editar</a></div></section>
+<?php return; endif ?>
+<?php if (in_array($mode,['create','edit'],true)): ?>
 <section class="card">
     <h2><?= $mode==='create' ? 'Crear promoción' : 'Configurar promoción' ?></h2>
     <p>Fechas y horas de Costa Rica. El vencimiento se valida al confirmar cada compra.</p>
@@ -53,22 +69,17 @@ $form=$promotionForm;
         <button>Filtrar</button><a href="administrador.php?module=promociones_tienda">Limpiar</a>
     </form>
     <p><?= e($list['total']) ?> promociones · Página <?= e($list['page']) ?></p>
-    <div class="table-scroll"><table>
-        <thead><tr><th>Promoción</th><th>Descuento</th><th>Alcance</th><th>Clientes</th><th>Compra mínima</th><th>Vigencia · Costa Rica</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <div class="table-scroll"><table data-server-paginated>
+        <thead><tr><th>Promoción</th><th>Descuento</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>
         <?php foreach ($list['rows'] as $promo):
             $now=gmdate('Y-m-d H:i:s');
             $status=!$promo['activo']?'Inactiva':($promo['fecha_fin']<=$now?'Vencida':($promo['fecha_inicio']>$now?'Programada':'Vigente'));
-            $dates=[]; foreach (['fecha_inicio','fecha_fin'] as $field) $dates[]=(new DateTimeImmutable($promo[$field],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i');
         ?>
-            <tr><td><?= e($promo['titulo']) ?></td><td><?= e(StorePromotions::benefit($promo)) ?></td><td><?= e($scopeLabels[$promo['alcance']]) ?></td><td><?= e($promo['publico']==='todos'?'Todos':$promo['grupo']) ?></td><td>₡<?= e(number_format((float)$promo['minimo_compra'],2,',','.')) ?></td><td><?= e($dates[0]) ?><br><?= e($dates[1]) ?></td><td><?= e($status) ?></td><td><div class="actions"><a href="administrador.php?module=promociones_tienda&amp;mode=edit&amp;id_promocion=<?= e($promo['id_promocion']) ?>">Editar</a><form method="post" action="administrador.php?module=promociones_tienda"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="id_promocion" value="<?= e($promo['id_promocion']) ?>"><input type="hidden" name="action" value="<?= $promo['activo']?'deactivate':'activate' ?>"><button class="secondary"><?= $promo['activo']?'Desactivar':'Activar' ?></button></form></div></td></tr>
+            <tr><td class="list-value"><?= e($promo['titulo']) ?></td><td><?= e(StorePromotions::benefit($promo)) ?></td><td><?= e($status) ?></td><td><div class="actions"><a href="administrador.php?module=promociones_tienda&amp;mode=view&amp;id_promocion=<?= e($promo['id_promocion']) ?>">Ver</a><a href="administrador.php?module=promociones_tienda&amp;mode=edit&amp;id_promocion=<?= e($promo['id_promocion']) ?>">Editar</a><form method="post" action="administrador.php?module=promociones_tienda"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="id_promocion" value="<?= e($promo['id_promocion']) ?>"><input type="hidden" name="action" value="<?= $promo['activo']?'deactivate':'activate' ?>"><button class="secondary"><?= $promo['activo']?'Desactivar':'Activar' ?></button></form></div></td></tr>
         <?php endforeach ?>
-        <?php if (!$list['rows']): ?><tr><td colspan="8" class="empty">No hay promociones. Usa Crear promoción para agregar la primera.</td></tr><?php endif ?>
+        <?php if (!$list['rows']): ?><tr><td colspan="4" class="empty">No hay promociones. Usa Crear promoción para agregar la primera.</td></tr><?php endif ?>
         </tbody>
     </table></div>
-    <div class="actions pagination">
-        <?php foreach ([$list['page']-1=>'Anterior',$list['page']+1=>'Siguiente'] as $page=>$caption): if ($page<1 || ($page-1)*20>=$list['total']) continue; ?>
-            <a href="administrador.php?<?= e(http_build_query(['module'=>'promociones_tienda','q'=>$search,'activo'=>$promotionStatus,'page'=>$page])) ?>"><?= e($caption) ?></a>
-        <?php endforeach ?>
-    </div>
+    <?php renderPagination((int)$list['total'], (int)$list['page'], array_replace($_GET, ['module'=>$moduleId])); ?>
 </section>

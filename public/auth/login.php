@@ -56,6 +56,7 @@ try {
     <link rel="stylesheet" href="../assets/css/app.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="../assets/css/auth.css?v=<?= e(filemtime(__DIR__.'/../assets/css/auth.css')) ?>">
+<?php responsiveAssets(); ?>
 </head>
 <body class="login login-artistic">
 <div class="auth-atmosphere" aria-hidden="true"><span class="auth-fog auth-fog-far"></span><span class="auth-fog auth-fog-near"></span><span class="auth-golden-light"></span></div>

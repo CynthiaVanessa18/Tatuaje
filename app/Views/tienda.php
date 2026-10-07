@@ -30,6 +30,7 @@ function tiendaIcono(string $nombre): string {
     <?php foreach ($tiendaIds as $id): if ($id==='imagenes') continue; ?><a href="administrador.php?module=<?= e($id) ?>" <?= $id === $moduloSeleccionado || ($id==='productos' && $moduloSeleccionado==='imagenes') ? 'aria-current="page"' : '' ?>><?= tiendaIcono($id) ?><?= e($tiendaTitulos[$id]) ?></a><?php endforeach ?>
 </nav>
 <?php foreach ($seccionesTienda as $seccion):
+    if ($mode==='view' && $seccion['moduleId']!==$moduloSeleccionado) continue;
     if (in_array($moduloSeleccionado,['productos','imagenes'],true)) {
         if (!in_array($seccion['moduleId'],['productos','imagenes'],true)) continue;
     } elseif ($seccion['moduleId'] !== $moduloSeleccionado) continue;

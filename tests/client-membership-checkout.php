@@ -3,10 +3,10 @@ declare(strict_types=1);
 if (PHP_SAPI!=='cli') { http_response_code(404); exit; }
 require __DIR__.'/../app/Core/bootstrap.php';
 require __DIR__.'/../app/Services/ClientMembershipCheckout.php';
-require __DIR__.'/../app/Services/MembershipPlans.php';
+require_once __DIR__.'/../app/Services/MembershipPlans.php';
 require __DIR__.'/temporary-store-promotions.php';
 $db=conectarBaseDatos();
-foreach (['clientes','planes_membresia','membresias_configuracion','membresias_reglas','ventas','detalle_ventas','pagos','membresias_clientes'] as $table) temporaryStoreTable($db,$table);
+foreach (['clientes','planes_membresia','membresias_configuracion','membresias_reglas','membresias_reglas_textos','ventas','detalle_ventas','pagos','membresias_clientes'] as $table) temporaryStoreTable($db,$table);
 $db->exec("INSERT INTO clientes (id_cliente,id_cuenta,nombre,apellidos) VALUES (1,1,'Ana','Prueba'),(2,2,'Luis','Prueba'),(3,3,'Eva','Prueba')");
 $db->exec("INSERT INTO planes_membresia (id_plan,nombre,precio,duracion_dias,activo) VALUES (1,'Plan prueba',1000,30,1)");
 $db->exec("INSERT INTO membresias_configuracion (id_plan,nivel,cuota_mensual,cuota_anual,modalidad) VALUES (1,'esencial',1000,10000,'ambas')");

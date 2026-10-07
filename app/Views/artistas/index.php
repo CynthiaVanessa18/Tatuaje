@@ -101,6 +101,7 @@ function artistSummary(?string $biography): string
         defer
     ></script>
 <link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>">
+<?php responsiveAssets(); ?>
 </head>
 
 <body class="artists-page">

@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-tinta-viva.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-tinta-viva.css')) ?>">
 <link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-navegacion.css')) ?>">
 <?php endif ?>
+<?php responsiveAssets($publicPrefix); ?>
+<?php if ($clientMemberships): ?><link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-membresia-visual.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-membresia-visual.css')) ?>"><?php endif ?>
 </head>
 <body class="<?= $requiredRole === 'cliente' ? 'cliente-tinta-viva ' : '' ?><?= $clientMemberships ? 'pagina-membresias ' : '' ?><?= $clientCart ? 'pagina-carrito ' : '' ?><?= $clientStore ? 'pagina-tienda tienda-cliente' : '' ?>" <?= $clientStore ? 'data-bs-theme="dark"' : '' ?>>
 <?php if ($requiredRole==='cliente'): require __DIR__.'/cliente-navegacion.php'; else: ?>
@@ -27,14 +29,16 @@
 </aside>
 <?php endif ?>
 <main>
-    <header>
+    <?php if ($clientMemberships): ?>
+    <header class="membership-hero"><div><p class="eyebrow"><span aria-hidden="true">✧</span> MI MEMBRESÍA</p><h1>Tu membresía</h1><p>Tu arte merece cuidado.</p><div class="membership-hero-ornament" aria-hidden="true"><span>✧</span></div></div></header>
+    <?php else: ?><header>
         <div>
             <p class="eyebrow">BIENVENIDO, <?= e($account['usuario']) ?></p>
             <h1><?= e($title) ?></h1>
             <p><?= e($description) ?></p>
         </div>
         <?php if ($clientStore && !$clientCart): ?><div class="store-actions"><a class="button secondary" href="<?= e($clientEndpoint) ?>?section=tarjetas">Mis tarjetas de regalo</a><a class="button carrito-cabecera" href="<?= e($clientEndpoint) ?>?section=carrito"><span aria-hidden="true">🛒</span> Mi carrito (<?= e($cartCount) ?>)</a></div><?php endif ?>
-    </header>
+    </header><?php endif ?>
     <?php if ($clientStore): ?>
         <?php if ($cartNotice): ?><div class="notice carrito-aviso" role="status" aria-live="polite" data-cart-notice><span><?= e($cartNotice) ?></span><a href="<?= e($clientEndpoint) ?>?section=carrito">Ver carrito</a><button type="button" aria-label="Cerrar mensaje" data-dismiss-cart-notice>×</button></div><?php endif ?>
         <?php if ($cartError): ?><p class="notice error" role="alert"><?= e($cartError) ?></p><?php endif ?>
@@ -53,7 +57,7 @@
         <h2>Próximas citas</h2>
         <p>Se muestran hasta 50 citas. Las horas se presentan en hora de Costa Rica.</p>
         <div class="table-scroll">
-            <table>
+            <table data-server-paginated>
                 <thead><tr>
                     <th>Inicio</th><th>Fin</th><th>Cliente</th><th>Artista</th><th>Estado</th>
                 </tr></thead>
@@ -75,6 +79,7 @@
                 </tbody>
             </table>
         </div>
+        <?php renderPagination($appointmentTotal,$appointmentPage,$_GET,'appointments_page'); ?>
     </section>
     <?php endif ?>
 </main>

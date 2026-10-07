@@ -4,6 +4,18 @@ declare(strict_types=1);
 final class AdminAccounts
 {
     public function __construct(private PDO $db, private int $actor) {}
+    public function summary(): array
+    {
+        $this->authorize();
+        return $this->db->query("SELECT COUNT(*) AS total,
+            COALESCE(SUM(c.estado='activo'),0) AS activos,
+            COALESCE(SUM(c.estado='bloqueado'),0) AS bloqueados,
+            COALESCE(SUM(c.estado='inactivo'),0) AS inactivos,
+            COALESCE(SUM(r.nombre_rol='cliente'),0) AS clientes,
+            COALESCE(SUM(r.nombre_rol='administrador'),0) AS administradores
+            FROM cuentas c JOIN roles r ON r.id_rol=c.id_rol
+            WHERE r.nombre_rol IN ('administrador','cliente')")->fetch();
+    }
     private function authorize(): void
     {
         $q=$this->db->prepare("SELECT c.id_cuenta FROM cuentas c JOIN roles r ON r.id_rol=c.id_rol WHERE c.id_cuenta=? AND c.estado='activo' AND r.nombre_rol='administrador' AND r.activo=1");

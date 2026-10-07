@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/../app/Core/bootstrap.php';
+require __DIR__.'/../app/Services/GiftCardBalances.php';
+require __DIR__.'/temporary-store-promotions.php';
+$db=conectarBaseDatos();
+foreach (['clientes','tarjetas_regalo','movimientos_tarjetas_regalo'] as $table) temporaryStoreTable($db,$table);
+$db->exec("INSERT INTO clientes (id_cliente,id_cuenta,nombre,apellidos) VALUES (1,1,'Cynthia','Compradora'),(2,2,'Ana','Compradora')");
+$insert=$db->prepare("INSERT INTO tarjetas_regalo (id_tarjeta,codigo_hash,id_cliente_comprador,nombre_destinatario,correo_destinatario,monto_inicial,estado) VALUES (?,UNHEX(SHA2(?,256)),?,?, 'prueba@example.com',1000,?)");
+for ($i=1;$i<=26;$i++) $insert->execute([$i,'codigo-'.$i,2,'Cynthia '.$i,'activa']);
+$insert->execute([27,'codigo-27',1,'Otro destinatario','pendiente']);
+$insert->execute([28,'codigo-28',2,'Cyn% especial','activa']);
+$db->exec("INSERT INTO movimientos_tarjetas_regalo (id_tarjeta,tipo,monto,referencia) VALUES (1,'carga_inicial',1000,'carga'),(1,'anulacion',200,'anulacion')");
+$service=new GiftCardBalances($db);$checks=0;
+function balanceCheck(bool $ok,string $message): void {global $checks;if (!$ok) throw new RuntimeException($message);++$checks;}
+$list=$service->listing('cyn','',null,1);
+balanceCheck($list['total']===28 && count($list['rows'])===20,'Busca coincidencias del destinatario y comprador');
+$page=$service->listing('cyn','',null,2);
+balanceCheck(count($page['rows'])===8 && $page['page']===2,'Pagina todas las coincidencias');
+balanceCheck($service->listing('cyn','pendiente',null,1)['total']===1,'Filtra estado junto al nombre');
+$selected=$service->listing('cyn','activa',1,1);
+balanceCheck($selected['total']===1 && $selected['rows'][0]['saldo_actual']==='800.00','Selecciona una tarjeta y calcula su saldo real');
+balanceCheck(count($service->suggestions('cyn','activa'))===10 && $service->suggestions('','')===[],'Sugerencias limitadas y búsqueda vacía');
+balanceCheck($service->listing('cyn%','',null,1)['total']===1,'Busca literalmente signos en nombres');
+balanceCheck($service->listing("' OR 1=1 --",'',null,1)['total']===0,'Consulta parametrizada');
+balanceCheck($service->listing('cyn','activa',27,1)['total']===0,'No ignora estado al seleccionar');
+echo "OK: $checks comprobaciones de nombres, coincidencias, selección, estados, saldo y paginación. Solo tablas temporales.\n";

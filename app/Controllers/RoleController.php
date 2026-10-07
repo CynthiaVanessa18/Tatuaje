@@ -23,16 +23,21 @@ if ($requiredRole === 'artista' || $requiredRole === 'cliente') {
     $parameters[] = $profileId === false ? 0 : $profileId;
 }
 
+$appointmentFrom=" FROM citas c
+     JOIN clientes cl ON cl.id_cliente = c.id_cliente
+     JOIN artistas a ON a.id_artista = c.id_artista
+     WHERE c.fecha_hora_fin >= CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00')
+       AND c.estado NOT IN ('cancelada', 'no_asistio') $where";
+$appointmentCount=conectarBaseDatos()->prepare('SELECT COUNT(*)'.$appointmentFrom);
+$appointmentCount->execute($parameters); $appointmentTotal=(int)$appointmentCount->fetchColumn();
+$appointmentPage=max(1,min((int)($_GET['appointments_page']??1),max(1,(int)ceil($appointmentTotal/20))));
+$appointmentOffset=($appointmentPage-1)*20;
 $query = conectarBaseDatos()->prepare(
     "SELECT c.fecha_hora_inicio, c.fecha_hora_fin, c.estado,
             CONCAT(cl.nombre, ' ', cl.apellidos) AS cliente,
             COALESCE(NULLIF(a.nombre_artistico, ''), CONCAT(a.nombre, ' ', a.apellidos)) AS artista
-     FROM citas c
-     JOIN clientes cl ON cl.id_cliente = c.id_cliente
-     JOIN artistas a ON a.id_artista = c.id_artista
-     WHERE c.fecha_hora_fin >= CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '-06:00')
-       AND c.estado NOT IN ('cancelada', 'no_asistio') $where
-     ORDER BY c.fecha_hora_inicio LIMIT 50"
+     $appointmentFrom
+     ORDER BY c.fecha_hora_inicio,c.id_cita LIMIT 20 OFFSET $appointmentOffset"
 );
 $query->execute($parameters);
 $appointments = $query->fetchAll();

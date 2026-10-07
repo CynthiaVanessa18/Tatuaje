@@ -1,0 +1,195 @@
+body .admin-sidebar {
+    width: 275px;
+    min-height: 100vh;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 2rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid var(--gold-dark);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(112, 13, 33, 0.2),
+            transparent 35%
+        ),
+        #080506;
+    box-shadow: 25px 0 70px rgba(0, 0, 0, 0.3);
+}
+
+body .admin-sidebar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -1px;
+    width: 1px;
+    height: 160px;
+    background: linear-gradient(var(--blood-light), transparent);
+}
+
+body .admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    text-decoration: none;
+}
+
+body .admin-brand__sigil {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--gold-dark);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 1.2rem;
+    box-shadow: 0 0 25px rgba(189, 146, 85, 0.12);
+}
+
+body .admin-brand strong,
+body .admin-brand small {
+    display: block;
+}
+
+body .admin-brand strong {
+    font-family: var(--title);
+    font-size: 0.92rem;
+    letter-spacing: 0.15rem;
+}
+
+body .admin-brand small {
+    margin-top: 0.2rem;
+    color: var(--blood-light);
+    font-size: 0.47rem;
+    font-weight: 700;
+    letter-spacing: 0.2rem;
+}
+
+body .admin-sidebar__label,
+.admin-eyebrow {
+    color: var(--gold);
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
+body .admin-sidebar__label {
+    margin: 3rem 0 0.9rem;
+    color: var(--bone-muted);
+}
+
+body .admin-sidebar nav {
+    display: grid;
+    gap: 0.35rem;
+}
+
+body .admin-sidebar nav a {
+    white-space: normal;
+    border-radius: 0;
+    padding: 0.75rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    border: 1px solid transparent;
+    color: var(--bone-muted);
+    font-family: var(--serif);
+    font-size: 0.93rem;
+    text-decoration: none;
+    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+body .admin-sidebar nav a span {
+    width: 18px;
+    color: var(--gold);
+    text-align: center;
+}
+
+body .admin-sidebar nav a:hover,
+body .admin-sidebar nav a[aria-current="page"] {
+    border-color: rgba(160, 24, 53, 0.35);
+    background: rgba(112, 13, 33, 0.16);
+    color: var(--bone);
+}
+
+body .admin-sidebar__bottom {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+    color: var(--bone-muted);
+    font-size: 0.72rem;
+}
+
+body .admin-sidebar__bottom strong {
+    display: block;
+    color: var(--bone);
+}
+
+body .admin-sidebar__bottom > a {
+    display: inline-block;
+    margin: 0.5rem 0 1rem;
+    color: var(--gold);
+    text-underline-offset: 0.3rem;
+}
+
+body .admin-sidebar__bottom form {
+    margin: 0;
+}
+
+body .admin-sidebar__bottom button {
+    border-radius: 0;
+    min-height: 0;
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--bone-muted);
+    cursor: pointer;
+}
+
+body.admin-tinta-viva {
+    background: radial-gradient(circle at 80% 8%, rgba(112, 13, 33, .18), transparent 34rem), var(--black);
+}
+body.admin-tinta-viva main {
+    width: min(1450px, 100%);
+    padding: clamp(2rem, 4vw, 4.5rem);
+}
+body.admin-tinta-viva main > header {
+    margin-bottom: 2.5rem;
+    border-bottom: 0;
+    align-items: flex-end;
+}
+body.admin-tinta-viva main > header h1 {
+    font-size: clamp(2.3rem, 4vw, 4.5rem);
+    line-height: 1.15;
+    margin: .45rem 0;
+}
+body.admin-tinta-viva main > header p:last-child {
+    font-family: var(--serif);
+    font-size: 1.12rem;
+}
+body .admin-sidebar__label { margin: 2rem 0 .9rem; }
+body .admin-sidebar__bottom { margin-top: auto; padding-top: 1.5rem; }
+@media (max-width: 900px) {
+    body.admin-tinta-viva { display: block; }
+    body .admin-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        padding: 1.25rem;
+    }
+    body .admin-sidebar nav { display: flex; overflow-x: auto; margin-top: 1rem; }
+    body .admin-sidebar nav a { flex: 0 0 auto; white-space: nowrap; }
+    body .admin-sidebar__label { display: none; }
+    body .admin-sidebar__bottom { display: block; margin-top: 1rem; }
+    body .admin-sidebar__bottom p, body .admin-sidebar__bottom > a { display: none; }
+    body .admin-sidebar__bottom button { width: auto; }
+}
+@media (max-width: 620px) {
+    body.admin-tinta-viva main { padding: 1.25rem; }
+    body.admin-tinta-viva main > header { align-items: flex-start; flex-direction: column; }
+}

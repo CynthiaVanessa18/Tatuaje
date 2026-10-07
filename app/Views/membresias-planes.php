@@ -1,5 +1,6 @@
 <?php
 $selectedMembership=(string)($membershipPlans[0]['id_plan']??'');
+if (is_string($_GET['plan']??null) && in_array($_GET['plan'],array_map('strval',array_column($membershipPlans,'id_plan')),true)) $selectedMembership=$_GET['plan'];
 if ($error && in_array((string)($_POST['id_plan']??''),array_map('strval',array_column($membershipPlans,'id_plan')),true)) $selectedMembership=(string)$_POST['id_plan'];
 $membershipIcons=[
 'esencial'=>'<path d="m12 3 8 9-8 9-8-9Z"/><path d="m4 12 8-4 8 4-8 4Z"/>',
@@ -38,10 +39,25 @@ $membershipIcons=[
 <div class="membership-rules-heading"><h4>Beneficios del plan</h4><span>Marca para incluir · Desmarca para quitar</span></div>
 <div class="table-responsive"><table class="table align-middle membership-benefits membership-edit-table">
 <caption class="visually-hidden">Editar beneficios de <?= e($plan['nombre']) ?></caption><thead><tr><th scope="col">Incluir</th><th scope="col">Regla precargada</th><th scope="col">Valor o cantidad</th></tr></thead><tbody>
-<?php foreach (MembershipPlans::RULES as $code=>[$name,$unit,$description]): $included=isset($rules[$code]); $ruleId='plan-rule-'.$plan['id_plan'].'-'.$code; ?>
+<?php foreach (MembershipPlans::RULES as $code=>[$name,$unit,$description]):
+    $customText=$plan['textos'][$code]??[];
+    if ($error && (string)($_POST['id_plan']??'')===(string)$plan['id_plan'] && is_array($_POST['textos'][$code]??null)) $customText=$_POST['textos'][$code];
+    $name=is_string($customText['nombre']??null)?$customText['nombre']:$name;
+    $description=is_string($customText['descripcion']??null)?$customText['descripcion']:$description;
+    $included=isset($rules[$code]); $ruleId='plan-rule-'.$plan['id_plan'].'-'.$code; ?>
 <tr class="<?= $included?'rule-selected':'' ?>" data-membership-rule>
 <td><div class="form-check"><input class="form-check-input" type="checkbox" id="<?= e($ruleId) ?>" name="reglas[]" value="<?= e($code) ?>" <?= $included?'checked':'' ?> aria-label="Incluir <?= e($name) ?>" data-membership-toggle></div></td>
-<th scope="row"><label for="<?= e($ruleId) ?>"><?= e($name) ?></label><small><?= e($description) ?></small></th>
+<th scope="row">
+    <div class="membership-rule-content">
+    <button type="button" class="membership-rule-edit" data-rule-edit aria-label="Editar <?= e($name) ?>" aria-controls="<?= e($ruleId) ?>-editor" aria-expanded="false" title="Editar nombre y descripción"><?= adminIcon('editar') ?></button>
+    <div class="membership-rule-caption" data-rule-caption><div><label for="<?= e($ruleId) ?>" data-rule-name><?= e($name) ?></label><small data-rule-description><?= e($description) ?></small></div></div>
+    <div class="membership-rule-text-editor" id="<?= e($ruleId) ?>-editor" data-rule-text-editor hidden>
+        <label for="<?= e($ruleId) ?>-name">Nombre de la regla<input id="<?= e($ruleId) ?>-name" name="textos[<?= e($code) ?>][nombre]" maxlength="120" required value="<?= e($name) ?>" data-rule-name-input></label>
+        <label for="<?= e($ruleId) ?>-description">Descripción<textarea id="<?= e($ruleId) ?>-description" name="textos[<?= e($code) ?>][descripcion]" maxlength="1000" rows="3" data-rule-description-input><?= e($description) ?></textarea></label>
+        <div class="actions"><button type="button" data-rule-apply>Aplicar a la fila</button><button type="button" class="secondary" data-rule-cancel>Cancelar</button></div><small>Se guarda al pulsar Guardar cambios. Solo afecta a este plan.</small>
+    </div>
+    </div>
+</th>
 <td><?php if ($unit!=='prioridad'): ?><label class="visually-hidden" for="<?= e($ruleId) ?>-value">Valor de <?= e($name) ?></label><div class="membership-rule-value"><input class="form-control" id="<?= e($ruleId) ?>-value" type="number" name="valores[<?= e($code) ?>]" min="<?= in_array($unit,['kits','sesiones'],true)?'1':'0.01' ?>" <?= $unit==='porcentaje'?'max="100"':'' ?> step="<?= in_array($unit,['kits','sesiones'],true)?'1':'0.01' ?>" value="<?= e($ruleValues[$code]??1) ?>" <?= $included?'required':'disabled' ?> data-membership-value><span><?= e(['porcentaje'=>'%','monto'=>'₡ por compra','sesiones'=>'sesiones','kits'=>'kits'][$unit]) ?></span></div><?php else: ?><span class="membership-priority-note">Prioridad de horario</span><?php endif ?></td>
 </tr>
 <?php endforeach ?></tbody></table></div>

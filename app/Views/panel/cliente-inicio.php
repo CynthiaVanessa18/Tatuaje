@@ -31,6 +31,7 @@ function clientDashboardDate(string $value, string $format = 'd/m/Y · H:i'): st
     <link rel="stylesheet" href="../assets/css/cliente-cotizaciones.css">
     <link rel="stylesheet" href="../assets/css/cliente-panel.css">
 <link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>">
+<?php responsiveAssets(); ?>
 </head>
 
 <body class="client-shared-layout admin-artists client-quotes client-home">

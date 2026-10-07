@@ -14,7 +14,8 @@ catch (PDOException $ex) { error_log($ex->getMessage()); $error='No se pudo crea
 ?>
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Crear cuenta · Tinta Viva</title><link rel="stylesheet" href="../assets/css/app.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="../assets/css/auth.css?v=<?= e(filemtime(__DIR__.'/../assets/css/auth.css')) ?>"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Crear cuenta · Tinta Viva</title><link rel="stylesheet" href="../assets/css/app.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Montserrat:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="../assets/css/auth.css?v=<?= e(filemtime(__DIR__.'/../assets/css/auth.css')) ?>"><?php responsiveAssets(); ?>
+</head>
 <body class="login registro"><div class="auth-atmosphere" aria-hidden="true"><span class="auth-fog auth-fog-far"></span><span class="auth-fog auth-fog-near"></span><span class="auth-golden-light"></span></div><main class="login-card">
 <a class="auth-brand" href="../index.php">TINTA VIVA</a><p class="eyebrow">FORMA PARTE DEL ESTUDIO</p><h1>Crear cuenta</h1><p>Regístrate como cliente para comprar y consultar tus citas.</p>
 <?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif ?>

@@ -12,7 +12,7 @@ try {
         $_SESSION['notice']='Cuenta guardada correctamente.';
         header('Location: administrador.php?module=cuentas',true,303);exit;
     }
-    if ($mode==='edit') {
+    if (in_array($mode,['edit','view'],true)) {
         $id=filter_var($_GET['id_cuenta']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]]);
         if (!$id) throw new DomainException('Cuenta inválida.');
         $record=$accountManager->find($id);
@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && $error) {
     $mode=($_POST['action']??'')==='create'?'create':'edit';
     $record=array_intersect_key($_POST,array_flip(['id_cuenta','usuario','correo','rol','estado','nombre','apellidos','telefono']));
 }
-if (!in_array($mode,['list','create','edit'],true)) $mode='list';
+if (!in_array($mode,['list','create','edit','view'],true)) $mode='list';
 $accountRoleFilter=is_string($_GET['rol']??null)?$_GET['rol']:'';
 $accountStateFilter=is_string($_GET['estado']??null)?$_GET['estado']:'';
+$accountSummary=$accountManager->summary();
 $list=$accountManager->listing($search,$accountRoleFilter,$accountStateFilter,max(1,(int)($_GET['page']??1)));

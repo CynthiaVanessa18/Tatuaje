@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="<?= e($publicPrefix ?? '../') ?>assets/css/app.css">
     <title>Conexión pendiente</title>
+<?php responsiveAssets($publicPrefix ?? '../'); ?>
 </head>
 
 <body class="login">

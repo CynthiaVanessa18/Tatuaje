@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/StorePromotions.php';
+require_once __DIR__.'/MembershipPlans.php';
 
 final class ClientMembershipCheckout
 {
@@ -73,10 +74,12 @@ final class ClientMembershipCheckout
     {
         $q=$db->prepare("SELECT m.*,p.nombre,d.descripcion,v.total,pa.metodo,pa.estado AS pago_estado FROM membresias_clientes m JOIN planes_membresia p ON p.id_plan=m.id_plan JOIN detalle_ventas d ON d.id_detalle_venta=m.id_detalle_venta JOIN ventas v ON v.id_venta=d.id_venta JOIN pagos pa ON pa.id_venta=v.id_venta AND pa.tipo_operacion='cobro' WHERE m.id_cliente=? ORDER BY m.id_membresia DESC");
         $q->execute([$client]);$rows=$q->fetchAll();
-        $rules=$db->prepare('SELECT codigo,valor FROM membresias_reglas WHERE id_plan=?');$byPlan=[];
+        $rules=$db->prepare('SELECT codigo,valor FROM membresias_reglas WHERE id_plan=?');$byPlan=[];$textsByPlan=[];
         foreach ($rows as &$row) {
             if (!isset($byPlan[$row['id_plan']])) { $rules->execute([$row['id_plan']]);$byPlan[$row['id_plan']]=array_column($rules->fetchAll(),'valor','codigo'); }
             $row['reglas']=$byPlan[$row['id_plan']];
+            $textsByPlan[$row['id_plan']]??=(new MembershipPlans($db))->texts((int)$row['id_plan']);
+            $row['textos']=$textsByPlan[$row['id_plan']];
         }
         unset($row);return $rows;
     }

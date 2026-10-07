@@ -21,13 +21,21 @@ final class MembershipPlans
     {
         $rows=$this->db->query('SELECT p.*,c.nivel,c.cuota_mensual,c.cuota_anual,c.modalidad FROM membresias_configuracion c JOIN planes_membresia p ON p.id_plan=c.id_plan'.($activeOnly?' WHERE p.activo=1':'')." ORDER BY FIELD(c.nivel,'esencial','plus','premium')")->fetchAll();
         $query=$this->db->prepare('SELECT codigo,valor FROM membresias_reglas WHERE id_plan=?');
-        foreach ($rows as &$row) { $query->execute([$row['id_plan']]); $row['reglas']=array_column($query->fetchAll(),'valor','codigo'); }
+        foreach ($rows as &$row) { $query->execute([$row['id_plan']]); $row['reglas']=array_column($query->fetchAll(),'valor','codigo'); $row['textos']=$this->texts((int)$row['id_plan']); }
         return $rows;
     }
 
-    public static function describe(string $code, string $value): string
+    public function texts(int $plan): array
+    {
+        $q=$this->db->prepare('SELECT codigo,nombre,descripcion FROM membresias_reglas_textos WHERE id_plan=?');
+        $q->execute([$plan]);
+        return array_column($q->fetchAll(),null,'codigo');
+    }
+
+    public static function describe(string $code, string $value, ?string $customName=null): string
     {
         [$name,$unit]=self::RULES[$code];
+        $name=$customName??$name;
         return $name.($unit==='prioridad'?'':': '.($unit==='monto'?'₡'.number_format((float)$value,2,',','.') : rtrim(rtrim($value,'0'),'.')).match($unit) {'porcentaje'=>' %','sesiones'=>' sesión(es) por período contratado','kits'=>' kit(s) por período contratado',default=>''});
     }
 
@@ -52,6 +60,16 @@ final class MembershipPlans
             $rules[$code]=StorePromotions::money($value);
         }
         if (!$rules) throw new DomainException('Selecciona al menos un beneficio del plan.');
+        $texts=$data['textos']??[];
+        if (!is_array($texts)) throw new DomainException('Revisa los textos de los beneficios.');
+        $validatedTexts=[];
+        foreach ($texts as $code=>$text) {
+            if (!isset(self::RULES[$code]) || !is_array($text)
+                || !is_string($text['nombre']??null) || trim($text['nombre'])===''
+                || mb_strlen($text['nombre'])>120 || !is_string($text['descripcion']??null)
+                || mb_strlen($text['descripcion'])>1000) throw new DomainException('Cada regla necesita un nombre de hasta 120 caracteres y una descripción de hasta 1000.');
+            $validatedTexts[$code]=[trim($text['nombre']),trim($text['descripcion'])];
+        }
         $this->db->beginTransaction();
         try {
             $q=$this->db->prepare('SELECT id_plan FROM membresias_configuracion WHERE id_plan=? FOR UPDATE'); $q->execute([$id]);
@@ -62,6 +80,8 @@ final class MembershipPlans
             $this->db->prepare('DELETE FROM membresias_reglas WHERE id_plan=?')->execute([$id]);
             $q=$this->db->prepare('INSERT INTO membresias_reglas (id_plan,codigo,valor) VALUES (?,?,?)');
             foreach ($rules as $code=>$value) $q->execute([$id,$code,$value]);
+            $q=$this->db->prepare('INSERT INTO membresias_reglas_textos (id_plan,codigo,nombre,descripcion) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE nombre=VALUES(nombre),descripcion=VALUES(descripcion)');
+            foreach ($validatedTexts as $code=>[$ruleName,$ruleDescription]) $q->execute([$id,$code,$ruleName,$ruleDescription]);
             $this->db->commit();
         } catch (Throwable $ex) { $this->db->rollBack(); throw $ex; }
     }

@@ -102,6 +102,7 @@ $websiteUrl = $artist !== null
     <link rel="stylesheet" href="../assets/css/artistas.css">
     <script src="../assets/js/site.js" defer></script>
 <link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>">
+<?php responsiveAssets(); ?>
 </head>
 
 <body class="artist-profile-page">

@@ -192,3 +192,45 @@ document.addEventListener('input', event => {
     if (!form) return;
     form.querySelector('[data-membership-save-status]').textContent = 'Tienes cambios sin guardar.';
 });
+
+document.addEventListener('click', event => {
+    const button = event.target.closest('[data-rule-edit], [data-rule-apply], [data-rule-cancel]');
+    if (!button) return;
+    const row = button.closest('[data-membership-rule]');
+    const editor = row.querySelector('[data-rule-text-editor]');
+    const caption = row.querySelector('[data-rule-caption]');
+    const nameInput = row.querySelector('[data-rule-name-input]');
+    const descriptionInput = row.querySelector('[data-rule-description-input]');
+    const editButton = row.querySelector('[data-rule-edit]');
+    if (button.hasAttribute('data-rule-edit')) {
+        if (!editor.hidden) {
+            row.querySelector('[data-rule-cancel]').click();
+            return;
+        }
+        editor.dataset.previousName = nameInput.value;
+        editor.dataset.previousDescription = descriptionInput.value;
+        editor.hidden = false;
+        caption.hidden = true;
+        editButton.setAttribute('aria-expanded', 'true');
+        editButton.title = 'Cancelar edición';
+        nameInput.focus();
+        return;
+    }
+    if (button.hasAttribute('data-rule-cancel')) {
+        nameInput.value = editor.dataset.previousName;
+        descriptionInput.value = editor.dataset.previousDescription;
+    } else {
+        nameInput.value = nameInput.value.trim();
+        if (!nameInput.reportValidity() || !descriptionInput.reportValidity()) return;
+        row.querySelector('[data-rule-name]').textContent = nameInput.value;
+        row.querySelector('[data-rule-description]').textContent = descriptionInput.value;
+        row.querySelector('[data-membership-toggle]').setAttribute('aria-label', `Incluir ${nameInput.value}`);
+        editButton.setAttribute('aria-label', `Editar ${nameInput.value}`);
+        row.closest('form').querySelector('[data-membership-save-status]').textContent = 'Tienes cambios sin guardar.';
+    }
+    editor.hidden = true;
+    caption.hidden = false;
+    editButton.setAttribute('aria-expanded', 'false');
+    editButton.title = 'Editar nombre y descripción';
+    editButton.focus();
+});

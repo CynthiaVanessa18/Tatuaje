@@ -396,6 +396,7 @@ $codigoEnviar = str_pad(
         rel="stylesheet"
         href="../assets/css/app.css"
     >
+<?php responsiveAssets(); ?>
 </head>
 
 <body class="login">

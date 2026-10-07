@@ -33,7 +33,7 @@
         default=>'Incluido',
     };
 ?>
-<td data-plan-column="<?= e($plan['id_plan']) ?>"><?php if ($included): ?><span class="membership-check" aria-hidden="true">✓</span><span class="membership-benefit-value"><?= e($amount) ?></span><?php else: ?><span class="membership-excluded">No incluido</span><?php endif ?></td>
+<td data-plan-column="<?= e($plan['id_plan']) ?>"><?php if ($included): ?><span class="membership-check" aria-hidden="true">✓</span><span class="membership-benefit-value"><?= e($amount) ?></span><?php if (isset($plan['textos'][$code])): ?><small><strong><?= e($plan['textos'][$code]['nombre']) ?></strong><br><?= e($plan['textos'][$code]['descripcion']) ?></small><?php endif ?><?php else: ?><span class="membership-excluded">No incluido</span><?php endif ?></td>
 <?php endforeach ?></tr>
 <?php endforeach ?>
 </tbody></table></div>
@@ -46,7 +46,7 @@
 <button type="submit">Comprar membresía →</button>
 </div>
 <p class="membership-terms">Las cantidades de sesiones y kits corresponden al período contratado. Los servicios están sujetos a valoración y disponibilidad. Sin renovación automática.</p>
-<details class="membership-benefit-details"><summary>Ver condiciones de los beneficios</summary><ul><?php foreach (MembershipPlans::RULES as [$benefit,$unit,$hint]): ?><li><strong><?= e($benefit) ?>:</strong> <?= e($hint) ?></li><?php endforeach ?></ul></details>
+<details class="membership-benefit-details"><summary>Ver condiciones de los beneficios</summary><?php foreach ($membershipPlans as $plan): ?><h3><?= e($plan['nombre']) ?></h3><ul><?php foreach ($plan['reglas'] as $code=>$value): if (!isset(MembershipPlans::RULES[$code])) continue; ?><li><strong><?= e($plan['textos'][$code]['nombre']??MembershipPlans::RULES[$code][0]) ?>:</strong> <?= e($plan['textos'][$code]['descripcion']??MembershipPlans::RULES[$code][2]) ?></li><?php endforeach ?></ul><?php endforeach ?></details>
 <noscript><p>Elige una modalidad disponible para tu plan según las cuotas de la tabla. El importe se confirma en el siguiente paso.</p></noscript>
 </form>
 <?php endif ?>

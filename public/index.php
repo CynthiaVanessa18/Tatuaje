@@ -59,6 +59,7 @@ $accountLink=accountAreaLink($account);
         defer
     ></script>
 <?php if (($_SESSION['role']??'')==='cliente'): ?><link rel="stylesheet" href="assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
+<?php responsiveAssets(''); ?>
 </head>
 <?php /* La cuenta de cliente comparte la misma navegación en todas las páginas. */ ?>
 
