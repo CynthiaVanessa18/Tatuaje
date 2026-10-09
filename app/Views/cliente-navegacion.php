@@ -16,6 +16,7 @@ $navStore=in_array($navSection,['tienda','carrito','tarjetas'],true);
 <a href="<?= e($navEndpoint) ?>?section=citas" <?= $navSection==='citas'?'aria-current="page"':'' ?>>Mis citas</a>
 <a href="<?= e($navPrefix) ?>panel/mis-cotizaciones.php">Mis cotizaciones</a>
 <a href="<?= e($navPrefix) ?>panel/mis-testimonios.php">Mi testimonio</a>
+<a href="<?= e($navPrefix) ?>panel/mis-calificaciones.php">Mi experiencia</a>
 <a href="<?= e($navPrefix) ?>panel/cliente.php">Mi espacio</a>
 </nav>
 <a class="client-navigation-account" href="<?= e($navEndpoint) ?>?section=cuenta" aria-label="Mi cuenta" title="Mi cuenta" <?= $navSection==='cuenta'?'aria-current="page"':'' ?>><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></a>

@@ -61,6 +61,12 @@ function clientDashboardDate(string $value, string $format = 'd/m/Y · H:i'): st
 
     <?php if ($profileMissing): ?><div class="admin-notice admin-notice--warning"><span>!</span>Tu cuenta está activa, pero todavía no tiene un perfil de cliente vinculado. Solicita ayuda al administrador.</div><?php endif ?>
 
+    <?php if ($pendingRatingAppointments): ?>
+    <section class="client-home-section">
+        <header><div><p class="client-kicker">DESPUÉS DE TU SESIÓN</p><h2>Pendiente de calificar</h2></div><a href="mis-calificaciones.php">Calificar mi experiencia →</a></header>
+        <p>Tienes <?= e(count($pendingRatingAppointments)) ?> sesión(es) finalizada(s) sin calificar. Cuéntanos cómo fue tu experiencia con el artista.</p>
+    </section>
+    <?php endif ?>
     <section class="client-home-stats" aria-label="Resumen personal">
         <article><span>I</span><div><b><?= e($quoteSummary['total']) ?></b><p>Ideas entregadas</p></div><small>Archivo</small></article>
         <article><span>II</span><div><b><?= e($quoteSummary['en_proceso']) ?></b><p>En el taller</p></div><small>Proceso</small></article>

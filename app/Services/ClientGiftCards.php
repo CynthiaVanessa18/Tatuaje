@@ -4,14 +4,23 @@ require_once __DIR__.'/StorePromotions.php';
 
 final class ClientGiftCards
 {
-    public static function assignRecipient(PDO $db,int $id,string $email): void
+    public static function assignRecipient(PDO $db,int $id,string $email): bool
     {
         // La asignación proviene de la emisión administrativa, no de cambiar el correo del cliente.
-        $q=$db->prepare("INSERT IGNORE INTO tarjetas_regalo_clientes (id_tarjeta,id_cliente) SELECT ?,cl.id_cliente FROM clientes cl JOIN cuentas c ON c.id_cuenta=cl.id_cuenta WHERE c.correo=? AND c.estado='activo'");
+        $q=$db->prepare("INSERT IGNORE INTO tarjetas_regalo_clientes (id_tarjeta,id_cliente) SELECT ?,cl.id_cliente FROM clientes cl JOIN cuentas c ON c.id_cuenta=cl.id_cuenta WHERE LOWER(TRIM(c.correo))=LOWER(TRIM(?)) AND c.estado='activo'");
         $q->execute([$id,$email]);
+        $q=$db->prepare('SELECT id_cliente FROM tarjetas_regalo_clientes WHERE id_tarjeta=?');$q->execute([$id]);
+        return $q->fetchColumn()!==false;
     }
     public static function owned(PDO $db,int $client): array
     {
+        // Attach older gifts when their verified recipient subsequently creates an account.
+        $sync=$db->prepare("INSERT IGNORE INTO tarjetas_regalo_clientes (id_tarjeta,id_cliente)
+            SELECT t.id_tarjeta,cl.id_cliente FROM tarjetas_regalo t
+            JOIN cuentas c ON LOWER(TRIM(c.correo))=LOWER(TRIM(t.correo_destinatario))
+            JOIN clientes cl ON cl.id_cuenta=c.id_cuenta
+            WHERE cl.id_cliente=? AND c.estado='activo' AND c.correo_verificado=1");
+        $sync->execute([$client]);
         $q=$db->prepare("SELECT t.*,COALESCE(SUM(CASE WHEN m.tipo IN ('carga_inicial','devolucion') THEN m.monto ELSE -m.monto END),0) AS saldo FROM tarjetas_regalo t LEFT JOIN tarjetas_regalo_clientes tc ON tc.id_tarjeta=t.id_tarjeta LEFT JOIN movimientos_tarjetas_regalo m ON m.id_tarjeta=t.id_tarjeta WHERE tc.id_cliente=? OR (tc.id_tarjeta IS NULL AND EXISTS (SELECT 1 FROM clientes cl JOIN cuentas c ON c.id_cuenta=cl.id_cuenta WHERE cl.id_cliente=? AND c.correo_verificado=1 AND c.correo=t.correo_destinatario)) GROUP BY t.id_tarjeta ORDER BY t.fecha_emision DESC,t.id_tarjeta DESC");
         $q->execute([$client,$client]);return $q->fetchAll();
     }

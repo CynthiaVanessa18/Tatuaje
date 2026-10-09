@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 $accountLink = accountAreaLink($account);
+$isClient = ($account['nombre_rol'] ?? '') === 'cliente';
 $careCount = count($careInstructions);
 ?>
 <!doctype html>
@@ -16,12 +17,12 @@ $careCount = count($careInstructions);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/cuidados.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cuidados.css')) ?>">
-    <?php if (($account['rol'] ?? '') === 'cliente'): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
+    <?php if ($isClient): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
     <?php responsiveAssets(); ?>
 </head>
-<body class="care-public<?= ($account['rol'] ?? '') === 'cliente' ? ' client-shared-layout' : '' ?>">
-<?php if (($account['rol'] ?? '') === 'cliente'): ?>
-    <?php $clientEndpoint='../panel/cliente.php';$publicPrefix='../';require __DIR__.'/../cliente-navegacion.php'; ?>
+<body class="care-public<?= $isClient ? ' client-shared-layout' : '' ?>">
+<?php if ($isClient): ?>
+    <?php $clientEndpoint='../index.php';$publicPrefix='../';require __DIR__.'/../cliente-navegacion.php'; ?>
 <?php else: ?>
     <header class="care-nav">
         <a class="care-nav__brand" href="../index.php">TINTA <strong>VIVA</strong><small>ARTE QUE DEJA HUELLA</small></a>

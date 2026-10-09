@@ -16,12 +16,12 @@ $faqTotal = count($faqs);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/preguntas.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/preguntas.css')) ?>">
-    <?php if (($account['rol'] ?? '') === 'cliente'): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
+    <?php if (($account['nombre_rol'] ?? '') === 'cliente'): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
     <?php responsiveAssets(); ?>
 </head>
-<body class="faq-public<?= ($account['rol'] ?? '') === 'cliente' ? ' client-shared-layout' : '' ?>">
-<?php if (($account['rol'] ?? '') === 'cliente'): ?>
-    <?php $clientEndpoint='../panel/cliente.php';$publicPrefix='../';require __DIR__.'/../cliente-navegacion.php'; ?>
+<body class="faq-public<?= ($account['nombre_rol'] ?? '') === 'cliente' ? ' client-shared-layout' : '' ?>">
+<?php if (($account['nombre_rol'] ?? '') === 'cliente'): ?>
+    <?php $clientEndpoint='../index.php';$publicPrefix='../';require __DIR__.'/../cliente-navegacion.php'; ?>
 <?php else: ?>
     <header class="faq-nav">
         <a class="faq-nav__brand" href="../index.php">TINTA <strong>VIVA</strong><small>ARTE QUE DEJA HUELLA</small></a>

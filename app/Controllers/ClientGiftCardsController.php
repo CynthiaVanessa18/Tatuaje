@@ -10,3 +10,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     } catch (DomainException $ex) { $giftError=$ex->getMessage(); }
 }
 if (!$profileMissing) $giftCards=ClientGiftCards::owned(conectarBaseDatos(),(int)$profileId);
+$giftCards=array_values(array_filter($giftCards,static fn(array $card):bool=>ClientGiftCards::usable($card)));
+$giftCardTotal=count($giftCards);
+$giftCardPageSize=10;
+$giftCardPage=max(1,min((int)($_GET['gift_page']??1),max(1,(int)ceil($giftCardTotal/$giftCardPageSize))));
+$giftCards=array_slice($giftCards,($giftCardPage-1)*$giftCardPageSize,$giftCardPageSize);

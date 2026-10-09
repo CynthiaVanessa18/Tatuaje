@@ -1,4 +1,4 @@
-<?php require __DIR__.'/cliente-regalos-disponibles.php'; ?>
+<?php require_once __DIR__.'/cliente-tienda-iconos.php'; require __DIR__.'/cliente-regalos-disponibles.php'; ?>
 <section class="card controles-catalogo">
     <form method="get" action="<?= e($clientEndpoint ?? '../index.php') ?>" class="buscador-cliente">
         <input type="hidden" name="section" value="tienda">
@@ -15,16 +15,20 @@
     <div class="ofertas-catalogo-lista">
     <?php foreach ($storePromotions as $offer): ?>
         <article class="oferta-catalogo">
-            <strong><?= e($offer['titulo']) ?></strong><span><?= e(StorePromotions::benefit($offer)) ?></span>
-            <?php if ($offer['descripcion']): ?><p><?= nl2br(e($offer['descripcion'])) ?></p><?php endif ?>
-            <small><?= e(['tienda'=>'Toda la tienda','productos'=>'Artículos seleccionados','categorias'=>'Categorías seleccionadas'][$offer['alcance']]) ?><?= StorePromotions::cents($offer['minimo_compra'])?' · Compra mínima: ₡'.e(number_format((float)$offer['minimo_compra'],2,',','.')):'' ?></small>
-            <small>Válida hasta <?= e((new DateTimeImmutable($offer['fecha_fin'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i')) ?> · Costa Rica</small>
+            <span class="store-offer-badge">Oferta</span>
+            <p class="store-offer-amount"><?= e($offer['tipo_descuento']==='porcentaje'?rtrim(rtrim(number_format((float)$offer['valor_descuento'],2,',','.'),'0'),',').' %':'₡'.number_format((float)$offer['valor_descuento'],2,',','.')) ?></p>
+            <h3><?= e($offer['titulo']) ?></h3>
+            <div class="store-offer-rule" aria-hidden="true"></div>
+            <p class="store-offer-detail"><?= clientStoreIcon('carrito') ?><span><?= e(['tienda'=>'Toda la tienda','productos'=>'Artículos seleccionados','categorias'=>'Categorías seleccionadas'][$offer['alcance']]) ?><?= $offer['tipo_descuento']==='monto'?' · Monto fijo por compra':'' ?></span></p>
+            <?php if (StorePromotions::cents($offer['minimo_compra'])): ?><p class="store-offer-detail"><?= clientStoreIcon('etiqueta') ?><span>Compra mínima: ₡<?= e(number_format((float)$offer['minimo_compra'],2,',','.')) ?></span></p><?php endif ?>
+            <p class="store-offer-detail"><?= clientStoreIcon('fecha') ?><span>Válida hasta <?= e((new DateTimeImmutable($offer['fecha_fin'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i')) ?> · Costa Rica</span></p>
+            <?php if ($offer['descripcion']): ?><details class="store-offer-description"><summary>Ver detalles</summary><p><?= nl2br(e($offer['descripcion'])) ?></p></details><?php endif ?>
         </article>
     <?php endforeach ?>
     </div>
 </section>
 <?php endif ?>
-<div class="cabecera-resultados"><h2><?= $storeCategory==='' ? 'Descubre nuestros artículos' : 'Artículos de esta categoría' ?></h2><p role="status"><?= e($storeTotal) ?> artículos</p></div>
+<div class="cabecera-resultados"><h2><?= $storeCategory==='' ? 'Descubre nuestros artículos' : 'Artículos de esta categoría' ?></h2><p role="status"><?= e($storeTotal) ?> <?= $storeTotal===1?'artículo':'artículos' ?></p></div>
 <div class="catalogo-cliente">
     <?php foreach ($storeProducts as $product): ?>
         <article class="producto-cliente" data-product-card>

@@ -50,6 +50,7 @@ final class CrudService
         $db=$this->repo->db; $table=$this->repo->module['table']; $db->beginTransaction();
         try {
             $old=$key?$this->repo->find($key,true):null;
+            if ($table==='tarjetas_regalo' && $action==='create' && !isset($input['estado'])) $input['estado']='activa';
             $d=$action==='delete'?[]:self::validate($this->repo->columns(),[$this->repo,'editable'],$input);
             $message='Registro guardado correctamente.';
             if ($table==='promociones' && $old && $action!=='delete') {
@@ -142,7 +143,8 @@ final class CrudService
             if ($table==='tarjetas_regalo' && !$old) {
                 $id=$db->lastInsertId();
                 $db->prepare("INSERT INTO movimientos_tarjetas_regalo (id_tarjeta,tipo,monto,referencia) VALUES (?,'carga_inicial',?,?)")->execute([$id,$d['monto_inicial'],'emision-'.bin2hex(random_bytes(16))]);
-                ClientGiftCards::assignRecipient($db,(int)$id,$d['correo_destinatario']);
+                $assigned=ClientGiftCards::assignRecipient($db,(int)$id,$d['correo_destinatario']);
+                $message.=$assigned?' La tarjeta se añadió automáticamente a la cuenta del destinatario.':' No hay una cuenta de cliente activa con ese correo. Entrega el código al destinatario para que la vincule.';
             }
             if ($table==='tarjetas_regalo' && $old && $action==='update') ClientGiftCards::assignRecipient($db,(int)$old['id_tarjeta'],$d['correo_destinatario']);
             if ($table==='detalle_ventas') {

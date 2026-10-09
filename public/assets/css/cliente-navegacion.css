@@ -1,4 +1,4 @@
-.client-navigation{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:18px;min-height:70px;padding:12px max(18px,calc((100% - 1420px)/2));background:rgba(5,3,4,.98);border-bottom:1px solid var(--gold-dark,#64492b);color:var(--bone,#eee2d0);box-sizing:border-box}
+.client-navigation{--gold:#bd9255;--gold-dark:#62421f;--bone:#eee3d0;--bone-muted:#a99887;--title:"Cinzel Decorative",Georgia,serif;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Montserrat",Arial,sans-serif;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:18px;min-height:70px;padding:12px max(18px,calc((100% - 1420px)/2));background:rgba(5,3,4,.98);border-bottom:1px solid var(--gold-dark,#64492b);color:var(--bone,#eee2d0);font-family:var(--sans);line-height:1.65;box-sizing:border-box}
 .client-navigation a{text-decoration:none;color:inherit}
 .client-navigation-brand{white-space:nowrap;font-family:var(--title,serif);font-size:16px;letter-spacing:2px}
 .client-navigation-brand strong{color:var(--gold,#bf9454)}

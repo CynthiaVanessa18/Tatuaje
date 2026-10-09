@@ -7,7 +7,8 @@ document.querySelectorAll('[data-balance-search]').forEach(form => {
     const close=() => { matches.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');active=-1; };
     const choose=card => {
         clearTimeout(timer);request?.abort();
-        selection.value=String(card.id_tarjeta);input.value=card.nombre_destinatario;
+        selection.value=card.destinatario;input.value=card.nombre_destinatario;
+        const currency=form.querySelector('[data-balance-currency]');if(currency)currency.value=card.moneda;
         close();form.requestSubmit();
     };
     const load=async () => {
@@ -27,7 +28,7 @@ document.querySelectorAll('[data-balance-search]').forEach(form => {
             cards.forEach((card,index) => {
                 const button=document.createElement('button');button.type='button';button.id=`balance-match-${index}`;button.setAttribute('role','option');button.setAttribute('aria-selected','false');
                 const name=document.createElement('strong');name.textContent=card.nombre_destinatario;
-                const detail=document.createElement('small');detail.textContent=`Tarjeta #${card.id_tarjeta} · ${card.comprador||'Comprador no disponible'} · ${card.moneda} ${Number(card.saldo_actual).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})} · ${card.estado}`;
+                const detail=document.createElement('small');detail.textContent=`${card.tarjetas} tarjetas · Saldo disponible: ${card.moneda} ${Number(card.saldo_actual).toLocaleString('es-CR',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
                 button.append(name,detail);button.addEventListener('click',()=>choose(card));matches.append(button);
             });
             matches.hidden=!cards.length;input.setAttribute('aria-expanded',String(!!cards.length));
@@ -37,7 +38,7 @@ document.querySelectorAll('[data-balance-search]').forEach(form => {
             close();status.textContent='No se pudieron cargar las sugerencias. Puedes pulsar Buscar para consultar.';
         }
     };
-    input.addEventListener('input',()=>{selection.value='';request?.abort();close();clearTimeout(timer);timer=setTimeout(load,250);});
+    input.addEventListener('input',()=>{selection.value='';form.querySelector('[data-balance-currency]')?.remove();request?.abort();close();clearTimeout(timer);timer=setTimeout(load,250);});
     input.addEventListener('focus',load);
     input.addEventListener('keydown',event=>{
         if (event.key==='Escape') {close();return;}

@@ -18,8 +18,10 @@
 <?php endif ?>
 <?php responsiveAssets($publicPrefix); ?>
 <?php if ($clientMemberships): ?><link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-membresia-visual.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-membresia-visual.css')) ?>"><?php endif ?>
+<?php if ($clientStore): ?><link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-tienda-visual.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-tienda-visual.css')) ?>"><?php endif ?>
+<?php if ($clientGiftCards): ?><link rel="stylesheet" href="<?= e($publicPrefix) ?>assets/css/cliente-tarjetas-visual.css?v=<?= e(filemtime(__DIR__.'/../../public/assets/css/cliente-tarjetas-visual.css')) ?>"><?php endif ?>
 </head>
-<body class="<?= $requiredRole === 'cliente' ? 'cliente-tinta-viva ' : '' ?><?= $clientMemberships ? 'pagina-membresias ' : '' ?><?= $clientCart ? 'pagina-carrito ' : '' ?><?= $clientStore ? 'pagina-tienda tienda-cliente' : '' ?>" <?= $clientStore ? 'data-bs-theme="dark"' : '' ?>>
+<body class="<?= $requiredRole === 'cliente' ? 'cliente-tinta-viva ' : '' ?><?= $clientGiftCards ? 'pagina-tarjetas ' : '' ?><?= $clientMemberships ? 'pagina-membresias ' : '' ?><?= $clientCart ? 'pagina-carrito ' : '' ?><?= $clientStore ? 'pagina-tienda tienda-cliente tienda-visual' : '' ?>" <?= $clientStore ? 'data-bs-theme="dark"' : '' ?>>
 <?php if ($requiredRole==='cliente'): require __DIR__.'/cliente-navegacion.php'; else: ?>
 <aside>
     <a class="brand" href="<?= e(roleRoutes()[$requiredRole]) ?>">ESTUDIO<br><strong>TATTOO</strong></a>
@@ -29,8 +31,12 @@
 </aside>
 <?php endif ?>
 <main>
-    <?php if ($clientMemberships): ?>
+    <?php if ($clientGiftCards): ?>
+    <header class="gift-hero"><h1>Mis tarjetas de <span>regalo</span></h1><p>Consulta tus regalos y usa su saldo en la tienda.</p><div class="gift-hero-ornament" aria-hidden="true"><span>✦</span></div></header>
+    <?php elseif ($clientMemberships): ?>
     <header class="membership-hero"><div><p class="eyebrow"><span aria-hidden="true">✧</span> MI MEMBRESÍA</p><h1>Tu membresía</h1><p>Tu arte merece cuidado.</p><div class="membership-hero-ornament" aria-hidden="true"><span>✧</span></div></div></header>
+    <?php elseif ($clientStore && !$clientCart): require_once __DIR__.'/cliente-tienda-iconos.php'; ?>
+    <header class="store-hero"><div class="store-hero-copy"><h1>Tienda <span>del estudio</span></h1><div class="store-hero-ornament" aria-hidden="true"><span>✧</span></div><p class="store-hero-tagline">Arte que llevas contigo.</p><p class="store-hero-description">Ropa, accesorios y cuidado para tus tatuajes.</p><div class="store-actions"><a class="button secondary" href="<?= e($clientEndpoint) ?>?section=tarjetas"><?= clientStoreIcon('regalo') ?> Mis tarjetas de regalo</a><a class="button carrito-cabecera" href="<?= e($clientEndpoint) ?>?section=carrito"><?= clientStoreIcon('carrito') ?> Mi carrito · <?= e($cartCount) ?></a></div></div></header>
     <?php else: ?><header>
         <div>
             <p class="eyebrow">BIENVENIDO, <?= e($account['usuario']) ?></p>
@@ -52,6 +58,18 @@
     <?php else: ?>
     <?php if ($profileMissing): ?>
         <p class="notice" role="status">Tu cuenta ya puede ingresar. Solicita al administrador que vincule tu perfil para mostrar tus citas.</p>
+    <?php endif ?>
+    <?php if ($requiredRole === 'cliente'): ?>
+    <section class="card">
+        <h2>Sesiones finalizadas</h2>
+        <p>El estudio finaliza la cita después de la sesión. Luego puedes valorar tu experiencia con el artista.</p>
+        <?php if (!$clientRatingAppointments): ?><p>Aún no tienes sesiones finalizadas.</p><?php endif ?>
+        <?php foreach ($clientRatingAppointments as $finishedAppointment): ?>
+        <p><strong><?= e($finishedAppointment['artista']) ?></strong> · <?= e((new DateTimeImmutable($finishedAppointment['fecha_hora_inicio']))->format('d/m/Y H:i')) ?> ·
+        <?php if ($finishedAppointment['id_calificacion'] === null): ?>Pendiente de calificar · <a href="<?= e($publicPrefix) ?>panel/mis-calificaciones.php#cita-<?= e($finishedAppointment['id_cita']) ?>">Calificar mi experiencia</a>
+        <?php else: ?>Experiencia calificada · <?= e($finishedAppointment['puntuacion']) ?>/5 · <a href="<?= e($publicPrefix) ?>panel/mis-calificaciones.php#cita-<?= e($finishedAppointment['id_cita']) ?>">Ver mi valoración</a><?php endif ?></p>
+        <?php endforeach ?>
+    </section>
     <?php endif ?>
     <section class="card">
         <h2>Próximas citas</h2>

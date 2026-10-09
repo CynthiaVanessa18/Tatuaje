@@ -1,3 +1,12 @@
+document.querySelectorAll('[data-renewal-options]').forEach(options => {
+    const form = options.closest('form');
+    const consent = form.querySelector('[name="accept_renewal_terms"]');
+    const update = () => {
+        consent.required = options.querySelector('[value="1"]').checked;
+    };
+    options.addEventListener('change', update);
+    update();
+});
 document.querySelectorAll('[data-membership-comparison]').forEach(form => {
     const mode = form.querySelector('[name="modalidad"]');
     const summary = form.querySelector('[data-membership-summary]');

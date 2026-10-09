@@ -22,11 +22,11 @@ function testimonialPublicDate(string $value): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/testimonios.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/testimonios.css')) ?>">
-    <?php if (($account['rol'] ?? '') === 'cliente'): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
+    <?php if (($account['nombre_rol'] ?? '') === 'cliente'): ?><link rel="stylesheet" href="../assets/css/cliente-navegacion.css?v=<?= e(filemtime(__DIR__.'/../../../public/assets/css/cliente-navegacion.css')) ?>"><?php endif ?>
     <?php responsiveAssets(); ?>
 </head>
-<body class="testimonials-public<?= ($account['rol'] ?? '') === 'cliente' ? ' client-shared-layout' : '' ?>">
-<?php if (($account['rol'] ?? '') === 'cliente'): ?>
+<body class="testimonials-public<?= ($account['nombre_rol'] ?? '') === 'cliente' ? ' client-shared-layout' : '' ?>">
+<?php if (($account['nombre_rol'] ?? '') === 'cliente'): ?>
     <?php $clientEndpoint='../index.php';$publicPrefix='../';require __DIR__.'/../cliente-navegacion.php'; ?>
 <?php else: ?>
     <header class="testimonials-nav">
@@ -43,7 +43,7 @@ function testimonialPublicDate(string $value): string
             <p class="testimonials-kicker"><span>✦</span> VOCES BAJO LA PIEL</p>
             <h1>Historias que<br><em>ya no pueden borrarse.</em></h1>
             <p>No hablamos por nuestros clientes. Dejamos que las personas que confiaron su historia al estudio cuenten cómo una idea terminó convertida en parte de ellas.</p>
-            <?php if (($account['rol'] ?? '') === 'cliente'): ?><a href="../panel/mis-testimonios.php">Contar mi experiencia <b>†</b></a><?php else: ?><a href="../auth/login.php">Ingresar para dejar mi voz <b>†</b></a><?php endif ?>
+            <?php if (($account['nombre_rol'] ?? '') === 'cliente'): ?><a href="../panel/mis-testimonios.php">Contar mi experiencia <b>†</b></a><?php else: ?><a href="../auth/login.php">Ingresar para dejar mi voz <b>†</b></a><?php endif ?>
         </div>
         <blockquote><span>“</span>La tinta permanece.<br>La experiencia también.</blockquote>
     </section>
@@ -91,7 +91,7 @@ function testimonialPublicDate(string $value): string
         <?php endif ?>
     </section>
 
-    <section class="testimonials-cta"><span aria-hidden="true">✦</span><div><p class="testimonials-kicker">TU EXPERIENCIA TAMBIÉN IMPORTA</p><h2>¿Tu obra ya forma parte de ti?</h2><p>Cuando tu cita esté finalizada podrás contarla desde tu espacio privado.</p></div><a href="<?= ($account['rol'] ?? '') === 'cliente' ? '../panel/mis-testimonios.php' : '../auth/login.php' ?>">Dejar mi testimonio →</a></section>
+    <section class="testimonials-cta"><span aria-hidden="true">✦</span><div><p class="testimonials-kicker">TU EXPERIENCIA TAMBIÉN IMPORTA</p><h2>¿Tu obra ya forma parte de ti?</h2><p>Cuando tu cita esté finalizada podrás contarla desde tu espacio privado.</p></div><a href="<?= ($account['nombre_rol'] ?? '') === 'cliente' ? '../panel/mis-testimonios.php' : '../auth/login.php' ?>">Dejar mi testimonio →</a></section>
 </main>
 
 <footer class="testimonials-footer"><strong>TINTA VIVA</strong><span>Personas reales · Historias eternas</span><small>© <?= date('Y') ?></small></footer>

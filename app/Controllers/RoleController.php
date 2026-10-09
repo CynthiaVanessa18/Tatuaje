@@ -41,6 +41,11 @@ $query = conectarBaseDatos()->prepare(
 );
 $query->execute($parameters);
 $appointments = $query->fetchAll();
+$clientRatingAppointments = [];
+if ($requiredRole === 'cliente' && ($_GET['section'] ?? '') === 'citas') {
+    require_once __DIR__.'/../Services/ClientRatings.php';
+    $clientRatingAppointments = (new ClientRatings(conectarBaseDatos(), (int)$account['id_cuenta']))->appointments();
+}
 $clientStore=$requiredRole==='cliente' && in_array($_GET['section']??'',['tienda','carrito'],true);
 $clientCart=$clientStore && ($_GET['section']??'')==='carrito';
 $clientMemberships=$requiredRole==='cliente' && ($_GET['section']??'')==='membresias';

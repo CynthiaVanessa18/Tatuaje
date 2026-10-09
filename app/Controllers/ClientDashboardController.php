@@ -8,6 +8,11 @@ $database = conectarBaseDatos();
 $quoteRepository = new QuoteRepository($database);
 $clientProfile = $quoteRepository->clientForAccount((int) $account['id_cuenta']);
 $profileMissing = $clientProfile === null;
+require_once __DIR__.'/../Services/ClientRatings.php';
+$pendingRatingAppointments = array_filter(
+    (new ClientRatings($database, (int)$account['id_cuenta']))->appointments(),
+    static fn(array $item): bool => $item['id_calificacion'] === null
+);
 $appointments = [];
 $quotes = [];
 $quoteSummary = [

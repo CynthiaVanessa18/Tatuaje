@@ -81,6 +81,12 @@ giftAssert(str_contains($html,'Usar tarjeta') && str_contains($html,'section=tie
 (new CrudService(new CrudRepository($db,$modules['tarjetas'])))->execute('create',['id_cliente_comprador'=>'1','nombre_destinatario'=>'Luis','correo_destinatario'=>'b@test.invalid','mensaje'=>'Regalo','monto_inicial'=>'300','moneda'=>'CRC','fecha_vencimiento'=>'','estado'=>'pendiente'],null);
 $cartGiftCards=ClientGiftCards::owned($db,2);
 ob_start();require __DIR__.'/../app/Views/cliente-regalos-disponibles.php';$html=ob_get_clean();
-giftAssert(str_contains($html,'Pendiente de activación') && substr_count($html,'name="cart_action"')===1,'Muestra pendientes sin permitir su canje');
+giftAssert(!str_contains($html,'Pendiente de activación') && substr_count($html,'name="cart_action"')===1 && str_contains($html,'1 tarjeta de regalo por usar'),'Cuenta únicamente regalos disponibles y oculta pendientes');
 giftAssert(!$db->inTransaction(),'Sin transacciones abiertas');
+giftAssert((bool)$db->query('SELECT id_cliente FROM tarjetas_regalo_clientes WHERE id_tarjeta=1')->fetchColumn(),'Tarjetas antiguas se vinculan al destinatario verificado');
+$defaultNotice=(new CrudService(new CrudRepository($db,$modules['tarjetas'])))->execute('create',['id_cliente_comprador'=>'1','nombre_destinatario'=>'Luis','correo_destinatario'=>'B@test.invalid','mensaje'=>'Obsequio del estudio','monto_inicial'=>'100','moneda'=>'CRC','fecha_vencimiento'=>''],null);
+$defaultGift=(int)$db->query('SELECT MAX(id_tarjeta) FROM tarjetas_regalo')->fetchColumn();
+giftAssert($db->query('SELECT estado FROM tarjetas_regalo WHERE id_tarjeta='.$defaultGift)->fetchColumn()==='activa','Obsequio se crea activo por defecto');
+giftAssert((int)$db->query('SELECT id_cliente FROM tarjetas_regalo_clientes WHERE id_tarjeta='.$defaultGift)->fetchColumn()===2,'Asignación reconoce correo con mayúsculas');
+giftAssert(str_contains($defaultNotice,'añadió automáticamente'),'Confirma asignación automática al administrador');
 echo "OK: $checks comprobaciones de privacidad, códigos, saldo parcial/completo, rechazo, vencimiento y reintentos. Solo tablas temporales.\n";

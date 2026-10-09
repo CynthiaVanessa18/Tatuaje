@@ -1,5 +1,5 @@
 <?php
-$availableGifts=array_values(array_filter($cartGiftCards,static fn(array $gift)=>ClientGiftCards::usable($gift) || ($gift['estado']==='pendiente' && (!$gift['fecha_vencimiento'] || $gift['fecha_vencimiento']>gmdate('Y-m-d H:i:s')))));
+$availableGifts=array_values(array_filter($cartGiftCards,static fn(array $gift)=>ClientGiftCards::usable($gift)));
 ?>
 <?php if ($availableGifts): ?>
 <section class="store-gifts" aria-labelledby="store-gifts-title">
