@@ -104,7 +104,9 @@ $accountLink=accountAreaLink($account);
             <a href="artistas/">Artistas</a>
             <a href="galeria/">Galería</a>
             <a href="cotizaciones/">Cotizar</a>
-            <a href="#cuidados">Cuidados</a>
+            <a href="testimonios/">Testimonios</a>
+            <a href="preguntas/">Preguntas</a>
+            <a href="cuidados/">Cuidados</a>
             <a href="index.php?section=membresias">Membresía</a>
             <a href="#calificaciones_artistas">Calificaciones de Artistas</a>
 
@@ -112,17 +114,17 @@ $accountLink=accountAreaLink($account);
             <a href="index.php?section=citas">Mis citas</a>
         </nav>
 
-        <?php if (!empty($_SESSION['account'])): ?>
-            <a class="button button--login" href="<?= e($accountLink['url']) ?>"><?= e($accountLink['label']) ?></a>
-            <form class="session-actions" method="post" action="auth/logout.php">
-                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
-                <button class="button button--login" type="submit">Cerrar sesión</button>
-            </form>
-        <?php else: ?>
-            <a class="button button--login" href="auth/login.php">
-                Ingresar
-            </a>
-        <?php endif ?>
+        <div class="nav-account-actions">
+            <?php if (!empty($_SESSION['account'])): ?>
+                <a class="button button--login" href="<?= e($accountLink['url']) ?>"><?= e($accountLink['label']) ?></a>
+                <form class="session-actions" method="post" action="auth/logout.php">
+                    <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                    <button class="button button--login" type="submit">Cerrar sesión</button>
+                </form>
+            <?php else: ?>
+                <a class="button button--login" href="auth/login.php">Ingresar</a>
+            <?php endif ?>
+        </div>
     </div>
 
     <div class="blood-edge" aria-hidden="true">
@@ -362,6 +364,8 @@ $accountLink=accountAreaLink($account);
                 </p>
             </article>
         </div>
+
+        <a class="ghost-link" href="cuidados/">Abrir guía completa de cuidados →</a>
     </section>
 
     <section class="summoning reveal" id="cotizar">

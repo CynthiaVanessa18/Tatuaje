@@ -16,7 +16,7 @@ $navigationModule = $navigationPage === 'administrador.php' ? ($moduleId ?? 'cat
     <a class="admin-brand" href="administrador.php"><span class="admin-brand__sigil">✦</span><span><strong>TINTA VIVA</strong><small>ADMINISTRACIÓN</small></span></a>
     <p class="admin-sidebar__label">GESTIÓN DEL ESTUDIO</p>
     <nav aria-label="Navegación administrativa">
-        <?php foreach (['artistas.php'=>['✦','Perfiles de artistas'], 'galeria.php'=>['▧','Galería fotográfica'], 'cotizaciones.php'=>['◆','Cotizaciones y citas']] as $href => [$icon, $title]): ?>
+        <?php foreach (['artistas.php'=>['✦','Perfiles de artistas'], 'galeria.php'=>['▧','Galería fotográfica'], 'cotizaciones.php'=>['◆','Cotizaciones y citas'], 'testimonios.php'=>['“','Testimonios'], 'preguntas.php'=>['?','Preguntas frecuentes'], 'cuidados.php'=>['†','Cuidados del tatuaje']] as $href => [$icon, $title]): ?>
         <a href="<?= e($href) ?>" <?= $navigationPage === $href ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= e($icon) ?></span><?= e($title) ?></a>
         <?php endforeach ?>
         <?php foreach ($navigationGroups as $name => $group): ?>

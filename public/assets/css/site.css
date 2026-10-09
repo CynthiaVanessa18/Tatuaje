@@ -122,19 +122,21 @@ a {
 }
 
 .nav-shell {
-    width: min(1420px, calc(100% - 3rem));
+    position: relative;
+    width: min(1760px, calc(100% - 2rem));
     min-height: 86px;
     margin: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    gap: clamp(0.75rem, 1.2vw, 1.35rem);
 }
 
 .brand {
     display: inline-flex;
     align-items: center;
     gap: 1rem;
+    flex: 0 0 auto;
     text-decoration: none;
 }
 
@@ -168,19 +170,37 @@ a {
 
 .main-nav {
     display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
     align-items: center;
-    gap: clamp(1.2rem, 3vw, 3rem);
+    justify-content: center;
+    gap: clamp(0.55rem, 0.9vw, 1rem);
 }
 
 .main-nav a {
     position: relative;
+    flex: 0 0 auto;
     color: var(--bone-muted);
     font-family: var(--serif);
-    font-size: 0.88rem;
+    font-size: clamp(0.66rem, 0.68vw, 0.78rem);
     font-weight: 600;
-    letter-spacing: 0.14rem;
+    letter-spacing: 0.08rem;
     text-decoration: none;
     text-transform: uppercase;
+}
+
+.nav-account-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.nav-account-actions .button--login {
+    min-width: 108px;
+    min-height: 43px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.64rem;
 }
 
 .main-nav a::after {
@@ -1027,6 +1047,53 @@ a {
 
 /* Responsive */
 
+@media (max-width: 1650px) {
+    .main-nav {
+        position: absolute;
+        top: 86px;
+        right: 0;
+        left: 0;
+        max-height: calc(100vh - 86px);
+        padding: 1.5rem 2rem;
+        display: none;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0;
+        overflow-y: auto;
+        border: 1px solid var(--gold-dark);
+        border-top: 0;
+        background: rgba(5, 3, 4, 0.985);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.58);
+    }
+
+    .main-nav.is-open {
+        display: flex;
+    }
+
+    .main-nav a {
+        width: 100%;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(189, 146, 85, 0.13);
+        font-size: 0.78rem;
+    }
+
+    .main-nav a::after {
+        display: none;
+    }
+
+    .menu-button {
+        display: block;
+        margin-left: auto;
+        flex: 0 0 auto;
+        order: 2;
+        cursor: pointer;
+    }
+
+    .nav-account-actions {
+        order: 3;
+    }
+}
+
 @media (max-width: 950px) {
     .main-nav {
         position: absolute;
@@ -1051,10 +1118,6 @@ a {
     .menu-button {
         display: block;
         order: 2;
-    }
-
-    .nav-shell > .button {
-        order: 3;
     }
 
     .hero {
@@ -1142,6 +1205,18 @@ a {
         min-height: 40px;
         padding-inline: 0.8rem;
         font-size: 0.58rem;
+    }
+
+    .nav-account-actions {
+        gap: 0.35rem;
+    }
+
+    .nav-account-actions .button--login {
+        min-width: auto;
+        min-height: 38px;
+        padding: 0.55rem 0.65rem;
+        font-size: 0.52rem;
+        letter-spacing: 0.08rem;
     }
 
     .main-nav {
