@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 final class ClientRatings
 {
+    private const ELIGIBLE = "c.estado NOT IN ('cancelada','no_asistio') AND (c.estado='finalizada' OR (q.estado='aceptada' AND q.id_cliente=c.id_cliente))";
     public function __construct(private PDO $db, private int $accountId) {}
 
     public function appointments(): array
     {
-        $query = $this->db->prepare("SELECT c.id_cita, c.fecha_hora_inicio,
+        $query = $this->db->prepare("SELECT c.id_cita, c.fecha_hora_inicio,c.estado AS estado_cita,
             COALESCE(NULLIF(a.nombre_artistico, ''), CONCAT_WS(' ', a.nombre, a.apellidos)) AS artista,
             r.id_calificacion, r.puntuacion, r.comentario, r.estado_publicacion
             FROM citas c JOIN clientes cl ON cl.id_cliente=c.id_cliente
             JOIN artistas a ON a.id_artista=c.id_artista
+            LEFT JOIN cotizaciones q ON q.id_cotizacion=c.id_cotizacion
             LEFT JOIN calificaciones_artistas r ON r.id_cita=c.id_cita
-            WHERE cl.id_cuenta=? AND c.estado='finalizada'
+            WHERE cl.id_cuenta=? AND ".self::ELIGIBLE."
             ORDER BY (r.id_calificacion IS NULL) DESC, c.fecha_hora_inicio DESC, c.id_cita DESC");
         $query->execute([$this->accountId]);
         return $query->fetchAll();
@@ -33,9 +35,10 @@ final class ClientRatings
         try {
             $query=$this->db->prepare("SELECT c.id_cita FROM citas c
                 JOIN clientes cl ON cl.id_cliente=c.id_cliente
-                WHERE c.id_cita=? AND cl.id_cuenta=? AND c.estado='finalizada' FOR UPDATE");
+                LEFT JOIN cotizaciones q ON q.id_cotizacion=c.id_cotizacion
+                WHERE c.id_cita=? AND cl.id_cuenta=? AND ".self::ELIGIBLE." FOR UPDATE");
             $query->execute([$appointmentId,$this->accountId]);
-            if ($query->fetchColumn() === false) throw new DomainException('Solo puedes calificar tus propias citas finalizadas.');
+            if ($query->fetchColumn() === false) throw new DomainException('Solo puedes reseñar tus propias citas finalizadas o con cotización aceptada. Las citas canceladas o con inasistencia no admiten reseñas.');
             $query=$this->db->prepare('SELECT id_calificacion FROM calificaciones_artistas WHERE id_cita=?');
             $query->execute([$appointmentId]);
             if ($query->fetchColumn() !== false) throw new DomainException('Ya calificaste esta cita.');

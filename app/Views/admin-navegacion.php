@@ -7,6 +7,7 @@ foreach ($navigationModules as $id => $item) {
     $navigationGroups[$item['group']]['entry'] ??= $id;
 }
 $navigationGroups['Venta de artículos']['entry'] = 'productos';
+$navigationGroups['Calificaciones']['entry'] = 'resumen_calificaciones';
 $navigationTitles = ['Categorías / filtros'=>'Categorías y especialidades', 'Membresía'=>'Membresías', 'Venta de artículos'=>'Tienda'];
 $navigationIcons = ['Cuentas'=>'♙', 'Categorías / filtros'=>'◇', 'Calificaciones'=>'★', 'Membresía'=>'♜', 'Beneficios'=>'✦', 'Tarjetas de regalo'=>'▣', 'Venta de artículos'=>'▤'];
 $navigationPage = basename($_SERVER['SCRIPT_NAME'] ?? '');
