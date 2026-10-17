@@ -173,5 +173,6 @@ $accountLink = accountAreaLink($account ?? null, '../');
     <a class="brand" href="../index.php"><span class="brand__text"><strong>TINTA VIVA</strong><small>ARTE QUE DEJA HUELLA</small></span></a>
     <p>Personas reales. Historias eternas.</p><p>© <?= date('Y') ?> Tinta Viva</p>
 </footer>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

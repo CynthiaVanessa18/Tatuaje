@@ -399,5 +399,6 @@ $accountLink=accountAreaLink($account);
 
     <p>© <?= date('Y') ?> Tinta Viva</p>
 </footer>
+<?php chatbotWidget(''); ?>
 </body>
 </html>

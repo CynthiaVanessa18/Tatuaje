@@ -11,6 +11,13 @@ function responsiveAssets(string $prefix='../'): void {
     echo '<link rel="stylesheet" href="'.e($prefix).'assets/css/responsive.css?v='.filemtime($assets.'css/responsive.css').'">';
     echo '<script src="'.e($prefix).'assets/js/table-pagination.js?v='.filemtime($assets.'js/table-pagination.js').'" defer></script>';
 }
+function chatbotWidget(string $prefix=''): void {
+    static $rendered=false;
+    if ($rendered) return;
+    $rendered=true;
+    $chatbotPrefix=$prefix;
+    require __DIR__.'/../Views/chatbot-widget.php';
+}
 function renderPagination(int $total, int $page, array $params, string $pageKey='page', int $size=20): void {
     $pages=max(1,(int)ceil($total/$size));
     $page=max(1,min($page,$pages));

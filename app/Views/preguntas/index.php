@@ -85,5 +85,6 @@ $faqTotal = count($faqs);
 
 <footer class="faq-footer"><strong>TINTA VIVA</strong><span>Claridad antes de marcar la piel</span><small>© <?= date('Y') ?></small></footer>
 <?php if ($faqs !== []): ?><script src="../assets/js/preguntas.js?v=<?= e(filemtime(__DIR__.'/../../../public/assets/js/preguntas.js')) ?>" defer></script><?php endif ?>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

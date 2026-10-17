@@ -96,5 +96,6 @@ function testimonialPublicDate(string $value): string
 
 <footer class="testimonials-footer"><strong>TINTA VIVA</strong><span>Personas reales · Historias eternas</span><small>© <?= date('Y') ?></small></footer>
 <?php if ($testimonials !== []): ?><script src="../assets/js/testimonios-carousel.js?v=<?= e(filemtime(__DIR__.'/../../../public/assets/js/testimonios-carousel.js')) ?>" defer></script><?php endif ?>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

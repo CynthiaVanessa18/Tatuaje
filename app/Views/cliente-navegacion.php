@@ -22,3 +22,4 @@ $navStore=in_array($navSection,['tienda','carrito','tarjetas'],true);
 <a class="client-navigation-account" href="<?= e($navEndpoint) ?>?section=cuenta" aria-label="Mi cuenta" title="Mi cuenta" <?= $navSection==='cuenta'?'aria-current="page"':'' ?>><svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></a>
 <form method="post" action="<?= e($navPrefix) ?>auth/logout.php"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><button type="submit">Cerrar sesión</button></form>
 </div>
+<?php chatbotWidget($navPrefix); ?>

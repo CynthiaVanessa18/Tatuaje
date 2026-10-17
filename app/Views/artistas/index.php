@@ -439,5 +439,6 @@ function artistSummary(?string $biography): string
 
     <p>© <?= date('Y') ?> Tinta Viva</p>
 </footer>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

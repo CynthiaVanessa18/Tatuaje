@@ -86,5 +86,6 @@ $careCount = count($careInstructions);
 
 <footer class="care-footer"><strong>TINTA VIVA</strong><span>La tinta permanece cuando la piel se respeta</span><small>© <?= date('Y') ?></small></footer>
 <?php if ($careInstructions !== []): ?><script src="../assets/js/cuidados.js?v=<?= e(filemtime(__DIR__.'/../../../public/assets/js/cuidados.js')) ?>" defer></script><?php endif ?>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

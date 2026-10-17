@@ -442,5 +442,6 @@ $websiteUrl = $artist !== null
     <p>Personas reales. Historias eternas.</p>
     <p>© <?= date('Y') ?> Tinta Viva</p>
 </footer>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>
