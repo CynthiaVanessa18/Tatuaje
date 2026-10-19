@@ -7,64 +7,78 @@ final class AdminAppointmentService
 
     public function __construct(
         private AppointmentRepository $repository,
-        private AppointmentEmailService $emailService
+        private AppointmentEmailService $emailService,
+        private ArtistAvailabilityService $availability
     ) {
     }
 
-    public function schedule(int $quoteId, int $accountId, array $input): int
+    public function schedule(int $quoteId, int $accountId, array $input): array
     {
-        $startValue = is_scalar($input['fecha_hora_inicio'] ?? null)
-            ? trim((string) $input['fecha_hora_inicio'])
-            : '';
-        $start = DateTimeImmutable::createFromFormat(
-            '!Y-m-d\TH:i',
-            $startValue,
-            new DateTimeZone(self::LOCAL_TIMEZONE)
-        );
-
-        if ($start === false || $start->format('Y-m-d\TH:i') !== $startValue) {
-            throw new DomainException('Selecciona una fecha y hora válidas para la cita.');
+        $quote = $this->repository->quoteSchedulingContext($quoteId);
+        if ($quote === null || $quote['estado'] !== 'aceptada' || $quote['id_artista'] === null) {
+            throw new DomainException('La cotización debe estar aceptada y tener un artista asignado.');
         }
 
+        $dates = is_array($input['fecha_sesion'] ?? null) ? $input['fecha_sesion'] : [];
+        $times = is_array($input['hora_sesion'] ?? null) ? $input['hora_sesion'] : [];
+        $durations = is_array($input['duracion_horas'] ?? null) ? $input['duracion_horas'] : [];
+        $notes = is_array($input['observaciones_cita'] ?? null) ? $input['observaciones_cita'] : [];
+        $expected = max(1, (int) ($quote['sesiones_estimadas'] ?? 1));
+        if ((int) ($quote['total_preferencias_sesiones'] ?? 0) < $expected) {
+            throw new DomainException('El cliente todavía debe proponer una fecha para cada sesión antes de agendar.');
+        }
+        $existing = $this->repository->activeSessionNumbers($quoteId);
+        $missing = array_values(array_diff(range(1, $expected), $existing));
+
+        if ($missing === []) {
+            throw new DomainException('Todas las sesiones de esta cotización ya están agendadas.');
+        }
+
+        $sessions = [];
         $now = new DateTimeImmutable('now', new DateTimeZone(self::LOCAL_TIMEZONE));
+        $previousStart = null;
 
-        if ($start <= $now) {
-            throw new DomainException('La cita debe programarse en una fecha futura.');
+        foreach ($missing as $number) {
+            $dateValue = is_scalar($dates[$number] ?? null) ? trim((string) $dates[$number]) : '';
+            $timeValue = is_scalar($times[$number] ?? null) ? trim((string) $times[$number]) : '';
+            $startValue = $dateValue . 'T' . $timeValue;
+            $start = DateTimeImmutable::createFromFormat('!Y-m-d\TH:i', $startValue, new DateTimeZone(self::LOCAL_TIMEZONE));
+            $hoursValue = is_scalar($durations[$number] ?? null)
+                ? str_replace(',', '.', trim((string) $durations[$number]))
+                : '';
+
+            if ($start === false || $start->format('Y-m-d\TH:i') !== $startValue || $start <= $now) {
+                throw new DomainException('Selecciona una fecha y hora futuras para la sesión ' . $number . '.');
+            }
+            if (!is_numeric($hoursValue) || (float) $hoursValue < 0.25 || (float) $hoursValue > 16) {
+                throw new DomainException('La duración de la sesión ' . $number . ' debe estar entre 0.25 y 16 horas.');
+            }
+
+            $end = $start->modify('+' . (int) round((float) $hoursValue * 60) . ' minutes');
+            $this->availability->assertSlotAvailable((int) $quote['id_artista'], $start, $end);
+
+            if ($previousStart !== null && $start <= $previousStart) {
+                throw new DomainException('Las sesiones deben programarse en orden cronológico.');
+            }
+
+            foreach ($sessions as $scheduled) {
+                if ($start < $scheduled['end_object'] && $end > $scheduled['start_object']) {
+                    throw new DomainException('Las sesiones nuevas no pueden superponerse entre sí.');
+                }
+            }
+
+            $sessions[] = [
+                'number' => $number,
+                'start' => $start->format('Y-m-d H:i:s'),
+                'end' => $end->format('Y-m-d H:i:s'),
+                'start_object' => $start,
+                'end_object' => $end,
+                'notes' => $this->optionalText($notes[$number] ?? null, 2000),
+            ];
+            $previousStart = $start;
         }
 
-        $hoursValue = is_scalar($input['duracion_horas'] ?? null)
-            ? str_replace(',', '.', trim((string) $input['duracion_horas']))
-            : '';
-
-        if (!is_numeric($hoursValue) || (float) $hoursValue < 0.25 || (float) $hoursValue > 16) {
-            throw new DomainException('La duración de la cita debe estar entre 0.25 y 16 horas.');
-        }
-
-        $durationMinutes = (int) round((float) $hoursValue * 60);
-        $end = $start->modify('+' . $durationMinutes . ' minutes');
-
-        if ($start->format('Y-m-d') !== $end->format('Y-m-d')) {
-            throw new DomainException('La cita debe iniciar y terminar el mismo día.');
-        }
-
-        $sessionValue = is_scalar($input['numero_sesion'] ?? null)
-            ? trim((string) $input['numero_sesion'])
-            : '';
-
-        if (!ctype_digit($sessionValue) || (int) $sessionValue < 1 || (int) $sessionValue > 30) {
-            throw new DomainException('El número de sesión debe estar entre 1 y 30.');
-        }
-
-        $notes = $this->optionalText($input['observaciones_cita'] ?? null, 2000);
-
-        return $this->repository->scheduleFromQuote(
-            $quoteId,
-            $accountId,
-            $start->format('Y-m-d H:i:s'),
-            $end->format('Y-m-d H:i:s'),
-            (int) $sessionValue,
-            $notes
-        );
+        return $this->repository->scheduleSessionsFromQuote($quoteId, $accountId, $sessions);
     }
 
     public function confirm(int $quoteId, int $appointmentId, int $accountId): array

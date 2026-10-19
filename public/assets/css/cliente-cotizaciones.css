@@ -57,6 +57,11 @@
 .client-decision-form label span { color: var(--bone-muted); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .client-decision-form textarea { width: 100%; min-height: 110px; padding: 0.85rem; resize: vertical; border: 1px solid var(--line); border-radius: 0; outline: 0; background: #070405; color: var(--bone); font: inherit; line-height: 1.55; }
 .client-decision-form textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(189, 146, 85, 0.08); }
+.client-session-preferences { margin: 1rem 0; padding: 1rem; display: grid; gap: 0.8rem; border: 1px solid rgba(189, 146, 85, 0.32); background: rgba(189, 146, 85, 0.045); }
+.client-session-preferences > p { margin: 0; color: var(--bone-muted); font-size: 0.7rem; line-height: 1.55; }
+.client-session-preferences select { width: 100%; min-height: 46px; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0; outline: 0; background: #070405; color: var(--bone); color-scheme: dark; }
+.client-session-preferences select:focus { border-color: var(--gold); }
+.client-session-preferences small { color: #e2a0ae; line-height: 1.5; }
 .client-decision-form__actions { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
 .client-decision-form__actions .admin-button { justify-content: center; }
 .client-decision-form__actions .admin-button--danger { grid-column: 1 / -1; }

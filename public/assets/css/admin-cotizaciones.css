@@ -4,13 +4,49 @@
 .quote-admin-stats {
     margin: 0 0 2rem;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     border: 1px solid var(--line);
     background: rgba(8, 4, 6, 0.82);
 }
 
+.quote-response-fields {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.quote-response-fields[disabled] {
+    opacity: .72;
+}
+
+.quote-session-planner {
+    display: grid;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.quote-session-row {
+    border: 1px solid rgba(190, 139, 62, .35);
+    background: rgba(8, 5, 6, .72);
+    padding: 1.25rem;
+}
+
+.quote-session-row legend {
+    padding: 0 .65rem;
+    color: #d6a654;
+    font-family: "Cinzel Decorative", serif;
+    font-size: .85rem;
+    letter-spacing: .08em;
+}
+
+.quote-session-row .quote-slot-feedback {
+    margin-top: 1rem;
+}
+
 .quote-admin-stats article { min-height: 115px; padding: 1.4rem; display: flex; align-items: center; gap: 1rem; }
 .quote-admin-stats article + article { border-left: 1px solid var(--line); }
+.quote-admin-stats article:nth-child(n + 4) { border-top: 1px solid var(--line); }
+.quote-admin-stats article:nth-child(4) { border-left: 0; }
 .quote-admin-stats span { color: var(--blood-light); font-family: var(--serif); font-size: 2.2rem; font-style: italic; }
 .quote-admin-stats p { margin: 0; color: var(--bone-muted); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
 .quote-admin-stats b { display: block; color: var(--gold); font-family: var(--title); font-size: 1.8rem; }
@@ -144,7 +180,7 @@
 .quote-references__empty { color: var(--bone-muted); }
 
 .quote-archive { margin-top: 0; }
-.quote-search { grid-template-columns: minmax(260px, 1fr) minmax(180px, 0.35fr) auto auto; }
+.quote-search { grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(170px, 0.4fr)) auto auto; }
 .quote-list { border-top: 1px solid var(--line); }
 .quote-list-card { display: grid; grid-template-columns: 150px minmax(260px, 1fr) minmax(310px, 0.75fr) 170px; align-items: center; gap: 1.3rem; padding: 1.3rem 1.5rem; border-bottom: 1px solid var(--line); transition: background 180ms ease; }
 .quote-list-card:hover { background: rgba(112, 13, 33, 0.075); }
@@ -172,6 +208,8 @@
     .quote-admin-stats { grid-template-columns: repeat(2, 1fr); }
     .quote-admin-stats article:nth-child(3) { border-top: 1px solid var(--line); border-left: 0; }
     .quote-admin-stats article:nth-child(4) { border-top: 1px solid var(--line); }
+    .quote-admin-stats article:nth-child(5) { border-top: 1px solid var(--line); border-left: 0; }
+    .quote-admin-stats article:nth-child(6) { border-top: 1px solid var(--line); }
     .quote-dossier__grid { grid-template-columns: 1fr; }
     .quote-response-form { border-top: 1px solid var(--line); border-left: 0; }
     .quote-appointment-card { grid-template-columns: 60px minmax(0, 1fr) 130px; }

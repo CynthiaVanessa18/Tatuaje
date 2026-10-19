@@ -115,14 +115,14 @@ function clientAppointmentLocalDate(?string $value, string $format = 'd/m/Y H:i'
         <section class="client-quote-detail">
             <header><div><p class="admin-eyebrow">SOLICITUD #<?= e($selectedQuote['id_cotizacion']) ?></p><h2><?= e($selectedQuote['categoria']) ?></h2><span class="client-status client-status--<?= e($selectedQuote['estado']) ?>"><?= e($statusLabels[$selectedQuote['estado']] ?? $selectedQuote['estado']) ?></span></div><a href="mis-cotizaciones.php">Cerrar detalle ×</a></header>
             <div class="client-quote-detail__grid">
-                <div class="client-quote-vision"><p class="client-quote-label">TU VISIÓN</p><blockquote><?= nl2br(e($selectedQuote['descripcion_idea'])) ?></blockquote><dl><div><dt>Artista</dt><dd><?= e($selectedQuote['artista']) ?></dd></div><div><dt>Zona</dt><dd><?= e($selectedQuote['zona_cuerpo']) ?></dd></div><div><dt>Tamaño</dt><dd><?= e($selectedQuote['tamano_descripcion'] ?: 'Por definir') ?></dd></div><div><dt>Fecha ideal</dt><dd><?= $selectedQuote['fecha_preferida'] ? e(clientQuoteLocalDate($selectedQuote['fecha_preferida'], 'd/m/Y')) : 'Flexible' ?></dd></div><div><dt>Solicitada</dt><dd><?= e(clientQuoteLocalDate($selectedQuote['fecha_solicitud'])) ?></dd></div></dl></div>
+                <div class="client-quote-vision"><p class="client-quote-label">TU VISIÓN</p><blockquote><?= nl2br(e($selectedQuote['descripcion_idea'])) ?></blockquote><dl><div><dt>Artista</dt><dd><?= e($selectedQuote['artista']) ?></dd></div><div><dt>Zona</dt><dd><?= e($selectedQuote['zona_cuerpo']) ?></dd></div><div><dt>Tamaño</dt><dd><?= e($selectedQuote['tamano_descripcion'] ?: 'Por definir') ?></dd></div><div><dt>Fecha preferida</dt><dd><?= $selectedQuote['fecha_preferida'] ? e(date('d/m/Y', strtotime((string) $selectedQuote['fecha_preferida']))) . ' · aún no reservada' : 'Sin definir' ?></dd></div><div><dt>Solicitada</dt><dd><?= e(clientQuoteLocalDate($selectedQuote['fecha_solicitud'])) ?></dd></div></dl></div>
                 <div class="client-quote-response">
                     <p class="client-quote-label">RESPUESTA DEL ESTUDIO</p>
                     <?php if (!$proposalVisible): ?>
                         <div class="client-pending-sigil"><span>⌛</span><h3>La interpretación continúa</h3><p>Aún estamos calculando artista, tiempo y valor. El estado cambiará cuando la respuesta esté lista.</p></div>
                     <?php else: ?>
                         <div class="client-price"><small>VALOR COTIZADO</small><b>₡<?= e(number_format((float) $selectedQuote['precio_cotizado'], 0, ',', '.')) ?></b><span><?= e($selectedQuote['sesiones_estimadas'] ?: '—') ?> <?= (int) ($selectedQuote['sesiones_estimadas'] ?? 0) === 1 ? 'sesión' : 'sesiones' ?> · <?= e(clientQuoteDuration($selectedQuote['duracion_estimada_minutos'] !== null ? (int) $selectedQuote['duracion_estimada_minutos'] : null)) ?></span></div>
-                        <dl><div><dt>Anticipo</dt><dd>₡<?= e(number_format((float) $selectedQuote['anticipo_requerido'], 0, ',', '.')) ?></dd></div><div><dt>Vigencia</dt><dd><?= e(clientQuoteLocalDate($selectedQuote['fecha_vencimiento'], 'd/m/Y')) ?></dd></div></dl>
+                        <dl><div><dt>Anticipo</dt><dd>₡<?= e(number_format((float) $selectedQuote['anticipo_requerido'], 0, ',', '.')) ?></dd></div><div><dt>Fecha límite para aceptar</dt><dd><?= e(clientQuoteLocalDate($selectedQuote['fecha_vencimiento'], 'd/m/Y H:i')) ?></dd></div></dl>
                     <?php endif ?>
 
                     <?php if ($proposalVisible && $selectedQuote['observaciones']): ?><div class="client-observations"><b>Notas del estudio</b><p><?= nl2br(e($selectedQuote['observaciones'])) ?></p></div><?php endif ?>
@@ -131,16 +131,45 @@ function clientAppointmentLocalDate(?string $value, string $format = 'd/m/Y H:i'
                         <form method="post" class="client-decision-form">
                             <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
                             <input type="hidden" name="id_cotizacion" value="<?= e($selectedQuote['id_cotizacion']) ?>">
-                            <div><p class="client-quote-label">TU DECISIÓN</p><h3>¿Cómo deseas continuar?</h3><p>Acepta la propuesta o cuéntanos qué debería cambiar.</p></div>
+                            <div><p class="client-quote-label">TU DECISIÓN</p><h3>¿Cómo deseas continuar?</h3><p>Aceptar aprueba el precio y las condiciones, pero todavía no reserva la fecha preferida. El estudio confirmará cada sesión por separado.</p></div>
+                            <div class="client-session-preferences">
+                                <p class="client-quote-label">FECHAS PREFERIDAS POR SESIÓN</p>
+                                <p>Elige un día distinto para cada sesión. Solo aparecen días donde <?= e($selectedQuote['artista']) ?> tiene un espacio suficiente según la duración cotizada.</p>
+                                <?php $clientEstimatedSessions = max(1, (int) ($selectedQuote['sesiones_estimadas'] ?? 1)); ?>
+                                <?php for ($sessionNumber = 1; $sessionNumber <= $clientEstimatedSessions; $sessionNumber++): ?>
+                                    <?php $submittedSessionDate = is_array($_POST['fechas_sesiones'] ?? null) ? ($_POST['fechas_sesiones'][$sessionNumber] ?? '') : ''; ?>
+                                    <?php $suggestedSessionDate = $submittedSessionDate ?: ($sessionNumber === 1 ? ($selectedQuote['fecha_preferida'] ?? '') : ''); ?>
+                                    <label><span>Sesión <?= e($sessionNumber) ?> de <?= e($clientEstimatedSessions) ?> *</span><select name="fechas_sesiones[<?= e($sessionNumber) ?>]" required><option value="">Selecciona un día disponible</option><?php foreach ($clientSessionDateOptions as $availableDate): ?><option value="<?= e($availableDate) ?>" <?= $suggestedSessionDate === $availableDate ? 'selected' : '' ?>><?= e((new DateTimeImmutable($availableDate))->format('d/m/Y')) ?></option><?php endforeach ?></select></label>
+                                <?php endfor ?>
+                                <?php if ($clientSessionDateOptions === []): ?><small>No hay fechas disponibles en los próximos seis meses. Solicita cambios para que el estudio revise la agenda.</small><?php endif ?>
+                            </div>
                             <label><span>Mensaje para el estudio</span><textarea name="mensaje" rows="4" maxlength="1500" placeholder="Es obligatorio si solicitas cambios; para aceptar o rechazar es opcional."><?= e($responseMessage) ?></textarea></label>
                             <div class="client-decision-form__actions">
                                 <button class="admin-button admin-button--success" type="submit" name="accion" value="aceptar">Aceptar cotización</button>
-                                <button class="admin-button admin-button--primary" type="submit" name="accion" value="solicitar_cambios">Solicitar cambios</button>
-                                <button class="admin-button admin-button--danger" type="submit" name="accion" value="rechazar">Rechazar</button>
+                                <button class="admin-button admin-button--primary" type="submit" name="accion" value="solicitar_cambios" formnovalidate>Solicitar cambios</button>
+                                <button class="admin-button admin-button--danger" type="submit" name="accion" value="rechazar" formnovalidate>Rechazar</button>
                             </div>
                         </form>
                     <?php elseif ($selectedQuote['estado'] === 'aceptada'): ?>
                         <div class="client-response-state client-response-state--accepted"><span>✓</span><div><b>Cotización aceptada</b><p>El administrador podrá proponer una cita. El correo se enviará únicamente cuando esa cita quede confirmada.</p></div></div>
+                        <?php if (($selectedQuote['preferencias_sesiones'] ?? []) !== []): ?><div class="client-session-preferences"><p class="client-quote-label">TUS FECHAS PROPUESTAS</p><?php foreach ($selectedQuote['preferencias_sesiones'] as $sessionNumber => $preferredSessionDate): ?><p><b>Sesión <?= e($sessionNumber) ?>:</b> <?= e((new DateTimeImmutable($preferredSessionDate))->format('d/m/Y')) ?> · aún no reservada</p><?php endforeach ?></div><?php endif ?>
+                        <?php if (($selectedQuote['preferencias_sesiones'] ?? []) === []): ?>
+                            <form method="post" class="client-decision-form">
+                                <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
+                                <input type="hidden" name="id_cotizacion" value="<?= e($selectedQuote['id_cotizacion']) ?>">
+                                <input type="hidden" name="accion" value="guardar_fechas">
+                                <div><p class="client-quote-label">FALTA ELEGIR LAS FECHAS</p><h3>Propón un día para cada sesión</h3><p>Tu cotización ya está aceptada, pero necesitamos estas preferencias antes de preparar la agenda definitiva.</p></div>
+                                <div class="client-session-preferences">
+                                    <?php $clientEstimatedSessions = max(1, (int) ($selectedQuote['sesiones_estimadas'] ?? 1)); ?>
+                                    <?php for ($sessionNumber = 1; $sessionNumber <= $clientEstimatedSessions; $sessionNumber++): ?>
+                                        <?php $suggestedSessionDate = $sessionNumber === 1 ? ($selectedQuote['fecha_preferida'] ?? '') : ''; ?>
+                                        <label><span>Sesión <?= e($sessionNumber) ?> de <?= e($clientEstimatedSessions) ?> *</span><select name="fechas_sesiones[<?= e($sessionNumber) ?>]" required><option value="">Selecciona un día disponible</option><?php foreach ($clientSessionDateOptions as $availableDate): ?><option value="<?= e($availableDate) ?>" <?= $suggestedSessionDate === $availableDate ? 'selected' : '' ?>><?= e((new DateTimeImmutable($availableDate))->format('d/m/Y')) ?></option><?php endforeach ?></select></label>
+                                    <?php endfor ?>
+                                    <?php if ($clientSessionDateOptions === []): ?><small>No hay fechas disponibles en los próximos seis meses. Contacta al estudio para revisar la agenda.</small><?php endif ?>
+                                </div>
+                                <button class="admin-button admin-button--success" type="submit" <?= $clientSessionDateOptions === [] ? 'disabled' : '' ?>>Guardar fechas preferidas</button>
+                            </form>
+                        <?php endif ?>
                     <?php elseif ($selectedQuote['estado'] === 'rechazada'): ?>
                         <div class="client-response-state"><span>×</span><div><b>Cotización rechazada</b><p>La propuesta quedó cerrada. Puedes iniciar una nueva solicitud cuando lo desees.</p></div></div>
                     <?php elseif ($quoteExpired && $selectedQuote['estado'] === 'enviada'): ?>

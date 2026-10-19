@@ -8,7 +8,9 @@ final class PublicQuoteService
 
     public function __construct(
         private QuoteRepository $repository,
-        private string $projectRoot
+        private string $projectRoot,
+        private ArtistAvailabilityService $availability,
+        private QuoteValidityPolicy $validityPolicy
     ) {
     }
 
@@ -31,7 +33,7 @@ final class PublicQuoteService
 
         $artistId = $this->optionalPositiveInteger($input['id_artista'] ?? null, 'El artista');
         $categoryId = $this->positiveInteger($input['id_categoria'] ?? null, 'Selecciona un estilo.');
-        $preferredDate = $this->optionalDate($input['fecha_preferida'] ?? null);
+        $preferredDate = $this->requiredDate($input['fecha_preferida'] ?? null);
         $email = $this->requiredText($input['correo_contacto'] ?? null, 'El correo', 254, 5);
 
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
@@ -39,6 +41,12 @@ final class PublicQuoteService
         }
 
         $phone = $this->optionalText($input['telefono_contacto'] ?? null, 'El teléfono', 25);
+
+        if ($artistId !== null) {
+            $this->availability->assertArtistHasFreeSlot($artistId, $preferredDate, 60);
+        } elseif ($this->availability->availableArtistsOnDate($preferredDate, 60) === []) {
+            throw new DomainException('El estudio no tiene artistas con horario disponible en la fecha elegida. Selecciona otro día.');
+        }
 
         $data = [
             'client_id' => $clientId,
@@ -230,12 +238,12 @@ final class PublicQuoteService
         return number_format((float) $normalized, 2, '.', '');
     }
 
-    private function optionalDate(mixed $value): ?string
+    private function requiredDate(mixed $value): string
     {
         $date = is_scalar($value) ? trim((string) $value) : '';
 
         if ($date === '') {
-            return null;
+            throw new DomainException('Selecciona una fecha ideal para comprobar la disponibilidad del estudio.');
         }
 
         $dateObject = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
@@ -244,11 +252,7 @@ final class PublicQuoteService
             throw new DomainException('Selecciona una fecha preferida válida.');
         }
 
-        if ($dateObject < new DateTimeImmutable('today')) {
-            throw new DomainException('La fecha preferida no puede estar en el pasado.');
-        }
-
-        return $date;
+        return $this->validityPolicy->validatePreferredDate($date);
     }
 
     private function safeOriginalName(mixed $value): string

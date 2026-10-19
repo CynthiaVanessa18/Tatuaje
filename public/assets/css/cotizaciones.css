@@ -443,9 +443,28 @@
     gap: 0.8rem;
 }
 
-.quote-preview { margin: 0; border: 1px solid var(--quote-line); background: #050304; }
+.quote-preview { position: relative; margin: 0; border: 1px solid var(--quote-line); background: #050304; }
 .quote-preview img { width: 100%; aspect-ratio: 1; display: block; object-fit: cover; filter: saturate(0.7) contrast(1.08); }
 .quote-preview figcaption { padding: 0.65rem; overflow: hidden; color: var(--quote-muted); font-size: 0.52rem; text-overflow: ellipsis; white-space: nowrap; }
+.quote-preview__remove {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(239, 224, 205, 0.72);
+    border-radius: 50%;
+    background: rgba(35, 3, 10, 0.92);
+    color: var(--quote-bone);
+    font: 700 1.35rem/1 Arial, sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.quote-preview__remove:hover,
+.quote-preview__remove:focus-visible { border-color: var(--quote-red); background: #700d21; transform: scale(1.08); outline: none; }
 .quote-preview__warning { grid-column: 1 / -1; margin: 0; color: #e1a4b0; font-size: 0.7rem; }
 
 .quote-form__seal {
