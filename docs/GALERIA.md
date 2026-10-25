@@ -134,3 +134,42 @@ Capturas proporcionadas para la documentación de Persona 2. Se conservan las ve
 
 </details>
 
+
+## Capturas adicionales de Persona 2
+
+### Categorías de tatuajes
+
+![Categorías de tatuajes](capturas/administrador/categorias-tatuajes.jpg)
+
+### Especialidades de artistas
+
+![Especialidades de artistas](capturas/administrador/especialidades-artistas.jpg)
+
+### Membresías de clientes
+
+![Membresías de clientes](capturas/administrador/membresias-clientes.jpg)
+
+### Beneficios vigentes
+
+![Beneficios vigentes](capturas/administrador/beneficios-vigentes.jpg)
+
+### Administración de promociones y ofertas
+
+![Administración de promociones y ofertas](capturas/administrador/promociones-ofertas.jpg)
+
+### Configuración de una promoción
+
+![Configuración de una promoción](capturas/administrador/configurar-promocion.jpg)
+
+### Calificación y reseñas desde el cliente
+
+![Calificación y reseñas desde el cliente](capturas/cliente/calificar-artista.jpg)
+
+### Carrito con artículos y total
+
+![Carrito con artículos y total](capturas/cliente/carrito.jpg)
+
+### Revisión del pago antes de confirmar
+
+![Revisión del pago antes de confirmar](capturas/cliente/revision-pago.jpg)
+
