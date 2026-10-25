@@ -219,73 +219,6 @@ El directorio de cuentas organiza usuarios por rol y estado. La pantalla muestra
 
 [Volver al contenido ↑](#contenido)
 
-## Más pantallas de Persona 2
-
-Capturas adicionales tomadas con las cuentas de demostración. Muestran categorías y filtros, calificaciones, promociones, membresías, beneficios y el proceso de compra hasta la revisión del pago. Las vistas se capturaron en un ancho reducido para mostrar también la adaptación de la interfaz.
-
-<details>
-<summary><strong>Categorías de tatuajes</strong></summary>
-
-![Categorías de tatuajes](docs/capturas/administrador/categorias-tatuajes.jpg)
-
-</details>
-
-<details>
-<summary><strong>Especialidades de artistas</strong></summary>
-
-![Especialidades de artistas](docs/capturas/administrador/especialidades-artistas.jpg)
-
-</details>
-
-<details>
-<summary><strong>Membresías de clientes</strong></summary>
-
-![Membresías de clientes](docs/capturas/administrador/membresias-clientes.jpg)
-
-</details>
-
-<details>
-<summary><strong>Beneficios vigentes</strong></summary>
-
-![Beneficios vigentes](docs/capturas/administrador/beneficios-vigentes.jpg)
-
-</details>
-
-<details>
-<summary><strong>Administración de promociones y ofertas</strong></summary>
-
-![Administración de promociones y ofertas](docs/capturas/administrador/promociones-ofertas.jpg)
-
-</details>
-
-<details>
-<summary><strong>Configuración de una promoción</strong></summary>
-
-![Configuración de una promoción](docs/capturas/administrador/configurar-promocion.jpg)
-
-</details>
-
-<details>
-<summary><strong>Calificación y reseñas desde el cliente</strong></summary>
-
-![Calificación y reseñas desde el cliente](docs/capturas/cliente/calificar-artista.jpg)
-
-</details>
-
-<details>
-<summary><strong>Carrito con artículos y total</strong></summary>
-
-![Carrito con artículos y total](docs/capturas/cliente/carrito.jpg)
-
-</details>
-
-<details>
-<summary><strong>Revisión del pago antes de confirmar</strong></summary>
-
-![Revisión del pago antes de confirmar](docs/capturas/cliente/revision-pago.jpg)
-
-</details>
-
 <a id="flujos-principales"></a>
 ## Flujos principales
 
@@ -340,7 +273,7 @@ Las pruebas disponibles se documentan en la [guía técnica](docs/GUIA-TECNICA.m
 | Recurso | Contenido |
 | --- | --- |
 | [Guía técnica](docs/GUIA-TECNICA.md) | Documentación anterior conservada: instalación, estructura, migraciones y pruebas |
-| [Galería completa](docs/GALERIA.md) | 27 capturas del sistema, incluidas nueve vistas adicionales de Persona 2 |
+| [Galería completa](docs/GALERIA.md) | Las 18 capturas proporcionadas, organizadas por rol |
 | [Esquema de base de datos](database/db_preliminar.sql) | Tablas, relaciones y reglas del sistema |
 | [Módulos administrativos](config/modules.php) | Catálogo de módulos de administración |
 
