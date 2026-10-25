@@ -1,129 +1,286 @@
-# Tinta Viva · Estudio de tatuajes
+<div align="center">
 
-Aplicación web en PHP 8.2 y PDO para la gestión y la experiencia pública de un estudio de tatuajes. El esquema principal está en `database/db_preliminar.sql`. No requiere Node y las dependencias PHP necesarias están incluidas en `vendor/`.
+# ✦ TINTA VIVA
 
-## Instalación
+### Arte que deja huella · Gestión de un estudio de tatuajes
 
-1. Inicia MySQL 8.0.16+ o MariaDB 10.4+. XAMPP es opcional; también puedes usar PHP y MySQL instalados de forma independiente.
-2. Importa `database/db_preliminar.sql` en phpMyAdmin o MySQL Workbench para una instalación nueva. Crea la base **estudio_tatuajes** con sus tablas, relaciones, vistas, disparadores y datos iniciales. La copia usa `utf8mb4_unicode_ci` y es compatible con MySQL 8.3 y MariaDB/XAMPP 10.4.
-3. `config/database.php` conecta por defecto a `127.0.0.1:3306`, base `estudio_tatuajes` y usuario `root`. Configura `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` como variables de entorno del servidor cuando tus datos sean distintos. No se carga `.env` automáticamente.
-   Para habilitar la recuperación y la confirmación real de citas por correo, configura también `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` y `APP_URL`. Opcionalmente define `SMTP_HOST`, `SMTP_PORT`, `SMTP_ENCRYPTION`, `SMTP_FROM_NAME`, `STUDIO_ADDRESS` y `STUDIO_PHONE`. Nunca guardes credenciales en el repositorio.
-4. Para pruebas locales, importa `database/usuarios_demo.sql`. También puedes crear únicamente un administrador desde PowerShell:
+**Catálogo · Membresías · Beneficios · Regalos · Experiencia del cliente**
+
+`PHP 8.2` · `MySQL / MariaDB` · `PDO` · `HTML / CSS / JavaScript`
+
+[Explorar módulos](#modulos-de-persona-2) · [Vista del cliente](#experiencia-del-cliente) · [Administración](#panel-de-administracion) · [Instalación](#ejecutar-el-proyecto)
+
+</div>
+
+---
+
+Tinta Viva reúne la experiencia del cliente y la administración del estudio en una aplicación web. El cliente explora artículos, consulta sus beneficios y utiliza sus tarjetas de regalo; el administrador organiza el catálogo, los planes y los registros del negocio.
+
+## Vista rápida del sistema
+
+Tres pantallas destacadas para conocer el resultado visual del proyecto. **Haz clic en cada imagen para verla en tamaño completo.**
+
+<table>
+  <tr>
+    <th align="center">Tienda del estudio</th>
+    <th align="center">Membresía y beneficios</th>
+    <th align="center">Calificaciones de artistas</th>
+  </tr>
+  <tr>
+    <td valign="top" width="33%"><a href="docs/capturas/cliente/tienda.png"><img src="docs/capturas/cliente/tienda.png" alt="Tienda con catálogo ilustrado, promociones, filtros y tarjetas de regalo" width="300"></a></td>
+    <td valign="top" width="33%"><a href="docs/capturas/cliente/membresia-beneficios.png"><img src="docs/capturas/cliente/membresia-beneficios.png" alt="Área del cliente con membresía Premium activa y beneficios del plan" width="300"></a></td>
+    <td valign="top" width="33%"><a href="docs/capturas/administrador/calificaciones-artistas.png"><img src="docs/capturas/administrador/calificaciones-artistas.png" alt="Panel administrativo con indicadores, retratos y valoraciones de artistas" width="300"></a></td>
+  </tr>
+  <tr>
+    <td>Catálogo de productos, búsqueda por categoría y ofertas en una misma vista.</td>
+    <td>Estado del plan y beneficios organizados en tarjetas para el cliente.</td>
+    <td>Resumen de reseñas, promedios y acceso al detalle de cada artista.</td>
+  </tr>
+</table>
+
+[Ver todas las pantallas del sistema →](docs/GALERIA.md)
+
+Este README presenta los **módulos de Persona 2** con las capturas proporcionadas. La identidad visual combina negro, vino y dorado, con una navegación diferenciada para cliente y administrador.
+
+> **Referencia de las pantallas:** las capturas muestran distintos momentos del proyecto y datos de ejemplo. La rama `Cynthia` integra los avances de `main`, incluidas las calificaciones por artista y la renovación de membresías. Los importes, estados y cantidades corresponden al momento de cada captura.
+
+<a id="contenido"></a>
+## Contenido
+
+1. [Módulos de Persona 2](#modulos-de-persona-2)
+2. [Experiencia del cliente](#experiencia-del-cliente)
+3. [Panel de administración](#panel-de-administracion)
+4. [Flujos principales](#flujos-principales)
+5. [Ejecutar el proyecto](#ejecutar-el-proyecto)
+6. [Alcance y verificación](#alcance-y-verificacion)
+7. [Documentación y galería](#documentacion-y-galeria)
+
+<a id="modulos-de-persona-2"></a>
+## Módulos de Persona 2
+
+| # | Módulo | Experiencia del cliente | Administración |
+| :--: | --- | --- | --- |
+| 3 | 🏷️ Categorías y filtros | Buscar y filtrar artículos por categoría | Organizar categorías, productos y especialidades |
+| 7 | ⭐ Calificaciones de artistas | Consultar la valoración pública de los artistas | Consultar promedios y gestionar la publicación de reseñas |
+| 8 | 🎁 Ofertas y promociones | Consultar ofertas y descuentos aplicables a la tienda | Configurar vigencia, descuento y artículos o categorías elegibles |
+| 9 | 💎 Membresías | Consultar planes, modalidad y membresía contratada | Configurar planes y gestionar membresías de clientes |
+| 10 | 🎯 Beneficios | Revisar condiciones y beneficios incluidos en su plan | Seleccionar y configurar beneficios por membresía |
+| 11 | 🎫 Tarjetas de regalo | Vincular un código, consultar saldo y usarlo en compras | Emitir tarjetas y consultar saldos y movimientos |
+| 12 | 🛍️ Venta de artículos | Explorar el catálogo y realizar pedidos desde el carrito | Gestionar productos, imágenes, inventario y ventas |
+
+Las cuentas de usuario sirven como apoyo para identificar al cliente y controlar el acceso a cada área.
+
+<a id="experiencia-del-cliente"></a>
+## Experiencia del cliente
+
+### 🛍️ Tienda, categorías y promociones
+
+El catálogo reúne imágenes de productos, precios, filtros y ofertas disponibles. La misma pantalla permite acceder al carrito y seleccionar una tarjeta de regalo con saldo.
+
+**Recorrido:** elegir categoría → buscar artículo → añadir al carrito → revisar descuentos y saldo → confirmar el pedido.
+
+![Tienda del cliente con categorías, promociones, productos y tarjetas disponibles](docs/capturas/cliente/tienda.png)
+
+<details>
+<summary><strong>Qué puede consultar el cliente</strong></summary>
+
+- Artículos de la categoría seleccionada y sus precios.
+- Ofertas disponibles y fechas de vigencia.
+- Tarjetas de regalo disponibles para usar.
+- Acceso al carrito para revisar cantidades y el total antes de comprar.
+
+</details>
+
+### 💎 Membresía y beneficios
+
+La vista de membresía presenta el plan contratado, su período y los beneficios incluidos. Cada beneficio muestra su cantidad, porcentaje o condición para que el cliente pueda entender qué tiene disponible.
+
+![Membresía del cliente con estado, período y beneficios del plan](docs/capturas/cliente/membresia-beneficios.png)
+
+<details>
+<summary><strong>Ver pantalla de confirmación de membresía</strong></summary>
+
+La captura reúne el resumen del plan, la modalidad, el importe y el resultado de la tarjeta de demostración. También muestra la opción de renovación de membresía; los pagos bancarios continúan siendo de demostración.
+
+![Confirmación de membresía y resumen de beneficios](docs/capturas/cliente/confirmar-membresia.png)
+
+</details>
+
+### 🎫 Mis tarjetas de regalo
+
+El cliente puede añadir el código recibido y consultar el saldo, la emisión, el vencimiento y el estado de cada tarjeta. El botón **Usar en la tienda** conecta el regalo con la compra.
+
+![Tarjetas del cliente con código, saldo, vencimiento y acceso a la tienda](docs/capturas/cliente/tarjetas-regalo.png)
+
+[Volver al contenido ↑](#contenido)
+
+<a id="panel-de-administracion"></a>
+## Panel de administración
+
+### ⭐ Calificaciones y detalle del artista
+
+Las capturas de referencia muestran una vista por artista con retrato, estrellas, promedio y cantidad de reseñas. Al abrir el detalle, se consultan indicadores de publicación y la distribución de puntuaciones.
+
+La rama `Cynthia` incluye esta vista de tarjetas por artista, sus indicadores y el detalle de reseñas.
+
+![Referencia visual de las calificaciones organizadas por artista](docs/capturas/administrador/calificaciones-artistas.png)
+
+<details>
+<summary><strong>Ver detalle e indicadores del artista</strong></summary>
+
+El detalle mostrado contiene promedio publicado, total de calificaciones, pendientes de revisión y distribución de una a cinco estrellas. La ventana tiene desplazamiento interno: la captura no muestra toda la sección de comentarios.
+
+![Detalle del artista con promedio y distribución de estrellas](docs/capturas/administrador/calificaciones-detalle.png)
+
+</details>
+
+### 💎 Configuración de membresías y beneficios
+
+El administrador selecciona un plan, ajusta nombre, estado, cuotas mensuales o anuales y los beneficios incluidos. Las cantidades y condiciones se organizan por plan.
+
+<details>
+<summary><strong>Ver planes y edición de beneficios</strong></summary>
+
+![Configuración de planes de membresía y beneficios](docs/capturas/administrador/planes-membresia.png)
+
+</details>
+
+### 🎫 Emisión, saldos y movimientos de tarjetas
+
+La administración reúne el listado de tarjetas, el destinatario, el importe inicial y el estado. Los saldos y movimientos permiten consultar el uso registrado del regalo.
+
+<details>
+<summary><strong>Ver tarjetas de regalo</strong></summary>
+
+![Administración de tarjetas de regalo](docs/capturas/administrador/tarjetas-regalo.png)
+
+</details>
+
+<details>
+<summary><strong>Ver saldos disponibles</strong></summary>
+
+![Consulta administrativa de saldos de tarjetas](docs/capturas/administrador/saldos-tarjetas.png)
+
+</details>
+
+<details>
+<summary><strong>Ver historial de movimientos</strong></summary>
+
+![Historial de movimientos de tarjetas de regalo](docs/capturas/administrador/movimientos-tarjetas.png)
+
+</details>
+
+### 🛍️ Catálogo, categorías e inventario
+
+Los artículos se organizan por categorías y se administran junto con sus imágenes, precios y existencias. Los filtros ayudan a encontrar productos para consultar o editar sus datos.
+
+<details>
+<summary><strong>Ver productos e inventario</strong></summary>
+
+![Administración de productos e inventario](docs/capturas/administrador/productos.png)
+
+</details>
+
+<details>
+<summary><strong>Ver categorías de artículos</strong></summary>
+
+![Categorías de productos de la tienda](docs/capturas/administrador/categorias-productos.png)
+
+</details>
+
+<details>
+<summary><strong>Ver productos filtrados por categoría</strong></summary>
+
+![Productos filtrados por categoría en el panel administrativo](docs/capturas/administrador/productos-filtrados.png)
+
+</details>
+
+### 🧾 Ventas de la tienda
+
+El listado permite consultar las ventas y sus estados. Los detalles de venta relacionan los artículos y cantidades con el pedido correspondiente.
+
+<details>
+<summary><strong>Ver administración de ventas</strong></summary>
+
+![Ventas de la tienda en el panel administrativo](docs/capturas/administrador/ventas.png)
+
+</details>
+
+### 👤 Cuentas de usuarios
+
+El directorio de cuentas organiza usuarios por rol y estado. La pantalla muestra indicadores y filtros para localizar una cuenta y consultar o editar sus datos.
+
+<details>
+<summary><strong>Ver directorio de cuentas</strong></summary>
+
+![Gestión de cuentas con indicadores, búsqueda y filtros](docs/capturas/administrador/cuentas.png)
+
+</details>
+
+[Volver al contenido ↑](#contenido)
+
+<a id="flujos-principales"></a>
+## Flujos principales
+
+| Proceso | Recorrido |
+| --- | --- |
+| Compra de artículos | Catálogo → carrito → revisión de descuentos y saldo → confirmación del pedido |
+| Membresía | Consultar planes → elegir modalidad → confirmar compra → consultar estado y beneficios |
+| Tarjeta de regalo | Emisión administrativa → entrega del código → vinculación al cliente → uso del saldo en tienda |
+| Promoción | Configuración administrativa → comprobación de vigencia y condiciones → aplicación en la compra |
+| Cotización y cita | Solicitud → propuesta del estudio → aceptación del cliente → programación de cita pendiente → confirmación |
+
+**Una cotización aceptada no genera automáticamente una cita.** El administrador debe programar la sesión y confirmar el horario. Una cotización puede relacionarse con varias citas cuando el trabajo requiere varias sesiones.
+
+<a id="ejecutar-el-proyecto"></a>
+## Ejecutar el proyecto
+
+**Requisitos:** PHP 8.2 con PDO MySQL y una base MySQL o MariaDB compatible. Las dependencias PHP están en `vendor/`; no se requiere Node para iniciar la aplicación.
+
+1. Iniciar MySQL e importar [`database/db_preliminar.sql`](database/db_preliminar.sql) para una instalación nueva.
+2. Revisar la conexión en [`config/database.php`](config/database.php) y configurar `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` cuando corresponda.
+3. Iniciar la aplicación desde la raíz:
 
    ```powershell
-   $env:ADMIN_PASSWORD = 'elige-una-clave-larga'
-   php scripts/create_admin.php administrador administrador@ejemplo.com
-   Remove-Item Env:ADMIN_PASSWORD
+   php -S 127.0.0.1:8000 -t public
    ```
 
-5. Ejecuta `php -S 127.0.0.1:8000 -t public` desde la raíz y abre http://127.0.0.1:8000. Con Apache usa `public/` como DocumentRoot. En htdocs puedes entrar a `Tatuaje/public/`.
+4. Abrir [Tinta Viva en el navegador](http://127.0.0.1:8000).
 
-Si actualizas una base existente, ejecuta una vez `database/migracion_flujo_citas_correo.sql`. La migración es repetible y evita duplicar el correo de confirmación de una cita.
+Con XAMPP y este repositorio dentro de `htdocs`, también puedes abrir [la aplicación con Apache](http://localhost/TatuajesRepositorio/Tatuaje/public/).
 
-Para editar el nombre y la descripción de las reglas dentro de la tabla de membresías en una instalación existente, ejecuta `php scripts/migrate_membership_texts.php`. El lápiz abre el editor en la misma fila; los textos se guardan por plan con **Guardar cambios**. Los valores y el cálculo de cada regla se mantienen en sus campos originales.
+Para crear un administrador, configurar SMTP o actualizar una base existente, consultar la [guía técnica](docs/GUIA-TECNICA.md). Las instrucciones y comandos de esa guía se ejecutan desde la raíz del repositorio.
 
-Las pantallas comparten ajustes para celular, tableta y escritorio. Las tablas anchas se desplazan dentro de su contenedor. Los listados de registros, cuentas, promociones, calificaciones y citas paginan desde el servidor, conservando sus filtros; el historial de moderación permite recorrer todas las decisiones. Las tablas de comparación y edición usan controles de filas por página en el navegador, conservando los campos de todas las páginas al guardar. `php tests/pagination.php` verifica paginación, filtros e historial con tablas temporales.
+<a id="alcance-y-verificacion"></a>
+## Alcance y verificación
 
-### Flujo de cotización y cita
-
-1. El cliente inicia sesión y envía una solicitud; el sistema utiliza el correo de su cuenta.
-2. El administrador prepara y envía la cotización desde el panel. El cliente la acepta, solicita cambios o la rechaza dentro de su cuenta.
-3. Después de la aceptación, el administrador puede proponer una cita en estado **pendiente**. En este paso no se envía correo.
-4. La cita se vuelve definitiva cuando el administrador la marca como **confirmada**. Solo entonces se crea y envía el correo real al cliente.
-5. Si SMTP falla, la cita permanece confirmada, el error queda registrado en `correos_salida` y el panel permite reintentar el envío sin duplicarlo.
-
-El esquema no incluye clientes, artistas ni citas de prueba. Esos registros pertenecen a otros integrantes y deben existir para seleccionarlos en calificaciones, ventas y membresías.
-
-## Carpetas
-
-| Carpeta | Responsabilidad |
+| Aspecto | Alcance |
 | --- | --- |
-| `config/` | Conexión, módulos autorizados y configuración SMTP |
-| `app/Controllers/` | Solicitudes, filtros, mensajes |
-| `app/Core/` | Arranque de la aplicación, sesión, autenticación y roles |
-| `app/Models/` | Consultas preparadas y metadatos del esquema |
-| `app/Services/` | Validaciones, transacciones y servicios de correo |
-| `app/Views/` | Plantillas del panel |
-| `public/auth/` | Inicio y cierre de sesión, recuperación de contraseña |
-| `public/panel/` | Entradas de los paneles por rol |
-| `public/assets/css/` | Estilos |
-| `public/assets/js/` | Confirmaciones y prevención de doble envío |
-| `database/` | Esquema importable |
-| `scripts/` | Alta de administrador por consola |
-| `tests/` | Pruebas con datos ficticios |
+| Pagos con tarjeta bancaria | Demostración; no realizan cobros bancarios reales |
+| Efectivo y transferencia | Requieren verificación del estudio |
+| Correos | Requieren configuración SMTP válida en el servidor |
+| Regalos y membresías | Se validan según su estado, período, saldo y configuración |
+| Capturas | Referencia visual; importes, fechas y cantidades reflejan el momento de la captura |
+| Datos iniciales | Las capturas no sustituyen una importación de datos ni crean usuarios o ventas |
 
-Las rutas anteriores de `view/` y `controller/` son puentes al panel nuevo. Se conservan las imágenes originales. Los formularios se construyen con las columnas reales de una lista cerrada de tablas para evitar duplicar enumeraciones y campos.
+El acceso se controla por rol. La aplicación utiliza consultas preparadas, validación en servidor, protección CSRF y escape HTML.
 
-## Alcance
+Las pruebas disponibles se documentan en la [guía técnica](docs/GUIA-TECNICA.md#verificación). Este cambio de documentación no representa una nueva ejecución de todas las pruebas del sistema.
 
-### Promociones automáticas de tienda
+<a id="documentacion-y-galeria"></a>
+## Documentación y galería
 
-En **Administrador → Tienda → Promociones y ofertas** se crean ofertas para toda la tienda, varios artículos o una o varias categorías. Permiten porcentaje (hasta 100%) o monto fijo en CRC por compra, público general o un grupo de clientes, compra mínima y fechas de inicio/vencimiento en hora de Costa Rica. Los grupos y sus integrantes se gestionan en los subapartados **Grupos de clientes** y **Clientes por grupo**.
-
-`database/db_preliminar.sql` incluye las relaciones nuevas. Para una instalación existente, ejecutar `php scripts/migrate_store_promotions.php`: agrega tablas sin eliminar o modificar registros existentes. No es necesario reimportar toda la base de datos.
-
-El cliente ve las ofertas vigentes que le corresponden. La compra mínima se calcula sobre todo el subtotal del carrito antes de descuentos; el descuento se aplica exclusivamente a los artículos elegibles. Se elige una sola promoción, la de mayor ahorro (en empate, la más antigua). El monto fijo se aplica una vez por pedido y se reparte entre sus líneas elegibles; no supera su importe. Las promociones anteriores sin reglas de tienda conservan su funcionamiento manual.
-
-Al confirmar se vuelven a validar precios, grupos, inventario y fechas. Si cambia el total mostrado, se solicita revisarlo antes de comprar. La venta, sus detalles y el pago guardan el descuento calculado por el servidor. Los pedidos cubiertos al 100% se registran sin crear un pago de monto cero y mantienen la protección contra reintentos duplicados.
-
-Validación: `php tests/store-promotions.php` y `php tests/client-checkout.php` usan exclusivamente tablas temporales, sin insertar compras o promociones en los datos operativos.
-
-| Requisito | Módulos |
+| Recurso | Contenido |
 | --- | --- |
-| 3 · Categorías / filtros | Categorías, especialidades y filtros por estado, actividad y relaciones |
-| 7 · Calificaciones | Citas finalizadas, puntuación 1–5, una calificación por cita y moderación |
-| 8 · Ofertas | Promociones por vigencia, porcentaje/monto, mínimo y ámbito |
-| 9 · Membresía | Planes y membresías vinculadas al detalle vendido |
-| 10 · Beneficios | Beneficios y asignación de varios beneficios por plan |
-| 11 · Tarjetas | Emisión, consulta, edición permitida, cancelación e historial |
-| 12 · Artículos | Categorías, inventario, imágenes, ventas y detalles |
+| [Guía técnica](docs/GUIA-TECNICA.md) | Documentación anterior conservada: instalación, estructura, migraciones y pruebas |
+| [Galería completa](docs/GALERIA.md) | Las 18 capturas proporcionadas, organizadas por rol |
+| [Esquema de base de datos](database/db_preliminar.sql) | Tablas, relaciones y reglas del sistema |
+| [Módulos administrativos](config/modules.php) | Catálogo de módulos de administración |
 
-Los módulos editables incluyen crear, listar con paginación, consultar detalle, editar y eliminar por POST. Las claves foráneas impiden eliminar registros utilizados; se puede desactivar cuando exista el campo activo.
+---
 
-### Ventas
+<div align="center">
 
-Crea una venta **pendiente**, agrega detalles y cámbiala a **confirmada** para descontar inventario. Si falta stock se revierte toda la confirmación. Los precios de productos y planes se toman del catálogo al guardar el detalle; el descuento de una promoción se calcula por línea y su mínimo se evalúa por línea. Sin promoción se admite descuento administrativo. El impuesto se registra como monto. Los totales se calculan desde los detalles.
+**TINTA VIVA** · Arte, identidad y gestión en un mismo lugar.
 
-La venta confirmada queda bloqueada contra edición/eliminación y nuevos detalles, evitando doble descuento de stock. Solo se permite cancelar desde el CRUD una venta pendiente sin pagos. Cobros, reembolsos, pasarelas, cancelación posterior a la confirmación y comprobantes fiscales están fuera de este panel.
-
-### Membresías y tarjetas
-
-Crea primero una venta confirmada con un detalle del tipo correspondiente. Después selecciona ese detalle al registrar la membresía o tarjeta; se verifica cliente y plan o importe/moneda. La activación es administrativa: verifica el cobro antes de activarla. Las fechas se introducen y almacenan en UTC. En membresías registra el período contratado según la duración del plan.
-
-Cada tarjeta genera un código mostrado **una sola vez** y almacena únicamente su hash SHA-256. Su carga inicial se registra en la misma transacción. El historial de movimientos es de consulta y el saldo está disponible en `vista_saldo_tarjetas`. No incluye canje, devolución de saldo ni envío de correos. Los estados agotada y vencida se reservan para esa futura integración.
-
-Las membresías y tarjetas emitidas se cancelan mediante estado para conservar historial; no se eliminan ni se cambian sus referencias de compra. Una tarjeta cancelada no puede reactivarse.
-
-## Verificación
-
-Ingreso con contraseña cifrada por hash, comprobación del rol administrador en cada solicitud, CSRF, escape HTML, consultas preparadas y validación en servidor. Los errores SQL se registran en el servidor; el navegador recibe mensajes comprensibles.
-
-Sintaxis PHP: `Get-ChildItem -Recurse -Filter *.php | ForEach-Object { php -l $_.FullName }`.
-
-Integración: importa una copia del esquema sustituyendo el nombre de base por `tattoo_crud_test`, configura `DB_NAME=tattoo_crud_test` y ejecuta `php tests/integration.php`. La prueba exige una base de prueba vacía de datos operativos y conserva los datos ficticios para inspección. Nunca la ejecutes contra la base del estudio.
-
-Prueba HTTP: con el servidor apuntando a esa base desechable, crea un administrador de prueba, define `TEST_ADMIN_USER` y `TEST_ADMIN_PASSWORD` y ejecuta `tests/http.ps1 -BaseUrl http://127.0.0.1:8018`. Comprueba ingreso, todos los listados y formularios, protección CSRF, alta/edición/eliminación, escape HTML y cierre de sesión.
-
-## Inicio de sesión por rol
-
-El mismo `public/auth/login.php` admite los dos roles habilitados en la aplicación: administrador y cliente. No se selecciona el rol en el formulario: se obtiene de la cuenta y se verifica nuevamente al abrir cada página.
-
-| Rol | Destino | Acceso actual |
-| --- | --- | --- |
-| administrador | `public/panel/administrador.php` | Gestión del estudio, cotizaciones y confirmación de citas |
-| cliente | `public/panel/cliente.php` | Sitio público, solicitudes, respuestas y citas propias |
-
-La cuenta cliente necesita un registro en `clientes` vinculado mediante `id_cuenta`. Si todavía no existe, la sesión funciona y se muestra un aviso para completar el perfil.
-
-Las rutas se centralizan en `app/Core/auth.php`, función `roleRoutes()`. Cada entrada usa `requireRole()`; el panel administrativo conserva `requireAdmin()`. Un acceso a una página de otro rol redirige al inicio del usuario. Las cuentas bloqueadas/inactivas y los roles desactivados pierden acceso incluso con una sesión abierta. `tests/roles-http.ps1` comprueba las redirecciones con cuentas ficticias en un servidor de pruebas.
-
-### Membresías configurables
-En Administración → Membresías → Planes de membresía se configuran los tres tipos Esencial, Plus y Premium. Cada uno admite cuotas mensuales y anuales independientes y beneficios seleccionados del catálogo precargado. Las cantidades de sesiones y kits corresponden al período contratado, no se renuevan mensualmente en un contrato anual. El importe anual se cobra como cuota anual total. Los planes se instalan inactivos y requieren cuotas positivas antes de activarse. Los clientes consultan los planes activos en index.php?section=membresias.
-Instalación en otra base: ejecutar `php scripts/migrate_memberships.php` después de importar db_preliminar.sql; el script es idempotente y conserva los registros existentes. Verificación: `php tests/membership-plans.php`.
-El cliente puede comparar los planes activos, elegir mensual o anual, confirmar una compra por período y cancelar su membresía. La tarjeta bancaria es de demostración; efectivo y transferencia requieren confirmación del estudio. No hay renovación automática. Verificación: `php tests/client-membership-checkout.php`.
-
-Las tarjetas de regalo se emiten sin seleccionar un detalle de venta. Para bases existentes, ejecutar `php scripts/migrate_gift_cards.php`: permite una relación de venta vacía y conserva las relaciones anteriores. El monto inicial y el comprador permanecen protegidos después de emitir la tarjeta; la carga inicial sigue registrada en sus movimientos. Verificación: `php tests/gift-cards.php`.
-
-Los regalos se vinculan al cliente registrado por su correo al emitirlos. En la tienda aparecen las tarjetas por usar; el saldo se aplica después de los descuentos, se conserva el sobrante y se puede combinar con otro método de pago. Los códigos nuevos usan el formato `XXXX-XXXX-XXXX`; los anteriores siguen vigentes. El aviso por correo requiere la configuración SMTP y solo incluye la notificación y el código. Verificación: `php tests/client-gift-cards.php` y `php tests/gift-card-email.php`.
-
-Para actualizar una base existente con los módulos de tienda, ejecutar `php scripts/migrate_store_promotions.php`, `php scripts/migrate_memberships.php` y `php scripts/migrate_gift_cards.php`; importar `database/perfiles_cuentas.sql` para cuentas y perfiles. La migración `database/migracion_flujo_citas_correo.sql` conserva el flujo de cotizaciones, citas y correo.
+</div>
