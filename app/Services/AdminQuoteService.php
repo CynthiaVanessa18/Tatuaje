@@ -3,30 +3,24 @@ declare(strict_types=1);
 
 final class AdminQuoteService
 {
-    private const STATUSES = [
-        'solicitada',
-        'en_revision',
-        'enviada',
-        'aceptada',
-        'rechazada',
-        'vencida',
-        'cancelada',
-    ];
-
-    public function __construct(private AdminQuoteRepository $repository)
+    public function __construct(
+        private AdminQuoteRepository $repository,
+        private ArtistAvailabilityService $availability,
+        private QuoteValidityPolicy $validityPolicy
+    )
     {
     }
 
     public function update(int $quoteId, int $accountId, array $input): void
     {
-        if ($this->repository->find($quoteId) === null) {
+        $quote = $this->repository->find($quoteId);
+
+        if ($quote === null) {
             throw new DomainException('La solicitud ya no existe.');
         }
 
-        $status = is_scalar($input['estado'] ?? null) ? (string) $input['estado'] : '';
-
-        if (!in_array($status, self::STATUSES, true)) {
-            throw new DomainException('Selecciona un estado válido.');
+        if (!in_array($quote['estado'], ['solicitada', 'en_revision'], true)) {
+            throw new DomainException('La cotización ya fue enviada o respondida; sus datos no se pueden modificar.');
         }
 
         $price = $this->optionalDecimal($input['precio_cotizado'] ?? null, 'El precio cotizado');
@@ -36,22 +30,42 @@ final class AdminQuoteService
             throw new DomainException('El anticipo no puede superar el precio cotizado.');
         }
 
-        if (in_array($status, ['enviada', 'aceptada'], true) && $price === null) {
-            throw new DomainException('Indica el precio antes de marcar la cotización como enviada o aceptada.');
+        if ($price === null) {
+            throw new DomainException('Indica el precio antes de enviar la propuesta al cliente.');
         }
 
+        $artistId = $this->optionalPositiveInteger($input['id_artista'] ?? null, 'El artista');
+        $estimatedMinutes = $this->optionalHoursToMinutes($input['duracion_estimada_horas'] ?? null);
+        $estimatedSessions = $this->optionalPositiveInteger($input['sesiones_estimadas'] ?? null, 'Las sesiones');
+
+        if ($artistId === null || $estimatedMinutes === null || $estimatedSessions === null) {
+            throw new DomainException('Asigna artista, duración y cantidad de sesiones antes de enviar la propuesta.');
+        }
+
+        if (empty($quote['fecha_preferida'])) {
+            throw new DomainException('Esta solicitud antigua no tiene fecha ideal. Pide al cliente una fecha antes de cotizar.');
+        }
+
+        $this->availability->assertArtistHasFreeSlot(
+            $artistId,
+            (string) $quote['fecha_preferida'],
+            $estimatedMinutes
+        );
+
         $data = [
-            'artist_id' => $this->optionalPositiveInteger($input['id_artista'] ?? null, 'El artista'),
+            'artist_id' => $artistId,
             'quoted_price' => $price,
             'required_deposit' => $deposit,
-            'estimated_minutes' => $this->optionalHoursToMinutes($input['duracion_estimada_horas'] ?? null),
-            'estimated_sessions' => $this->optionalPositiveInteger($input['sesiones_estimadas'] ?? null, 'Las sesiones'),
-            'status' => $status,
-            'expiration_date' => $this->optionalExpiration($input['fecha_vencimiento'] ?? null),
+            'estimated_minutes' => $estimatedMinutes,
+            'estimated_sessions' => $estimatedSessions,
+            'status' => 'enviada',
+            'expiration_date' => $this->validityPolicy
+                ->expirationFor((string) $quote['fecha_preferida'])
+                ->format('Y-m-d H:i:s'),
             'notes' => $this->optionalText($input['observaciones'] ?? null, 'Las observaciones', 5000),
         ];
 
-        if ($data['estimated_sessions'] !== null && $data['estimated_sessions'] > 30) {
+        if ($data['estimated_sessions'] > 30) {
             throw new DomainException('Las sesiones estimadas no pueden superar 30.');
         }
 
@@ -110,27 +124,6 @@ final class AdminQuoteService
         }
 
         return number_format((float) $normalized, 2, '.', '');
-    }
-
-    private function optionalExpiration(mixed $value): ?string
-    {
-        $date = is_scalar($value) ? trim((string) $value) : '';
-
-        if ($date === '') {
-            return null;
-        }
-
-        $dateObject = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
-
-        if ($dateObject === false || $dateObject->format('Y-m-d') !== $date) {
-            throw new DomainException('La fecha de vencimiento no es válida.');
-        }
-
-        if ($dateObject < new DateTimeImmutable('today')) {
-            throw new DomainException('La fecha de vencimiento no puede estar en el pasado.');
-        }
-
-        return $date . ' 23:59:59';
     }
 
     private function optionalText(mixed $value, string $label, int $maximum): ?string

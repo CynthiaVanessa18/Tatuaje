@@ -117,12 +117,13 @@ $accountLink = accountAreaLink($account ?? null, '../');
             <section class="quote-form__chapter reveal" aria-labelledby="capitulo-obra">
                 <header><span>II</span><div><p>LA VISIÓN</p><h3 id="capitulo-obra">Dale palabras a la imagen</h3></div></header>
                 <div class="quote-fields">
+                    <label class="quote-fields__wide"><span>Primero, elige tu fecha preferida (aún no reservada) *</span><input type="date" name="fecha_preferida" min="<?= e($minimumPreferredDate) ?>" value="<?= e($form['fecha_preferida'] ?? '') ?>" data-quote-date required><small data-availability-message>Debe tener al menos siete días de anticipación y define qué artistas están disponibles.</small></label>
                     <label><span>Estilo principal *</span><select name="id_categoria" required><option value="">Selecciona un estilo</option>
                         <?php foreach ($categories as $category): ?>
                             <option value="<?= e($category['id_categoria']) ?>" <?= (string) ($form['id_categoria'] ?? '') === (string) $category['id_categoria'] ? 'selected' : '' ?>><?= e($category['nombre']) ?></option>
                         <?php endforeach ?>
                     </select></label>
-                    <label><span>Artista preferido</span><select name="id_artista"><option value="">Que el estudio elija por mí</option>
+                    <label><span>Artista preferido</span><select name="id_artista" data-quote-artist data-selected-artist="<?= e($form['id_artista'] ?? '') ?>" disabled><option value="">Primero elige una fecha</option>
                         <?php foreach ($artists as $quoteArtist): ?>
                             <option value="<?= e($quoteArtist['id_artista']) ?>" <?= (string) ($form['id_artista'] ?? '') === (string) $quoteArtist['id_artista'] ? 'selected' : '' ?>><?= e($quoteArtist['nombre_publico']) ?><?= $quoteArtist['especialidades'] ? ' · ' . e($quoteArtist['especialidades']) : '' ?></option>
                         <?php endforeach ?>
@@ -138,7 +139,6 @@ $accountLink = accountAreaLink($account ?? null, '../');
                     <label><span>Tamaño aproximado</span><input name="tamano_descripcion" maxlength="120" value="<?= e($form['tamano_descripcion'] ?? '') ?>" placeholder="Pequeño, media manga..."></label>
                     <label><span>Ancho en cm</span><input type="number" name="ancho_cm" min="0.1" max="250" step="0.1" value="<?= e($form['ancho_cm'] ?? '') ?>" placeholder="12"></label>
                     <label><span>Alto en cm</span><input type="number" name="alto_cm" min="0.1" max="250" step="0.1" value="<?= e($form['alto_cm'] ?? '') ?>" placeholder="18"></label>
-                    <label><span>Fecha ideal</span><input type="date" name="fecha_preferida" min="<?= e(date('Y-m-d')) ?>" value="<?= e($form['fecha_preferida'] ?? '') ?>"></label>
                     <label class="quote-color-choice"><input type="checkbox" name="a_color" value="1" <?= !empty($form['a_color']) ? 'checked' : '' ?>><span aria-hidden="true"></span><b>Quiero explorar tinta a color</b></label>
                 </div>
             </section>
@@ -165,7 +165,7 @@ $accountLink = accountAreaLink($account ?? null, '../');
     <section class="quote-aftercare reveal">
         <p class="eyebrow">DESPUÉS DEL ENVÍO</p>
         <h2>La respuesta no será automática.<br><em>Será humana.</em></h2>
-        <div><p><b>01</b> Revisamos la complejidad, ubicación y medidas.</p><p><b>02</b> Publicamos precio, artista y condiciones dentro de tu cuenta.</p><p><b>03</b> Si aceptas, el administrador agenda y confirma la cita.</p><p><b>04</b> Solo la cita confirmada genera un correo real.</p></div>
+        <div><p><b>01</b> Revisamos la complejidad, ubicación y medidas.</p><p><b>02</b> Publicamos precio, artista y fecha límite para aceptar.</p><p><b>03</b> Aceptar no reserva la fecha: el administrador agenda cada sesión.</p><p><b>04</b> Solo la cita confirmada genera un correo real.</p></div>
     </section>
 </main>
 
@@ -173,5 +173,6 @@ $accountLink = accountAreaLink($account ?? null, '../');
     <a class="brand" href="../index.php"><span class="brand__text"><strong>TINTA VIVA</strong><small>ARTE QUE DEJA HUELLA</small></span></a>
     <p>Personas reales. Historias eternas.</p><p>© <?= date('Y') ?> Tinta Viva</p>
 </footer>
+<?php chatbotWidget('../'); ?>
 </body>
 </html>

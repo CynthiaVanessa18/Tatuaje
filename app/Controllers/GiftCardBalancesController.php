@@ -8,7 +8,11 @@ $balanceState=is_string($_GET['estado']??null)&&isset(GiftCardBalances::STATES[$
 $selectedCard=filter_var($_GET['selected_card']??null,FILTER_VALIDATE_INT,['options'=>['min_range'=>1]])?:null;
 if (($_GET['suggest']??null)==='1') {
     header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');
-    echo json_encode($balanceService->suggestions($search,$balanceState),JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);exit;
+    echo json_encode($balanceService->recipients($search,$balanceState,1)['rows'],JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE);exit;
 }
-$list=$balanceService->listing($search,$balanceState,$selectedCard,max(1,(int)($_GET['page']??1)));
+$selectedRecipient=is_string($_GET['destinatario']??null) && preg_match('/^[a-f0-9]{64}$/D',$_GET['destinatario']) ? $_GET['destinatario'] : null;
+$balanceCurrency=is_string($_GET['moneda']??null) && preg_match('/^[A-Z]{3}$/D',$_GET['moneda']) ? $_GET['moneda'] : '';
+$list=$selectedRecipient===null
+    ? $balanceService->recipients($search,$balanceState,max(1,(int)($_GET['page']??1)))
+    : $balanceService->recipientCards($selectedRecipient,max(1,(int)($_GET['page']??1)),$balanceState,$balanceCurrency);
 $mode='list';$notice=null;$error=null;$esTienda=false;

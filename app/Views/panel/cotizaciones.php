@@ -97,7 +97,9 @@ function adminScheduleTime(string $value): string
         <article><span>I</span><p><b><?= e($summary['nuevas'] ?? 0) ?></b>Nuevas</p></article>
         <article><span>II</span><p><b><?= e($summary['en_revision'] ?? 0) ?></b>En revisión</p></article>
         <article><span>III</span><p><b><?= e($summary['enviadas'] ?? 0) ?></b>Enviadas</p></article>
-        <article><span>IV</span><p><b><?= e($summary['aceptadas'] ?? 0) ?></b>Aceptadas</p></article>
+        <article><span>IV</span><p><b><?= e($summary['aceptadas'] ?? 0) ?></b>Por agendar</p></article>
+        <article><span>V</span><p><b><?= e($summary['agendadas'] ?? 0) ?></b>Agendadas</p></article>
+        <article><span>VI</span><p><b><?= e($summary['cerradas'] ?? 0) ?></b>Cerradas</p></article>
     </section>
 
     <?php if ($mode === 'view' && $quote !== null): ?>
@@ -116,7 +118,7 @@ function adminScheduleTime(string $value): string
                         <div><dt>Zona</dt><dd><?= e($quote['zona_cuerpo']) ?></dd></div>
                         <div><dt>Medidas</dt><dd><?= $quote['ancho_cm'] !== null ? e($quote['ancho_cm']) . ' × ' . e($quote['alto_cm']) . ' cm' : e($quote['tamano_descripcion'] ?: 'Por definir') ?></dd></div>
                         <div><dt>Color</dt><dd><?= !empty($quote['a_color']) ? 'Sí' : 'No' ?></dd></div>
-                        <div><dt>Fecha ideal</dt><dd><?= $quote['fecha_preferida'] ? e(date('d/m/Y', strtotime((string) $quote['fecha_preferida']))) : 'Flexible' ?></dd></div>
+                        <div><dt>Fecha preferida</dt><dd><?= $quote['fecha_preferida'] ? e(date('d/m/Y', strtotime((string) $quote['fecha_preferida']))) . ' · aún no reservada' : 'Sin definir' ?></dd></div>
                         <div><dt>Solicitada</dt><dd><?= e(adminQuoteLocalDate($quote['fecha_solicitud'])) ?> <small>(hora de Costa Rica)</small></dd></div>
                     </dl>
 
@@ -128,23 +130,27 @@ function adminScheduleTime(string $value): string
                     </div>
                 </div>
 
+                <?php $quoteEditable = in_array($quote['estado'], ['solicitada', 'en_revision'], true); ?>
                 <form method="post" class="quote-response-form">
                     <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
                     <input type="hidden" name="action" value="save">
                     <input type="hidden" name="id_cotizacion" value="<?= e($quote['id_cotizacion']) ?>">
                     <p class="quote-dossier__label">RESPUESTA DEL ESTUDIO</p>
-                    <p class="quote-flow-hint">Selecciona <strong>Enviada</strong> para habilitar al cliente las opciones de aceptar, solicitar cambios o rechazar.</p>
-                    <div class="quote-response-fields">
-                        <label><span>Estado *</span><select name="estado" required><?php foreach ($statusLabels as $value => $caption): ?><option value="<?= e($value) ?>" <?= ($quote['estado'] ?? '') === $value ? 'selected' : '' ?>><?= e($caption) ?></option><?php endforeach ?></select></label>
-                        <label><span>Artista asignado</span><select name="id_artista"><option value="">Pendiente de asignar</option><?php foreach ($artists as $adminArtist): ?><option value="<?= e($adminArtist['id_artista']) ?>" <?= (string) ($quote['id_artista'] ?? '') === (string) $adminArtist['id_artista'] ? 'selected' : '' ?>><?= e($adminArtist['nombre_publico']) ?></option><?php endforeach ?></select></label>
+                    <p class="quote-flow-hint"><?php if ($quoteEditable): ?>Al guardar, el sistema cambiará automáticamente la solicitud a <strong>Enviada</strong>.<?php else: ?>Esta propuesta está <strong><?= e(strtolower($statusLabels[$quote['estado']] ?? $quote['estado'])) ?></strong> y sus condiciones quedaron bloqueadas.<?php endif ?></p>
+                    <fieldset class="quote-response-fields" <?= $quoteEditable ? '' : 'disabled' ?>>
+                        <?php if ($quote['id_artista'] !== null): ?>
+                            <label><span>Artista elegido por el cliente</span><input value="<?= e($quote['artista']) ?>" readonly><input type="hidden" name="id_artista" value="<?= e($quote['id_artista']) ?>"><small>La elección del cliente se conserva y no puede cambiarse desde la cotización.</small></label>
+                        <?php else: ?>
+                            <label><span>Asignar artista disponible *</span><select name="id_artista" required><option value="" selected disabled>Selecciona un artista disponible</option><?php foreach ($artists as $adminArtist): ?><option value="<?= e($adminArtist['id_artista']) ?>"><?= e($adminArtist['nombre_publico']) ?></option><?php endforeach ?></select><small>Solo aparecen artistas con espacio en la fecha solicitada.</small></label>
+                        <?php endif ?>
                         <label><span>Precio cotizado (CRC)</span><input type="number" name="precio_cotizado" min="0" step="0.01" value="<?= e($quote['precio_cotizado'] ?? '') ?>" placeholder="95000"></label>
                         <label><span>Anticipo requerido (CRC)</span><input type="number" name="anticipo_requerido" min="0" step="0.01" value="<?= e($quote['anticipo_requerido'] ?? 0) ?>"></label>
                         <label><span>Duración estimada (horas)</span><input type="number" name="duracion_estimada_horas" min="0.01" max="168" step="0.01" value="<?= e(adminQuoteDurationHours($quote['duracion_estimada_minutos'] ?? null)) ?>" placeholder="Ej. 2.5"></label>
                         <label><span>Sesiones estimadas</span><input type="number" name="sesiones_estimadas" min="1" max="30" value="<?= e($quote['sesiones_estimadas'] ?? '') ?>"></label>
-                        <label><span>Válida hasta</span><input type="date" name="fecha_vencimiento" value="<?= e($quote['fecha_vencimiento'] ? substr((string) $quote['fecha_vencimiento'], 0, 10) : '') ?>"></label>
+                        <label><span>Fecha límite para aceptar</span><input value="<?= e($automaticExpiration ? $automaticExpiration->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i') : 'Se requiere una nueva fecha preferida') ?>" readonly><small><?= e($validityIssue ?: 'Se usa la fecha más cercana: siete días después del envío o dos días antes de la fecha preferida.') ?></small></label>
                         <label class="quote-response-fields__wide"><span>Mensaje visible para el cliente</span><textarea name="observaciones" rows="6" maxlength="5000" placeholder="Condiciones, aclaraciones o próximos pasos para el cliente..."><?= e($quote['observaciones'] ?? '') ?></textarea></label>
-                    </div>
-                    <div class="quote-response-form__actions"><button class="admin-button admin-button--primary" type="submit">Guardar respuesta</button><a href="cotizaciones.php">Volver al archivo</a></div>
+                    </fieldset>
+                    <div class="quote-response-form__actions"><?php if ($quoteEditable): ?><button class="admin-button admin-button--primary" type="submit">Enviar propuesta al cliente</button><?php endif ?><a href="cotizaciones.php">Volver al archivo</a></div>
                 </form>
             </div>
 
@@ -177,18 +183,20 @@ function adminScheduleTime(string $value): string
 
             <?php if ($quote['estado'] === 'aceptada' || $appointments !== []): ?>
                 <?php
-                $highestSession = 0;
+                $activeSessionNumbers = [];
                 foreach ($appointments as $appointmentItem) {
                     if (!in_array($appointmentItem['estado'], ['cancelada', 'no_asistio'], true)) {
-                        $highestSession = max($highestSession, (int) $appointmentItem['numero_sesion']);
+                        $activeSessionNumbers[] = (int) $appointmentItem['numero_sesion'];
                     }
                 }
-                $nextSession = $highestSession + 1;
-                $estimatedSessions = (int) ($quote['sesiones_estimadas'] ?? 0);
+                $estimatedSessions = max(1, (int) ($quote['sesiones_estimadas'] ?? 1));
+                $missingSessions = array_values(array_diff(range(1, $estimatedSessions), $activeSessionNumbers));
+                $hasAllSessionPreferences = count($quote['preferencias_sesiones'] ?? []) >= $estimatedSessions;
                 $canAddSession = $quote['estado'] === 'aceptada'
                     && $quote['id_cliente'] !== null
                     && $quote['id_artista'] !== null
-                    && ($estimatedSessions === 0 || $nextSession <= $estimatedSessions);
+                    && $hasAllSessionPreferences
+                    && $missingSessions !== [];
                 $minimumAppointmentStart = (new DateTimeImmutable('now', new DateTimeZone('America/Costa_Rica')))
                     ->format('Y-m-d\TH:i');
                 ?>
@@ -200,6 +208,7 @@ function adminScheduleTime(string $value): string
                         <section class="quote-artist-availability" data-appointment-planner>
                             <script type="application/json" data-artist-schedule><?= json_encode($artistSchedule, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?></script>
                             <script type="application/json" data-artist-unavailable><?= json_encode($artistUnavailablePeriods, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?></script>
+                            <script type="application/json" data-available-slots><?= json_encode($availableAppointmentSlots, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?></script>
                             <div class="quote-artist-availability__heading">
                                 <div><small>HORARIO ACTIVO DEL ARTISTA</small><h4><?= e($quote['artista']) ?></h4></div>
                                 <span>Hora de Costa Rica</span>
@@ -248,17 +257,29 @@ function adminScheduleTime(string $value): string
                             <input type="hidden" name="csrf" value="<?= e(csrf()) ?>">
                             <input type="hidden" name="action" value="schedule_appointment">
                             <input type="hidden" name="id_cotizacion" value="<?= e($quote['id_cotizacion']) ?>">
-                            <div><p class="quote-dossier__label">NUEVA CITA PENDIENTE</p><h3>Reservar un espacio en la agenda</h3></div>
-                            <div class="quote-response-fields">
-                                <label><span>Inicio · hora de Costa Rica *</span><input type="datetime-local" name="fecha_hora_inicio" min="<?= e($minimumAppointmentStart) ?>" value="<?= e($appointmentForm['fecha_hora_inicio'] ?? '') ?>" data-appointment-start required></label>
-                                <label><span>Duración (horas) *</span><input type="number" name="duracion_horas" min="0.25" max="16" step="0.25" value="<?= e($appointmentForm['duracion_horas'] ?? (adminQuoteDurationHours($quote['duracion_estimada_minutos'] ?? null) ?: '2')) ?>" data-appointment-duration required></label>
-                                <label><span>Número de sesión *</span><input type="number" name="numero_sesion" min="1" max="30" value="<?= e($appointmentForm['numero_sesion'] ?? $nextSession) ?>" required></label>
-                                <label class="quote-response-fields__wide"><span>Indicaciones visibles para el cliente</span><textarea name="observaciones_cita" rows="4" maxlength="2000" placeholder="Preparación, documentos, acompañante o cualquier indicación previa..."><?= e($appointmentForm['observaciones_cita'] ?? '') ?></textarea></label>
+                            <div><p class="quote-dossier__label">PLAN DE SESIONES</p><h3>Agenda <?= e(count($missingSessions)) ?> sesión(es) pendiente(s)</h3><p>Se guardan juntas: si una hora no está disponible, ninguna se registra.</p></div>
+                            <div class="quote-session-planner">
+                                <?php foreach ($missingSessions as $sessionNumber): ?>
+                                    <?php $preferredSessionDate = $quote['preferencias_sesiones'][$sessionNumber] ?? ''; ?>
+                                    <?php $selectedSessionDate = $appointmentForm['fecha_sesion'][$sessionNumber] ?? $preferredSessionDate; ?>
+                                    <fieldset class="quote-session-row" data-appointment-row>
+                                        <legend>Sesión <?= e($sessionNumber) ?> de <?= e($estimatedSessions) ?></legend>
+                                        <div class="quote-response-fields">
+                                            <label><span>Fecha disponible *</span><select name="fecha_sesion[<?= e($sessionNumber) ?>]" data-session-date required><option value="">Selecciona una fecha</option><?php foreach (array_keys($availableAppointmentSlots) as $availableDate): ?><option value="<?= e($availableDate) ?>" <?= $selectedSessionDate === $availableDate ? 'selected' : '' ?>><?= e((new DateTimeImmutable($availableDate))->format('d/m/Y')) ?><?= $preferredSessionDate === $availableDate ? ' · preferida por el cliente' : '' ?></option><?php endforeach ?></select></label>
+                                            <label><span>Hora disponible *</span><select name="hora_sesion[<?= e($sessionNumber) ?>]" data-session-time data-selected-time="<?= e($appointmentForm['hora_sesion'][$sessionNumber] ?? '') ?>" required><option value="">Selecciona primero la fecha</option></select></label>
+                                            <label><span>Duración cotizada (horas)</span><input type="number" name="duracion_horas[<?= e($sessionNumber) ?>]" value="<?= e(adminQuoteDurationHours($quote['duracion_estimada_minutos'] ?? null) ?: '2') ?>" data-appointment-duration readonly required></label>
+                                            <label class="quote-response-fields__wide"><span>Indicaciones visibles para el cliente</span><textarea name="observaciones_cita[<?= e($sessionNumber) ?>]" rows="3" maxlength="2000" placeholder="Preparación o indicaciones para esta sesión..."><?= e($appointmentForm['observaciones_cita'][$sessionNumber] ?? '') ?></textarea></label>
+                                        </div>
+                                        <div class="quote-slot-feedback" data-row-feedback aria-live="polite"><span>◷</span><div><b>Selecciona fecha y hora</b><p>Validaremos horario, bloqueos y citas existentes.</p></div></div>
+                                    </fieldset>
+                                <?php endforeach ?>
                             </div>
-                            <button class="admin-button admin-button--primary" type="submit" data-appointment-submit <?= $artistSchedule === [] ? 'disabled' : '' ?>>Crear cita pendiente</button>
+                            <button class="admin-button admin-button--primary" type="submit" data-appointment-submit <?= $artistSchedule === [] || $availableAppointmentSlots === [] ? 'disabled' : '' ?>>Crear todas las citas pendientes</button>
                         </form>
                     <?php elseif ($quote['estado'] === 'aceptada' && ($quote['id_cliente'] === null || $quote['id_artista'] === null)): ?>
                         <p class="quote-history__empty">Asigna un artista y asegúrate de que la cotización pertenezca a un cliente registrado antes de agendar.</p>
+                    <?php elseif ($quote['estado'] === 'aceptada' && !$hasAllSessionPreferences): ?>
+                        <p class="quote-history__empty">El cliente todavía debe elegir una fecha preferida para cada sesión. La agenda se habilitará automáticamente cuando las complete.</p>
                     <?php elseif ($quote['estado'] === 'aceptada' && $estimatedSessions > 0): ?>
                         <p class="quote-history__empty">Ya se registraron todas las sesiones estimadas de esta cotización.</p>
                     <?php endif ?>
@@ -275,9 +296,10 @@ function adminScheduleTime(string $value): string
     <section class="artist-management quote-archive">
         <form class="artist-search quote-search" method="get">
             <label><span>Buscar solicitud</span><input name="buscar" value="<?= e($search) ?>" placeholder="Número, cliente, correo, idea o estilo..."></label>
-            <label><span>Estado</span><select name="estado"><option value="">Todos los estados</option><?php foreach ($statusLabels as $value => $caption): ?><option value="<?= e($value) ?>" <?= $status === $value ? 'selected' : '' ?>><?= e($caption) ?></option><?php endforeach ?></select></label>
+            <label><span>Bandeja</span><select name="vista"><option value="active" <?= $archiveView === 'active' ? 'selected' : '' ?>>Activas y por atender</option><option value="scheduled" <?= $archiveView === 'scheduled' ? 'selected' : '' ?>>Agenda completa</option><option value="closed" <?= $archiveView === 'closed' ? 'selected' : '' ?>>Cerradas</option></select></label>
+            <label><span>Estado específico</span><select name="estado"><option value="">Todos en esta bandeja</option><?php foreach ($statusLabels as $value => $caption): ?><option value="<?= e($value) ?>" <?= $status === $value ? 'selected' : '' ?>><?= e($caption) ?></option><?php endforeach ?></select></label>
             <button class="admin-button admin-button--primary" type="submit">Filtrar</button>
-            <?php if ($search !== '' || $status !== ''): ?><a href="cotizaciones.php">Limpiar</a><?php endif ?>
+            <?php if ($search !== '' || $status !== '' || $archiveView !== 'active'): ?><a href="cotizaciones.php">Limpiar</a><?php endif ?>
         </form>
 
         <div class="artist-management__summary"><p><strong><?= e(count($quotes)) ?></strong> <?= count($quotes) === 1 ? 'solicitud encontrada' : 'solicitudes encontradas' ?></p><p>Abre un expediente para preparar la respuesta.</p></div>
@@ -290,7 +312,7 @@ function adminScheduleTime(string $value): string
                     <article class="quote-list-card">
                         <div class="quote-list-card__number"><small>EXPEDIENTE</small><b>#<?= e($item['id_cotizacion']) ?></b><span class="quote-status quote-status--<?= e($item['estado']) ?>"><?= e($statusLabels[$item['estado']] ?? $item['estado']) ?></span></div>
                         <div class="quote-list-card__idea"><p><?= e($item['categoria']) ?> · <?= e($item['zona_cuerpo']) ?></p><h2><?= e($item['nombre_contacto']) ?></h2><blockquote><?= e($item['descripcion_idea']) ?></blockquote></div>
-                        <dl><div><dt>Artista</dt><dd><?= e($item['artista']) ?></dd></div><div><dt>Valor</dt><dd><?= $item['precio_cotizado'] !== null ? '₡' . e(number_format((float) $item['precio_cotizado'], 0, ',', '.')) : 'Por definir' ?></dd></div><div><dt>Referencias</dt><dd><?= e($item['total_referencias']) ?></dd></div></dl>
+                        <dl><div><dt>Artista</dt><dd><?= e($item['artista']) ?></dd></div><div><dt>Valor</dt><dd><?= $item['precio_cotizado'] !== null ? '₡' . e(number_format((float) $item['precio_cotizado'], 0, ',', '.')) : 'Por definir' ?></dd></div><div><dt>Sesiones</dt><dd><?= e($item['sesiones_agendadas']) ?>/<?= e($item['sesiones_estimadas'] ?: 1) ?></dd></div></dl>
                         <div class="quote-list-card__action"><time datetime="<?= e($item['fecha_solicitud']) ?>"><?= e(adminQuoteLocalDate($item['fecha_solicitud'], 'd M Y · H:i')) ?></time><a class="admin-button admin-button--ghost" href="cotizaciones.php?id=<?= e($item['id_cotizacion']) ?>">Abrir expediente</a></div>
                     </article>
                 <?php endforeach ?>

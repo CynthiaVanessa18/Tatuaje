@@ -42,15 +42,15 @@ $activeGroup = $module['group'];
         <header>
             <div>
                 <p class="eyebrow">PANEL ADMINISTRATIVO</p>
-                <h1><span class="dashboard-title-icon"><?= adminIcon($esTienda?'productos':$moduleId) ?></span><?= $esTienda ? 'Administración de la tienda' : e($module['title']) ?></h1>
-                <p><?= $esTienda ? 'Gestiona productos, existencias y ventas en un solo lugar.' : 'Consulta y organiza los registros de tu estudio.' ?></p>
+                <h1><span class="dashboard-title-icon"><?= adminIcon($esTienda?'productos':$moduleId) ?></span><?= $esTienda ? 'Administración de la tienda' : ($moduleId==='resumen_calificaciones'?'Calificaciones de artistas':e($module['title'])) ?></h1>
+                <p><?= $esTienda ? 'Gestiona productos, existencias y ventas en un solo lugar.' : ($moduleId==='resumen_calificaciones'?'Conoce la valoración de cada artista y consulta sus reseñas.':'Consulta y organiza los registros de tu estudio.') ?></p>
             </div><?php if (empty($module['readonly']) && $moduleId!=='planes'):
                 $createModule = $moduleId==='imagenes' ? 'productos' : $moduleId;
                 $createTitle = ['cuentas'=>'Crear cuenta','productos'=>'Agregar producto','promociones_tienda'=>'Crear promoción','grupos_clientes'=>'Crear grupo','clientes_grupos'=>'Asignar cliente'][$createModule] ?? 'Crear registro';
             ?><a class="button"
                     href="administrador.php?module=<?= e($createModule) ?>&amp;mode=create">＋ <?= e($createTitle) ?></a><?php endif ?>
         </header>
-        <?php if (!$esTienda && $moduleId !== 'beneficios'): ?>
+        <?php if (!$esTienda && !in_array($moduleId,['beneficios','calificaciones','resumen_calificaciones'],true)): ?>
             <nav class="accesos-admin" aria-label="Subapartados de <?= e($adminGroups[$activeGroup]['title']) ?>">
                 <?php foreach ($adminGroups[$activeGroup]['modules'] as $id => $title): ?>
                     <a href="administrador.php?module=<?= e($id) ?>" <?= $id === $moduleId ? 'aria-current="page"' : '' ?>><?= adminIcon($id) ?> <?= e($title) ?></a>
@@ -62,7 +62,7 @@ $activeGroup = $module['group'];
         <?php if ($error): ?>
             <p class="notice error" role="alert"><?= e($error) ?></p><?php endif ?>
         <?php
-        if ($mode!=='view' && !in_array($moduleId,['cuentas','beneficios','saldos_tarjetas'],true) && !$esTienda) require __DIR__.'/admin-resumen.php';
+        if ($mode!=='view' && !in_array($moduleId,['cuentas','beneficios','saldos_tarjetas','resumen_calificaciones'],true) && !$esTienda) require __DIR__.'/admin-resumen.php';
         if ($moduleId === 'saldos_tarjetas') {
             require __DIR__.'/saldos-tarjetas.php';
         } elseif ($moduleId === 'beneficios') {
@@ -73,6 +73,8 @@ $activeGroup = $module['group'];
             require __DIR__.'/membresias-planes.php';
         } elseif ($moduleId === 'calificaciones') {
             require __DIR__.'/calificaciones.php';
+        } elseif ($moduleId === 'resumen_calificaciones') {
+            require __DIR__.'/artistas-calificaciones-resumen.php';
         } elseif ($esTienda) {
             require __DIR__.'/tienda.php';
         } else {

@@ -15,7 +15,19 @@
         <?php if ($pending): ?><p class="membership-status-copy">Coordina el pago con el estudio<br>para activar tus beneficios.</p>
         <details class="membership-payment-help" id="<?= e($paymentId) ?>"><summary>Coordinar pago <span aria-hidden="true">→</span></summary><div><p>Indica tu membresía #<?= e($membership['id_membresia']) ?> al coordinar con el estudio.</p><p><strong><?= e(label($membership['metodo'])) ?> · ₡<?= e(number_format((float)$membership['total'],2,',','.')) ?></strong></p><p>El personal confirmará el pago y la fecha de activación.</p><?php $studioPhone=trim((string)getenv('STUDIO_PHONE')); if (preg_match('/^\+?[\d ()-]{7,25}$/D',$studioPhone)): ?><a href="tel:<?= e(preg_replace('/[^+\d]/','',$studioPhone)) ?>">Llamar al estudio</a><?php endif ?></div></details>
         <?php else: ?><p class="membership-status-copy">Disfruta del cuidado de tu arte.</p><p class="membership-validity">Del <?= e((new DateTimeImmutable($membership['fecha_inicio'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y')) ?> al <?= e((new DateTimeImmutable($membership['fecha_fin'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y')) ?></p><?php endif ?>
-        <?php if ($membership['metodo']==='pasarela'): ?><p class="membership-demo-note">Pago de demostración, sin cobro real.</p><?php endif ?>
+        <?php if (!$pending): $renewal=$membership['renovacion']??null;$renewalEnabled=(bool)($renewal['habilitada']??false); ?>
+        <section class="membership-renewal">
+        <div class="membership-renewal-heading"><h3>Renovación automática</h3><span><?= $renewalEnabled?'Activada':'Desactivada' ?></span></div>
+        <?php if ($renewalEnabled): ?><p>Próxima renovación: <?= e((new DateTimeImmutable($membership['fecha_fin'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('America/Costa_Rica'))->format('d/m/Y H:i')) ?> · ₡<?= e(number_format($renewal['importe_centavos']/100,2,',','.')) ?></p><?php endif ?>
+        <?php if ($renewalEnabled): ?>
+        <form method="post" action="<?= e($clientEndpoint) ?>?section=membresias">
+        <input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="id_membresia" value="<?= e($membership['id_membresia']) ?>">
+        <input type="hidden" name="membership_action" value="renew_disable">
+        <button type="submit">Desactivar renovación</button>
+        </form>
+        <?php endif ?>
+        </section>
+        <?php endif ?>
         <details class="membership-cancel"><summary>Cancelar membresía</summary><p>La cancelación desactiva los beneficios y conserva el historial de pagos. No genera un reembolso automático.</p><form method="post" action="<?= e($clientEndpoint) ?>?section=membresias"><input type="hidden" name="csrf" value="<?= e(csrf()) ?>"><input type="hidden" name="membership_action" value="cancel"><input type="hidden" name="id_membresia" value="<?= e($membership['id_membresia']) ?>"><label class="membership-cancel-confirm"><input type="checkbox" name="confirm_cancel" value="1" required> Confirmo que quiero cancelar esta membresía.</label><button type="submit" class="secondary">Confirmar cancelación</button></form></details>
         <span class="membership-corner corner-bottom-left" aria-hidden="true">❧</span><span class="membership-corner corner-bottom-right" aria-hidden="true">❧</span><span class="membership-card-star" aria-hidden="true">✧</span>
     </article>

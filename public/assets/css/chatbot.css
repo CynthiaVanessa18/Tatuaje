@@ -1,0 +1,87 @@
+:root {
+    --oracle-black: #050304;
+    --oracle-ink: #0d0709;
+    --oracle-blood: #9f1235;
+    --oracle-blood-bright: #db1749;
+    --oracle-gold: #c99b55;
+    --oracle-bone: #f1e7d7;
+    --oracle-muted: #ae9589;
+}
+
+.tattoo-oracle, .tattoo-oracle * { box-sizing: border-box; }
+.tattoo-oracle { position: fixed; right: clamp(14px, 2vw, 32px); bottom: clamp(14px, 2vw, 28px); z-index: 9998; color: var(--oracle-bone); font-family: Montserrat, sans-serif; }
+.tattoo-oracle [hidden] { display: none !important; }
+.tattoo-oracle__summon { min-width: 190px; padding: 9px 16px 9px 9px; display: flex; align-items: center; gap: 11px; border: 1px solid rgba(201,155,85,.52); background: linear-gradient(110deg, #080405, #16070c); color: var(--oracle-bone); box-shadow: 0 18px 55px #000, inset 0 0 25px rgba(159,18,53,.12); cursor: pointer; clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); }
+.tattoo-oracle__summon::after { content:""; position:absolute; inset:0; pointer-events:none; border-top:2px solid var(--oracle-blood); transform:scaleX(.45); transform-origin:left; transition:transform .3s ease; }
+.tattoo-oracle__summon:hover::after, .tattoo-oracle.is-open .tattoo-oracle__summon::after { transform:scaleX(1); }
+.tattoo-oracle__summon small, .tattoo-oracle__summon strong { display:block; text-align:left; letter-spacing:.18em; }
+.tattoo-oracle__summon small { color:var(--oracle-muted); font-size:.48rem; }
+.tattoo-oracle__summon strong { margin-top:3px; font-family:"Cinzel Decorative",serif; font-size:.75rem; }
+.tattoo-oracle__sigil { position:relative; width:42px; height:42px; flex:0 0 42px; display:grid; place-items:center; border:1px solid var(--oracle-gold); border-radius:50%; color:var(--oracle-gold); }
+.tattoo-oracle__sigil::before, .tattoo-oracle__sigil::after { content:""; position:absolute; inset:6px; border:1px solid rgba(219,23,73,.6); transform:rotate(45deg); }
+.tattoo-oracle__sigil::after { inset:11px; transform:rotate(0); border-radius:50%; box-shadow:0 0 18px rgba(219,23,73,.7); }
+.tattoo-oracle__sigil b { position:relative; z-index:2; font-size:.65rem; }
+
+.tattoo-oracle__panel { position:absolute; right:0; bottom:66px; width:min(400px, calc(100vw - 28px)); height:min(680px, calc(100vh - 100px)); display:grid; grid-template-rows:auto auto minmax(150px,1fr) auto auto auto; overflow:hidden; border:1px solid rgba(201,155,85,.5); background:radial-gradient(circle at 70% 0,rgba(126,10,38,.25),transparent 45%),linear-gradient(145deg,#0e0709,#050304 70%); box-shadow:0 30px 100px #000,0 0 0 1px rgba(159,18,53,.16); clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px); animation:oracle-rise .24s ease-out; }
+.tattoo-oracle__panel::before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.18; background:repeating-linear-gradient(115deg,transparent 0 38px,rgba(201,155,85,.08) 39px,transparent 40px 78px); }
+@keyframes oracle-rise { from { opacity:0; transform:translateY(12px) scale(.98); } }
+.tattoo-oracle__header { position:relative; display:grid; grid-template-columns:54px 1fr auto; gap:12px; align-items:center; padding:18px; border-bottom:1px solid rgba(201,155,85,.25); }
+.tattoo-oracle__moon { width:52px; height:52px; display:grid; place-items:center; border:1px solid var(--oracle-gold); border-radius:50%; background:radial-gradient(circle,rgba(219,23,73,.3),#090405 67%); box-shadow:0 0 30px rgba(159,18,53,.32); }
+.tattoo-oracle__moon span { font-family:"Cormorant Garamond",serif; font-size:1.2rem; }
+.tattoo-oracle__header small { color:var(--oracle-gold); font-size:.48rem; font-weight:700; letter-spacing:.19em; }
+.tattoo-oracle__header h2 { margin:4px 0 2px; color:var(--oracle-bone); font-family:"Cinzel Decorative",serif; font-size:1rem; }
+.tattoo-oracle__header p { margin:0; color:var(--oracle-muted); font-size:.61rem; }
+.tattoo-oracle__header p i { display:inline-block; width:6px; height:6px; margin-right:5px; border-radius:50%; background:#73a56c; box-shadow:0 0 9px #73a56c; }
+.tattoo-oracle.is-escalated .tattoo-oracle__header p i { background:var(--oracle-gold); box-shadow:0 0 9px var(--oracle-gold); }
+.tattoo-oracle__header > button { align-self:start; border:0; background:none; color:var(--oracle-muted); font-size:1.5rem; cursor:pointer; }
+.tattoo-oracle__warning { position:relative; padding:8px 18px; color:#b69c91; background:rgba(201,155,85,.06); border-bottom:1px solid rgba(201,155,85,.12); font-size:.56rem; line-height:1.4; }
+.tattoo-oracle__messages { position:relative; overflow-y:auto; padding:18px; scrollbar-color:#6f1930 #090506; scrollbar-width:thin; }
+.tattoo-oracle__message { width:88%; margin:0 0 14px; }
+.tattoo-oracle__message small { display:block; margin-bottom:5px; color:var(--oracle-gold); font-size:.48rem; font-weight:700; letter-spacing:.18em; }
+.tattoo-oracle__message p { margin:0; padding:12px 14px; border:1px solid rgba(201,155,85,.22); background:rgba(24,12,15,.9); color:#e8dacb; font-family:"Cormorant Garamond",serif; font-size:1.03rem; line-height:1.38; white-space:pre-line; }
+.tattoo-oracle__message--usuario { margin-left:auto; }
+.tattoo-oracle__message--usuario small { text-align:right; color:#d85a78; }
+.tattoo-oracle__message--usuario p { border-color:rgba(159,18,53,.45); background:linear-gradient(135deg,rgba(106,10,34,.78),rgba(39,5,13,.9)); }
+.tattoo-oracle__message--welcome { width:100%; }
+.tattoo-oracle__message--welcome p { border-left:2px solid var(--oracle-gold); background:rgba(201,155,85,.055); }
+.tattoo-oracle__action { display:inline-block; margin-top:7px; padding:7px 10px; border:1px solid rgba(201,155,85,.45); background:transparent; color:var(--oracle-gold); font:600 .58rem Montserrat,sans-serif; letter-spacing:.1em; text-decoration:none; text-transform:uppercase; cursor:pointer; }
+.tattoo-oracle__feedback { display:flex; align-items:center; gap:5px; padding-top:6px; color:var(--oracle-muted); font-size:.56rem; }
+.tattoo-oracle__feedback button { border:1px solid rgba(201,155,85,.25); background:transparent; color:var(--oracle-muted); font-size:.55rem; cursor:pointer; }
+.tattoo-oracle__feedback button.is-selected { border-color:var(--oracle-gold); color:var(--oracle-gold); }
+.tattoo-oracle__loading, .tattoo-oracle__typing { display:flex; align-items:center; gap:5px; color:var(--oracle-muted); font-size:.65rem; }
+.tattoo-oracle__loading i, .tattoo-oracle__typing i { width:6px; height:6px; border-radius:50%; background:var(--oracle-blood-bright); animation:oracle-pulse 1s infinite alternate; }
+.tattoo-oracle__loading i:nth-child(2), .tattoo-oracle__typing i:nth-child(2) { animation-delay:.2s; }
+.tattoo-oracle__loading i:nth-child(3), .tattoo-oracle__typing i:nth-child(3) { animation-delay:.4s; }
+.tattoo-oracle__loading span { margin-left:6px; }
+@keyframes oracle-pulse { to { opacity:.25; transform:translateY(-3px); } }
+.tattoo-oracle__prompts { position:relative; display:flex; gap:6px; overflow-x:auto; padding:0 14px 12px; scrollbar-width:none; }
+.tattoo-oracle__prompts::-webkit-scrollbar { display:none; }
+.tattoo-oracle__prompts button { flex:0 0 auto; padding:7px 9px; border:1px solid rgba(201,155,85,.24); background:#0a0507; color:#c5aa9d; font-size:.54rem; cursor:pointer; }
+.tattoo-oracle__prompts button:hover { border-color:var(--oracle-gold); color:var(--oracle-gold); }
+.tattoo-oracle__form { position:relative; display:grid; grid-template-columns:1fr auto; gap:8px; padding:12px 14px; border-top:1px solid rgba(201,155,85,.22); background:#070405; }
+.tattoo-oracle__form textarea { width:100%; min-height:44px; max-height:105px; resize:none; padding:12px; border:1px solid rgba(201,155,85,.28); border-radius:0; outline:none; background:#020102; color:var(--oracle-bone); font: .78rem Montserrat,sans-serif; }
+.tattoo-oracle__form textarea:focus { border-color:var(--oracle-gold); box-shadow:0 0 0 2px rgba(201,155,85,.08); }
+.tattoo-oracle__form button { min-width:74px; border:1px solid #c11b44; background:linear-gradient(135deg,#a00e34,#5c071e); color:white; font:700 .56rem Montserrat,sans-serif; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; }
+.tattoo-oracle__form button b { display:none; }
+.tattoo-oracle__form button:disabled { opacity:.45; cursor:wait; }
+.tattoo-oracle__status { min-height:0; margin:0; padding:0 14px; color:#e0a253; font-size:.58rem; }
+.tattoo-oracle__status:not(:empty) { padding-bottom:9px; }
+.tattoo-oracle__panel > footer { position:relative; padding:7px; border-top:1px solid rgba(201,155,85,.12); color:#765d50; font-size:.43rem; letter-spacing:.14em; text-align:center; }
+.tattoo-oracle__panel > footer span { color:var(--oracle-blood-bright); }
+.tattoo-oracle__error { color:#e18797; font-size:.72rem; }
+.tattoo-oracle .sr-only { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
+
+@media (max-width: 520px) {
+    .tattoo-oracle { right:10px; bottom:10px; }
+    .tattoo-oracle__summon { min-width:0; padding-right:10px; }
+    .tattoo-oracle__summon > span:last-child { display:none; }
+    .tattoo-oracle__panel { position:fixed; inset:8px; width:auto; height:auto; max-height:none; bottom:8px; }
+    .tattoo-oracle__message { width:94%; }
+    .tattoo-oracle__form button { min-width:48px; }
+    .tattoo-oracle__form button span { display:none; }
+    .tattoo-oracle__form button b { display:inline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tattoo-oracle__panel, .tattoo-oracle__loading i, .tattoo-oracle__typing i { animation:none; }
+}

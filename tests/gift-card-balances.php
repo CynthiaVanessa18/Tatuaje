@@ -24,4 +24,16 @@ balanceCheck(count($service->suggestions('cyn','activa'))===10 && $service->sugg
 balanceCheck($service->listing('cyn%','',null,1)['total']===1,'Busca literalmente signos en nombres');
 balanceCheck($service->listing("' OR 1=1 --",'',null,1)['total']===0,'Consulta parametrizada');
 balanceCheck($service->listing('cyn','activa',27,1)['total']===0,'No ignora estado al seleccionar');
+$recipients=$service->recipients('','',1);
+balanceCheck($service->recipients('','activa',1)['rows'][0]['tarjetas']==1,'Filtro activo excluye tarjetas sin saldo');
+balanceCheck($service->recipientCards($recipients['rows'][0]['destinatario'],1,'pendiente')['total']===1,'Detalle conserva filtro pendiente');
+balanceCheck($service->recipientCards($recipients['rows'][0]['destinatario'],1,'activa')['total']===1,'Detalle conserva filtro activo');
+balanceCheck($service->recipientCards($recipients['rows'][0]['destinatario'],1,'','USD')['total']===0,'Detalle conserva moneda seleccionada');
+balanceCheck($recipients['total']===1 && (int)$recipients['rows'][0]['tarjetas']===28 && (float)$recipients['rows'][0]['saldo_actual']===800.0,'Agrupa por destinatario y suma saldo disponible');
+$details=$service->recipientCards($recipients['rows'][0]['destinatario'],2);
+balanceCheck($details['total']===28 && count($details['rows'])===8,'Detalle muestra todas las tarjetas con paginación');
+$db->exec("UPDATE tarjetas_regalo SET fecha_emision='2020-01-01',fecha_vencimiento='2020-02-01' WHERE id_tarjeta=1");
+balanceCheck((float)$service->recipients('','',1)['rows'][0]['saldo_actual']===0.0,'No suma saldo vencido aunque el estado diga activa');
+$db->exec("UPDATE tarjetas_regalo SET correo_destinatario='otra@example.com' WHERE id_tarjeta=28");
+balanceCheck($service->recipients('','',1)['total']===2,'No mezcla destinatarios con correos diferentes');
 echo "OK: $checks comprobaciones de nombres, coincidencias, selección, estados, saldo y paginación. Solo tablas temporales.\n";

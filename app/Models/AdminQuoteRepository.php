@@ -15,14 +15,24 @@ final class AdminQuoteRepository
                 SUM(estado = 'solicitada') AS nuevas,
                 SUM(estado = 'en_revision') AS en_revision,
                 SUM(estado = 'enviada') AS enviadas,
-                SUM(estado = 'aceptada') AS aceptadas
+                SUM(estado = 'aceptada' AND (
+                    SELECT COUNT(*) FROM citas appointment
+                    WHERE appointment.id_cotizacion = cotizaciones.id_cotizacion
+                      AND appointment.estado NOT IN ('cancelada', 'no_asistio')
+                ) < COALESCE(sesiones_estimadas, 1)) AS aceptadas,
+                SUM(estado = 'aceptada' AND (
+                    SELECT COUNT(*) FROM citas appointment
+                    WHERE appointment.id_cotizacion = cotizaciones.id_cotizacion
+                      AND appointment.estado NOT IN ('cancelada', 'no_asistio')
+                ) >= COALESCE(sesiones_estimadas, 1)) AS agendadas,
+                SUM(estado IN ('rechazada', 'vencida', 'cancelada')) AS cerradas
              FROM cotizaciones"
         )->fetch();
 
-        return $row ?: ['total' => 0, 'nuevas' => 0, 'en_revision' => 0, 'enviadas' => 0, 'aceptadas' => 0];
+        return $row ?: ['total' => 0, 'nuevas' => 0, 'en_revision' => 0, 'enviadas' => 0, 'aceptadas' => 0, 'agendadas' => 0, 'cerradas' => 0];
     }
 
-    public function listing(string $search = '', string $status = ''): array
+    public function listing(string $search = '', string $status = '', string $view = 'active'): array
     {
         $conditions = [];
         $parameters = [];
@@ -54,6 +64,21 @@ final class AdminQuoteRepository
             $parameters['status'] = $status;
         }
 
+        if ($status === '') {
+            $activeAppointments = "(SELECT COUNT(*) FROM citas appointment
+                WHERE appointment.id_cotizacion = quote.id_cotizacion
+                  AND appointment.estado NOT IN ('cancelada', 'no_asistio'))";
+
+            if ($view === 'scheduled') {
+                $conditions[] = "quote.estado = 'aceptada' AND {$activeAppointments} >= COALESCE(quote.sesiones_estimadas, 1)";
+            } elseif ($view === 'closed') {
+                $conditions[] = "quote.estado IN ('rechazada', 'vencida', 'cancelada')";
+            } else {
+                $conditions[] = "(quote.estado IN ('solicitada', 'en_revision', 'enviada')
+                    OR (quote.estado = 'aceptada' AND {$activeAppointments} < COALESCE(quote.sesiones_estimadas, 1)))";
+            }
+        }
+
         $where = $conditions === [] ? '' : 'WHERE ' . implode(' AND ', $conditions);
         $query = $this->database->prepare(
             "SELECT
@@ -78,6 +103,9 @@ final class AdminQuoteRepository
                     CONCAT_WS(' ', artist.nombre, artist.apellidos),
                     'Sin asignar'
                 ) AS artista,
+                (SELECT COUNT(*) FROM citas appointment
+                 WHERE appointment.id_cotizacion = quote.id_cotizacion
+                   AND appointment.estado NOT IN ('cancelada', 'no_asistio')) AS sesiones_agendadas,
                 (SELECT COUNT(*)
                  FROM referencias_cotizacion reference
                  WHERE reference.id_cotizacion = quote.id_cotizacion) AS total_referencias
@@ -126,6 +154,7 @@ final class AdminQuoteRepository
 
         $quote['referencias'] = $this->references($quoteId);
         $quote['historial'] = $this->history($quoteId);
+        $quote['preferencias_sesiones'] = $this->sessionPreferences($quoteId);
 
         return $quote;
     }
@@ -167,6 +196,22 @@ final class AdminQuoteRepository
         return $query->fetchAll();
     }
 
+    private function sessionPreferences(int $quoteId): array
+    {
+        $query = $this->database->prepare(
+            'SELECT numero_sesion, fecha_preferida
+             FROM preferencias_sesiones_cotizacion
+             WHERE id_cotizacion = :quote_id
+             ORDER BY numero_sesion'
+        );
+        $query->execute(['quote_id' => $quoteId]);
+        $preferences = [];
+        foreach ($query->fetchAll() as $row) {
+            $preferences[(int) $row['numero_sesion']] = (string) $row['fecha_preferida'];
+        }
+        return $preferences;
+    }
+
     public function artists(): array
     {
         return $this->database->query(
@@ -177,6 +222,45 @@ final class AdminQuoteRepository
              WHERE activo = TRUE
              ORDER BY nombre_publico"
         )->fetchAll();
+    }
+
+    public function expireSentQuotes(): void
+    {
+        $this->database->beginTransaction();
+
+        try {
+            $expired = $this->database->query(
+                "SELECT id_cotizacion, precio_cotizado FROM cotizaciones
+                 WHERE estado = 'enviada'
+                   AND fecha_vencimiento IS NOT NULL
+                   AND fecha_vencimiento < UTC_TIMESTAMP()
+                 FOR UPDATE"
+            )->fetchAll();
+
+            if ($expired !== []) {
+                $this->database->exec(
+                    "UPDATE cotizaciones SET estado = 'vencida'
+                     WHERE estado = 'enviada'
+                       AND fecha_vencimiento IS NOT NULL
+                       AND fecha_vencimiento < UTC_TIMESTAMP()"
+                );
+                $history = $this->database->prepare(
+                    "INSERT INTO historial_cotizaciones
+                        (id_cotizacion, id_cuenta_responsable, estado_anterior, estado_nuevo, precio_cotizado, observacion)
+                     VALUES (:quote_id, NULL, 'enviada', 'vencida', :price, 'La propuesta venció automáticamente.')"
+                );
+                foreach ($expired as $quote) {
+                    $history->execute(['quote_id' => $quote['id_cotizacion'], 'price' => $quote['precio_cotizado']]);
+                }
+            }
+
+            $this->database->commit();
+        } catch (Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
+            throw $exception;
+        }
     }
 
     public function updateResponse(int $quoteId, int $accountId, array $data): void
@@ -195,6 +279,10 @@ final class AdminQuoteRepository
 
             if ($previousStatus === false) {
                 throw new DomainException('La solicitud ya no existe.');
+            }
+
+            if (!in_array($previousStatus, ['solicitada', 'en_revision'], true)) {
+                throw new DomainException('La propuesta ya fue enviada o respondida y sus datos están bloqueados.');
             }
 
             $query = $this->database->prepare(
@@ -246,6 +334,38 @@ final class AdminQuoteRepository
                 $this->database->rollBack();
             }
 
+            throw $exception;
+        }
+    }
+
+    public function markUnderReview(int $quoteId, int $accountId): bool
+    {
+        $this->database->beginTransaction();
+
+        try {
+            $update = $this->database->prepare(
+                "UPDATE cotizaciones SET estado = 'en_revision'
+                 WHERE id_cotizacion = :quote_id AND estado = 'solicitada'"
+            );
+            $update->execute(['quote_id' => $quoteId]);
+
+            if ($update->rowCount() !== 1) {
+                $this->database->commit();
+                return false;
+            }
+
+            $history = $this->database->prepare(
+                "INSERT INTO historial_cotizaciones
+                    (id_cotizacion, id_cuenta_responsable, estado_anterior, estado_nuevo, precio_cotizado, observacion)
+                 VALUES (:quote_id, :account_id, 'solicitada', 'en_revision', NULL, 'El administrador abrió la solicitud para revisarla.')"
+            );
+            $history->execute(['quote_id' => $quoteId, 'account_id' => $accountId]);
+            $this->database->commit();
+            return true;
+        } catch (Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
             throw $exception;
         }
     }

@@ -250,6 +250,7 @@ final class QuoteRepository
         $quote['referencias'] = $this->references($quoteId);
         $quote['historial'] = $this->historyForClient($quoteId);
         $quote['citas'] = $this->appointmentsForQuote($quoteId, $clientId);
+        $quote['preferencias_sesiones'] = $this->sessionPreferences($quoteId);
 
         return $quote;
     }
@@ -259,7 +260,8 @@ final class QuoteRepository
         int $clientId,
         int $accountId,
         string $newStatus,
-        string $message
+        string $message,
+        array $sessionDates = []
     ): void {
         $this->database->beginTransaction();
 
@@ -307,6 +309,25 @@ final class QuoteRepository
                 'quote_id' => $quoteId,
                 'client_id' => $clientId,
             ]);
+
+            if ($newStatus === 'aceptada') {
+                $deletePreferences = $this->database->prepare(
+                    'DELETE FROM preferencias_sesiones_cotizacion WHERE id_cotizacion = :quote_id'
+                );
+                $deletePreferences->execute(['quote_id' => $quoteId]);
+                $insertPreference = $this->database->prepare(
+                    'INSERT INTO preferencias_sesiones_cotizacion
+                        (id_cotizacion, numero_sesion, fecha_preferida)
+                     VALUES (:quote_id, :session_number, :preferred_date)'
+                );
+                foreach ($sessionDates as $sessionNumber => $preferredDate) {
+                    $insertPreference->execute([
+                        'quote_id' => $quoteId,
+                        'session_number' => (int) $sessionNumber,
+                        'preferred_date' => $preferredDate,
+                    ]);
+                }
+            }
 
             $history = $this->database->prepare(
                 'INSERT INTO historial_cotizaciones (
@@ -412,5 +433,64 @@ final class QuoteRepository
         $query->execute(['quote_id' => $quoteId]);
 
         return $query->fetchAll();
+    }
+
+    public function saveSessionPreferences(int $quoteId, int $clientId, array $sessionDates): void
+    {
+        $this->database->beginTransaction();
+
+        try {
+            $ownership = $this->database->prepare(
+                "SELECT COUNT(*) FROM cotizaciones
+                 WHERE id_cotizacion = :quote_id AND id_cliente = :client_id AND estado = 'aceptada'
+                 FOR UPDATE"
+            );
+            $ownership->execute(['quote_id' => $quoteId, 'client_id' => $clientId]);
+            if ((int) $ownership->fetchColumn() !== 1) {
+                throw new DomainException('La cotización aceptada ya no está disponible.');
+            }
+
+            $delete = $this->database->prepare(
+                'DELETE FROM preferencias_sesiones_cotizacion WHERE id_cotizacion = :quote_id'
+            );
+            $delete->execute(['quote_id' => $quoteId]);
+            $insert = $this->database->prepare(
+                'INSERT INTO preferencias_sesiones_cotizacion
+                    (id_cotizacion, numero_sesion, fecha_preferida)
+                 VALUES (:quote_id, :session_number, :preferred_date)'
+            );
+            foreach ($sessionDates as $number => $date) {
+                $insert->execute([
+                    'quote_id' => $quoteId,
+                    'session_number' => (int) $number,
+                    'preferred_date' => $date,
+                ]);
+            }
+
+            $this->database->commit();
+        } catch (Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
+            throw $exception;
+        }
+    }
+
+    public function sessionPreferences(int $quoteId): array
+    {
+        $query = $this->database->prepare(
+            'SELECT numero_sesion, fecha_preferida
+             FROM preferencias_sesiones_cotizacion
+             WHERE id_cotizacion = :quote_id
+             ORDER BY numero_sesion'
+        );
+        $query->execute(['quote_id' => $quoteId]);
+
+        $preferences = [];
+        foreach ($query->fetchAll() as $row) {
+            $preferences[(int) $row['numero_sesion']] = (string) $row['fecha_preferida'];
+        }
+
+        return $preferences;
     }
 }

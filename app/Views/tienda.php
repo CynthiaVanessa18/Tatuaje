@@ -31,9 +31,7 @@ function tiendaIcono(string $nombre): string {
 </nav>
 <?php foreach ($seccionesTienda as $seccion):
     if ($mode==='view' && $seccion['moduleId']!==$moduloSeleccionado) continue;
-    if (in_array($moduloSeleccionado,['productos','imagenes'],true)) {
-        if (!in_array($seccion['moduleId'],['productos','imagenes'],true)) continue;
-    } elseif ($seccion['moduleId'] !== $moduloSeleccionado) continue;
+    if ($seccion['moduleId'] !== $moduloSeleccionado) continue;
     extract($seccion,EXTR_OVERWRITE); ?>
     <section id="tienda-<?= e($moduleId) ?>" class="seccion-tienda" aria-labelledby="titulo-<?= e($moduleId) ?>">
         <header><h2 id="titulo-<?= e($moduleId) ?>"><?= tiendaIcono($moduleId) ?><?= e($tiendaTitulos[$moduleId]) ?></h2>

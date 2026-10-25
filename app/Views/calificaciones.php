@@ -7,11 +7,17 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
 ?>
 <p class="hint">Aprueba las calificaciones u oculta contenido inapropiado y registra el motivo. Una opinión negativa sobre el servicio no es motivo para ocultarla.</p>
 <?php if ($record && in_array($mode, ['edit', 'view'], true)): ?>
+<?php
+$ratingContextQuery=conectarBaseDatos()->prepare("SELECT a.id_artista,COALESCE(NULLIF(a.nombre_artistico,''),CONCAT_WS(' ',a.nombre,a.apellidos)) AS artista,CONCAT_WS(' ',cl.nombre,cl.apellidos) AS cliente FROM citas c JOIN artistas a ON a.id_artista=c.id_artista LEFT JOIN clientes cl ON cl.id_cliente=c.id_cliente WHERE c.id_cita=?");
+$ratingContextQuery->execute([$record['id_cita']]);$ratingContext=$ratingContextQuery->fetch();
+?>
+<p><a href="administrador.php?module=resumen_calificaciones&amp;artista=<?= e($ratingContext['id_artista']??'') ?>">← Volver a los comentarios del artista</a></p>
 <section class="card">
     <h2><?= $mode === 'edit' ? 'Moderar calificación' : 'Detalle e historial de la calificación' ?></h2>
     <dl>
-        <dt>Cita</dt><dd><?= e(displayValue('id_cita', $columns['id_cita'], $refs, $record['id_cita'])) ?></dd>
-        <dt>Puntuación</dt><dd><?= e($record['puntuacion']) ?>/5</dd>
+        <dt>Artista</dt><dd><?= e($ratingContext['artista']??'Artista no disponible') ?></dd>
+        <dt>Cliente</dt><dd><?= e($ratingContext['cliente']??'Cliente no disponible') ?></dd>
+        <dt>Puntuación</dt><dd><span class="rating-display" role="img" aria-label="<?= e($record['puntuacion']) ?> de 5 estrellas"><span aria-hidden="true"><span class="rating-display-filled"><?= str_repeat('★', max(0, min(5, (int)$record['puntuacion']))) ?></span><span class="rating-display-empty"><?= str_repeat('☆', 5-max(0, min(5, (int)$record['puntuacion']))) ?></span></span></span> <span><?= e($record['puntuacion']) ?>/5</span></dd>
         <dt>Comentario</dt><dd><?= nl2br(e($record['comentario'] ?? 'Sin comentario.')) ?></dd>
         <dt>Estado actual</dt><dd><?= e($states[$record['estado_publicacion']]) ?></dd>
     </dl>
@@ -62,7 +68,7 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
     <?php endif ?>
 </section>
 <?php endif ?>
-<?php if ($record && $mode==='view') return; ?>
+<?php if ($record && in_array($mode,['view','edit'],true)) return; ?>
 <section class="card">
     <form method="get" action="administrador.php" class="filters">
         <input type="hidden" name="module" value="calificaciones">
@@ -84,7 +90,7 @@ $categoryLabels = $reasons + ['aprobacion'=>'Aprobación', 'revision'=>'Revisió
         <?php foreach ($list['rows'] as $rating): $query = http_build_query(['module'=>'calificaciones', 'id_calificacion'=>$rating['id_calificacion']]); ?>
         <tr>
             <td>Cita #<?= e($rating['id_cita']) ?></td>
-            <td><?= e($rating['puntuacion']) ?>/5</td><td><?= e($states[$rating['estado_publicacion']]) ?></td>
+            <td><span class="rating-display" role="img" aria-label="<?= e($rating['puntuacion']) ?> de 5 estrellas"><span aria-hidden="true"><span class="rating-display-filled"><?= str_repeat('★', max(0, min(5, (int)$rating['puntuacion']))) ?></span><span class="rating-display-empty"><?= str_repeat('☆', 5-max(0, min(5, (int)$rating['puntuacion']))) ?></span></span></span> <span><?= e($rating['puntuacion']) ?>/5</span></td><td><?= e($states[$rating['estado_publicacion']]) ?></td>
             <td><div class="actions"><a href="administrador.php?<?= e($query) ?>&amp;mode=view">Ver</a><a href="administrador.php?<?= e($query) ?>&amp;mode=edit">Moderar</a></div></td>
         </tr>
         <?php endforeach ?>

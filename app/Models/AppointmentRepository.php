@@ -139,6 +139,106 @@ final class AppointmentRepository
         return $appointment === false ? null : $appointment;
     }
 
+    public function quoteSchedulingContext(int $quoteId): ?array
+    {
+        $query = $this->database->prepare(
+            'SELECT quote.id_cotizacion, quote.id_cliente, quote.id_artista, quote.estado,
+                    quote.sesiones_estimadas, quote.duracion_estimada_minutos,
+                    (SELECT COUNT(*) FROM preferencias_sesiones_cotizacion preference
+                     WHERE preference.id_cotizacion = quote.id_cotizacion) AS total_preferencias_sesiones
+             FROM cotizaciones quote WHERE quote.id_cotizacion = :quote_id LIMIT 1'
+        );
+        $query->execute(['quote_id' => $quoteId]);
+        $quote = $query->fetch();
+
+        return $quote === false ? null : $quote;
+    }
+
+    public function activeSessionNumbers(int $quoteId): array
+    {
+        $query = $this->database->prepare(
+            "SELECT numero_sesion FROM citas
+             WHERE id_cotizacion = :quote_id
+               AND estado NOT IN ('cancelada', 'no_asistio')
+             ORDER BY numero_sesion"
+        );
+        $query->execute(['quote_id' => $quoteId]);
+
+        return array_map('intval', $query->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    public function scheduleSessionsFromQuote(int $quoteId, int $accountId, array $sessions): array
+    {
+        $this->database->beginTransaction();
+
+        try {
+            $quoteQuery = $this->database->prepare(
+                'SELECT id_cliente, id_artista, estado, sesiones_estimadas
+                 FROM cotizaciones WHERE id_cotizacion = :quote_id FOR UPDATE'
+            );
+            $quoteQuery->execute(['quote_id' => $quoteId]);
+            $quote = $quoteQuery->fetch();
+
+            if ($quote === false || $quote['estado'] !== 'aceptada') {
+                throw new DomainException('Solo se pueden agendar cotizaciones aceptadas por el cliente.');
+            }
+
+            if ($quote['id_cliente'] === null || $quote['id_artista'] === null) {
+                throw new DomainException('La cotización debe tener cliente y artista asignados antes de agendar.');
+            }
+
+            $existingQuery = $this->database->prepare(
+                "SELECT numero_sesion FROM citas
+                 WHERE id_cotizacion = :quote_id AND estado NOT IN ('cancelada', 'no_asistio') FOR UPDATE"
+            );
+            $existingQuery->execute(['quote_id' => $quoteId]);
+            $existing = array_map('intval', $existingQuery->fetchAll(PDO::FETCH_COLUMN));
+            $estimated = max(1, (int) ($quote['sesiones_estimadas'] ?? 1));
+
+            $insert = $this->database->prepare(
+                "INSERT INTO citas
+                    (id_cliente, id_artista, id_cotizacion, fecha_hora_inicio, fecha_hora_fin, numero_sesion, origen, estado, observaciones)
+                 VALUES
+                    (:client_id, :artist_id, :quote_id, :starts_at, :ends_at, :session_number, 'administracion', 'pendiente', :notes)"
+            );
+            $history = $this->database->prepare(
+                "INSERT INTO historial_citas
+                    (id_cita, id_cuenta_responsable, estado_anterior, estado_nuevo, observacion)
+                 VALUES (:appointment_id, :account_id, NULL, 'pendiente', 'El administrador creó esta sesión como cita pendiente.')"
+            );
+            $created = [];
+
+            foreach ($sessions as $session) {
+                $number = (int) $session['number'];
+                if ($number < 1 || $number > $estimated || in_array($number, $existing, true)) {
+                    throw new DomainException('Una de las sesiones ya existe o está fuera del total estimado.');
+                }
+
+                $insert->execute([
+                    'client_id' => (int) $quote['id_cliente'],
+                    'artist_id' => (int) $quote['id_artista'],
+                    'quote_id' => $quoteId,
+                    'starts_at' => $session['start'],
+                    'ends_at' => $session['end'],
+                    'session_number' => $number,
+                    'notes' => $session['notes'],
+                ]);
+                $appointmentId = (int) $this->database->lastInsertId();
+                $history->execute(['appointment_id' => $appointmentId, 'account_id' => $accountId]);
+                $created[] = $appointmentId;
+                $existing[] = $number;
+            }
+
+            $this->database->commit();
+            return $created;
+        } catch (Throwable $exception) {
+            if ($this->database->inTransaction()) {
+                $this->database->rollBack();
+            }
+            throw $exception;
+        }
+    }
+
     public function scheduleFromQuote(
         int $quoteId,
         int $accountId,

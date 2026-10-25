@@ -4,6 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Models/AdminQuoteRepository.php';
 require_once __DIR__ . '/../Models/AppointmentRepository.php';
 require_once __DIR__ . '/../Services/AdminQuoteService.php';
+require_once __DIR__ . '/../Services/ArtistAvailabilityService.php';
+require_once __DIR__ . '/../Services/QuoteValidityPolicy.php';
 require_once __DIR__ . '/../Services/AppointmentEmailService.php';
 require_once __DIR__ . '/../Services/AdminAppointmentService.php';
 
@@ -42,20 +44,26 @@ function adminQuoteImageUrl(mixed $value): ?string
 
 $database = conectarBaseDatos();
 $quoteRepository = new AdminQuoteRepository($database);
-$quoteService = new AdminQuoteService($quoteRepository);
+$availabilityService = new ArtistAvailabilityService($database);
+$validityPolicy = new QuoteValidityPolicy();
+$quoteService = new AdminQuoteService($quoteRepository, $availabilityService, $validityPolicy);
 $appointmentRepository = new AppointmentRepository($database);
 $appointmentEmailService = new AppointmentEmailService($appointmentRepository);
-$appointmentService = new AdminAppointmentService($appointmentRepository, $appointmentEmailService);
+$appointmentService = new AdminAppointmentService($appointmentRepository, $appointmentEmailService, $availabilityService);
+$quoteRepository->expireSentQuotes();
 $quoteId = adminQuoteId($_GET['id'] ?? null);
 $mode = $quoteId === null ? 'list' : 'view';
 $quote = null;
 $appointments = [];
 $artistSchedule = [];
 $artistUnavailablePeriods = [];
+$availableAppointmentSlots = [];
 $error = null;
 $notice = $_SESSION['admin_quote_notice'] ?? null;
 $warning = $_SESSION['admin_quote_warning'] ?? null;
 $appointmentForm = [];
+$automaticExpiration = null;
+$validityIssue = null;
 unset($_SESSION['admin_quote_notice'], $_SESSION['admin_quote_warning']);
 
 try {
@@ -71,10 +79,10 @@ try {
 
         if ($action === 'save') {
             $quoteService->update($postedQuoteId, (int) $account['id_cuenta'], $_POST);
-            $_SESSION['admin_quote_notice'] = 'La respuesta de la cotización fue actualizada.';
+            $_SESSION['admin_quote_notice'] = 'La propuesta fue enviada al cliente y quedó bloqueada hasta que responda.';
         } elseif ($action === 'schedule_appointment') {
-            $appointmentService->schedule($postedQuoteId, (int) $account['id_cuenta'], $_POST);
-            $_SESSION['admin_quote_notice'] = 'La cita fue creada como pendiente. Todavía no se envió ningún correo.';
+            $createdAppointments = $appointmentService->schedule($postedQuoteId, (int) $account['id_cuenta'], $_POST);
+            $_SESSION['admin_quote_notice'] = count($createdAppointments) . ' cita(s) fueron creadas como pendientes. Todavía no se envió ningún correo.';
         } elseif ($action === 'confirm_appointment') {
             $appointmentId = adminAppointmentId($_POST['id_cita'] ?? null);
 
@@ -138,6 +146,11 @@ try {
 if ($mode === 'view' && $quoteId !== null) {
     $quote = $quoteRepository->find($quoteId);
 
+    if ($quote !== null && $_SERVER['REQUEST_METHOD'] !== 'POST' && $quote['estado'] === 'solicitada') {
+        $quoteRepository->markUnderReview($quoteId, (int) $account['id_cuenta']);
+        $quote = $quoteRepository->find($quoteId);
+    }
+
     if ($quote === null) {
         $mode = 'list';
         $error = 'La cotización solicitada ya no existe.';
@@ -146,6 +159,16 @@ if ($mode === 'view' && $quoteId !== null) {
     }
 
     if ($quote !== null) {
+        if (!empty($quote['fecha_vencimiento'])) {
+            $automaticExpiration = new DateTimeImmutable((string) $quote['fecha_vencimiento'], new DateTimeZone('UTC'));
+        } elseif (!empty($quote['fecha_preferida'])) {
+            try {
+                $automaticExpiration = $validityPolicy->expirationFor((string) $quote['fecha_preferida']);
+            } catch (DomainException $exception) {
+                $validityIssue = $exception->getMessage();
+            }
+        }
+
         $appointments = $appointmentRepository->forQuote($quoteId);
 
         if ($quote['id_artista'] !== null) {
@@ -156,6 +179,11 @@ if ($mode === 'view' && $quoteId !== null) {
                 (int) $quote['id_artista'],
                 $availabilityStart->format('Y-m-d H:i:s'),
                 $availabilityEnd->format('Y-m-d H:i:s')
+            );
+            $availableAppointmentSlots = $availabilityService->availableSlotsForArtist(
+                (int) $quote['id_artista'],
+                max(15, (int) ($quote['duracion_estimada_minutos'] ?? 120)),
+                180
             );
         }
 
@@ -171,6 +199,21 @@ $search = function_exists('mb_substr') ? mb_substr($search, 0, 100) : substr($se
 $allowedStatuses = ['solicitada', 'en_revision', 'enviada', 'aceptada', 'rechazada', 'vencida', 'cancelada'];
 $statusValue = $_GET['estado'] ?? '';
 $status = is_string($statusValue) && in_array($statusValue, $allowedStatuses, true) ? $statusValue : '';
-$quotes = $quoteRepository->listing($search, $status);
+$viewValue = $_GET['vista'] ?? 'active';
+$archiveView = is_string($viewValue) && in_array($viewValue, ['active', 'scheduled', 'closed'], true) ? $viewValue : 'active';
+$quotes = $quoteRepository->listing($search, $status, $archiveView);
 $summary = $quoteRepository->summary();
 $artists = $quoteRepository->artists();
+
+if ($quote !== null && !empty($quote['fecha_preferida'])) {
+    $availableRows = $availabilityService->availableArtistsOnDate(
+        (string) $quote['fecha_preferida'],
+        max(60, (int) ($quote['duracion_estimada_minutos'] ?? 60))
+    );
+    $availableArtistIds = array_map(static fn(array $artist): int => (int) $artist['id_artista'], $availableRows);
+    $artists = array_values(array_filter(
+        $artists,
+        static fn(array $artist): bool => in_array((int) $artist['id_artista'], $availableArtistIds, true)
+            || (int) $artist['id_artista'] === (int) ($quote['id_artista'] ?? 0)
+    ));
+}

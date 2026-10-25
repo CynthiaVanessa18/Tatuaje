@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../Models/QuoteRepository.php';
+require_once __DIR__ . '/../Services/ArtistAvailabilityService.php';
 require_once __DIR__ . '/../Services/ClientQuoteResponseService.php';
 
 function clientQuoteId(mixed $value): ?int
@@ -30,8 +31,10 @@ function clientQuoteImageUrl(mixed $value): ?string
     return '../' . ltrim($path, '/');
 }
 
-$quoteRepository = new QuoteRepository(conectarBaseDatos());
-$quoteResponseService = new ClientQuoteResponseService($quoteRepository);
+$clientQuoteDatabase = conectarBaseDatos();
+$quoteRepository = new QuoteRepository($clientQuoteDatabase);
+$clientAvailability = new ArtistAvailabilityService($clientQuoteDatabase);
+$quoteResponseService = new ClientQuoteResponseService($quoteRepository, $clientAvailability);
 $clientProfile = $quoteRepository->clientForAccount((int) $account['id_cuenta']);
 $profileMissing = $clientProfile === null;
 $quotes = [];
@@ -53,13 +56,22 @@ if (!$profileMissing) {
                 throw new DomainException('La cotización indicada no es válida.');
             }
 
-            $notice = $quoteResponseService->respond(
-                $postedQuoteId,
-                $clientId,
-                (int) $account['id_cuenta'],
-                $_POST['accion'] ?? null,
-                $_POST['mensaje'] ?? null
-            );
+            if (($_POST['accion'] ?? null) === 'guardar_fechas') {
+                $notice = $quoteResponseService->saveSessionDates(
+                    $postedQuoteId,
+                    $clientId,
+                    $_POST['fechas_sesiones'] ?? null
+                );
+            } else {
+                $notice = $quoteResponseService->respond(
+                    $postedQuoteId,
+                    $clientId,
+                    (int) $account['id_cuenta'],
+                    $_POST['accion'] ?? null,
+                    $_POST['mensaje'] ?? null,
+                    $_POST['fechas_sesiones'] ?? null
+                );
+            }
             $_SESSION['client_quote_notice'] = $notice;
             header('Location: mis-cotizaciones.php?id=' . $postedQuoteId, true, 303);
             exit;
@@ -80,4 +92,18 @@ if (!$profileMissing) {
             $error = 'La solicitud indicada no existe o no pertenece a tu cuenta.';
         }
     }
+}
+
+$clientSessionDateOptions = [];
+if (
+    $selectedQuote !== null
+    && in_array($selectedQuote['estado'], ['enviada', 'aceptada'], true)
+    && $selectedQuote['id_artista'] !== null
+    && $selectedQuote['duracion_estimada_minutos'] !== null
+) {
+    $clientSessionDateOptions = array_keys($clientAvailability->availableSlotsForArtist(
+        (int) $selectedQuote['id_artista'],
+        (int) $selectedQuote['duracion_estimada_minutos'],
+        180
+    ));
 }

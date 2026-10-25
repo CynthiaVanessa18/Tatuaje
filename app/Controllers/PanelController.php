@@ -7,6 +7,8 @@ require_once __DIR__.'/../Services/RatingModeration.php';
 
 $modules=require __DIR__.'/../../config/modules.php';
 $moduleId=is_string($_GET['module']??null)?$_GET['module']:'categorias';
+// Una sola entrada para explorar artistas; conserva las rutas de moderación.
+if ($moduleId==='calificaciones' && !in_array($_GET['mode']??'list',['edit','view'],true) && $_SERVER['REQUEST_METHOD']!=='POST') $moduleId='resumen_calificaciones';
 if (!isset($modules[$moduleId])) { http_response_code(404); exit('Módulo no encontrado.'); }
 $module=$modules[$moduleId];
 if ($moduleId === 'beneficios') {
@@ -35,8 +37,11 @@ if ($moduleId === 'calificaciones'
 
         $_SESSION['notice'] = $ratingModerator->moderate($_POST);
 
+        $returnArtistQuery=conectarBaseDatos()->prepare('SELECT c.id_artista FROM calificaciones_artistas ca JOIN citas c ON c.id_cita=ca.id_cita WHERE ca.id_calificacion=?');
+        $returnArtistQuery->execute([$_POST['id_calificacion']]);
+        $returnArtist=(int)$returnArtistQuery->fetchColumn();
         header(
-            'Location: administrador.php?module=calificaciones',
+            'Location: administrador.php?module=resumen_calificaciones&artista='.$returnArtist,
             true,
             303
         );
@@ -93,6 +98,7 @@ $search=is_string($_GET['q']??null)?trim($_GET['q']):'';
 $filterable=array_filter($columns,fn($c)=>isset($refs[$c['Field']]) || str_starts_with($c['Type'],'enum(') || $c['Field']==='activo');
 $filters=array_filter(array_intersect_key(is_array($_GET['filter']??null)?$_GET['filter']:[],$filterable),'is_string');
 $list=in_array($moduleId,['promociones_tienda','cuentas'],true) ? ['rows'=>[],'total'=>0,'page'=>1] : $repo->listing($search,$filters,max(1,(int)($_GET['page']??1)));
+if ($moduleId==='resumen_calificaciones') require __DIR__.'/ArtistRatingsOverviewController.php';
 if ($moduleId==='promociones_tienda') require __DIR__.'/StorePromotionController.php';
 if ($moduleId==='planes') require __DIR__.'/MembershipController.php';
 if ($moduleId==='cuentas') require __DIR__.'/AdminAccountsController.php';

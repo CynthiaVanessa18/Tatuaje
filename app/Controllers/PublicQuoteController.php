@@ -2,11 +2,16 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../Models/QuoteRepository.php';
+require_once __DIR__ . '/../Services/ArtistAvailabilityService.php';
+require_once __DIR__ . '/../Services/QuoteValidityPolicy.php';
 require_once __DIR__ . '/../Services/PublicQuoteService.php';
 
 $database = conectarBaseDatos();
 $quoteRepository = new QuoteRepository($database);
-$quoteService = new PublicQuoteService($quoteRepository, dirname(__DIR__, 2));
+$availabilityService = new ArtistAvailabilityService($database);
+$validityPolicy = new QuoteValidityPolicy();
+$quoteService = new PublicQuoteService($quoteRepository, dirname(__DIR__, 2), $availabilityService, $validityPolicy);
+$minimumPreferredDate = $validityPolicy->minimumPreferredDate();
 $categories = $quoteRepository->categories();
 $artists = $quoteRepository->artists();
 $account = currentAccount();

@@ -18,6 +18,14 @@ $card=$db->query('SELECT * FROM tarjetas_regalo')->fetch();
 if(count($sent)!==1 || $sent[0][0]!==$input['correo_destinatario'] || hash('sha256',str_replace('-','',$sent[0][1]),true)!==$card['codigo_hash'] || !str_contains($notice,'enviados')) throw new RuntimeException('Aviso o código incorrectos');
 $mail=GiftCardEmail::message($sent[0][0],$sent[0][1],['usuario'=>'studio@example.com','password'=>'test']);
 if (!str_contains($mail->Body,$sent[0][1]) || !str_contains($mail->Subject,'tarjeta de regalo') || str_contains($mail->Body,'5000') || str_contains($mail->Body,'Mensaje privado')) throw new RuntimeException('El correo debe contener solo aviso y código');
+$smtpMail=GiftCardEmail::message($sent[0][0],$sent[0][1],['usuario'=>' studio@example.com ','password'=>'abcd efgh ijkl mnop','encryption'=>'SSL','port'=>465]);
+if ($smtpMail->Mailer!=='smtp' || !$smtpMail->SMTPAuth || $smtpMail->Username!=='studio@example.com' || $smtpMail->Password!=='abcdefghijklmnop' || $smtpMail->SMTPSecure!=='ssl' || $smtpMail->Port!==465 || !str_contains($smtpMail->AltBody,$sent[0][1])) throw new RuntimeException('SMTP debe seguir la configuración de recuperación y ofrecer texto alternativo');
+try {
+    GiftCardEmail::message($sent[0][0],$sent[0][1],['usuario'=>'studio@example.com','password'=>'']);
+    throw new LogicException('Se aceptó SMTP sin contraseña');
+} catch (RuntimeException $error) {
+    if ($error instanceof LogicException || !str_contains($error->getMessage(),'SMTP_USER')) throw $error;
+}
 $service->execute('update',$input,['id_tarjeta'=>$card['id_tarjeta']]);if(count($sent)!==1) throw new RuntimeException('Editar no debe reenviar');
 $notice=(new CrudService($repo,static fn()=>false))->execute('create',$input,null);
 if(!str_contains($notice,'No se pudo enviar') || (int)$db->query('SELECT COUNT(*) FROM tarjetas_regalo')->fetchColumn()!==2) throw new RuntimeException('Fallo de correo debe conservar tarjeta y código');

@@ -45,12 +45,21 @@
                             if (!$repo->editable($c))
                                 continue;
                             $value = $record[$name] ?? ($mode === 'create' ? ($c['Default'] ?? '') : '');
+                            if ($moduleId==='tarjetas' && $mode==='create' && $name==='estado' && !isset($record[$name])) $value='activa';
                             $required = $c['Null'] === 'NO';
                             $options = choices($c, $refs); ?>
                             <label><?= $moduleId === 'imagenes' && $name === 'imagen_url' ? 'Imagen del artículo' : e(label($name)) ?><?= $required && !($moduleId === 'imagenes' && $name === 'imagen_url' && $mode === 'edit') ? ' *' : '' ?>
                                 <?php if ($moduleId === 'imagenes' && $name === 'imagen_url'): ?>
                                     <input type="file" name="imagen_archivo" accept="image/jpeg,image/png,image/webp" <?= $mode === 'create' ? 'required' : '' ?>>
                                     <small>Selecciona un archivo JPG, PNG o WebP (máximo 5 MB, sujeto al límite del servidor).<?= $mode === 'edit' ? ' Si no seleccionas otro archivo, se conserva la imagen actual.' : '' ?></small>
+                                <?php elseif ($moduleId==='tarjetas' && $name==='correo_destinatario'): ?>
+                                    <input type="email" name="correo_destinatario" value="<?= e($value) ?>" list="gift-recipient-emails" maxlength="254" required>
+                                    <datalist id="gift-recipient-emails">
+                                    <?php foreach ($repo->db->query("SELECT c.correo,CONCAT_WS(' ',cl.nombre,cl.apellidos) AS nombre FROM clientes cl JOIN cuentas c ON c.id_cuenta=cl.id_cuenta WHERE c.estado='activo' ORDER BY cl.nombre,cl.apellidos")->fetchAll() as $recipient): ?>
+                                    <option value="<?= e($recipient['correo']) ?>"><?= e($recipient['nombre']) ?></option>
+                                    <?php endforeach ?>
+                                    </datalist>
+                                    <small>Selecciona el correo de la cuenta del destinatario para añadir el regalo automáticamente. El comprador no determina quién recibe la tarjeta.</small>
                                 <?php elseif ($options !== null): ?><select name="<?= e($name) ?>" <?= $required ? 'required' : '' ?>>
                                         <option value="">Selecciona…</option><?php foreach ($options as $v => $caption): ?>
                                             <option value="<?= e($v) ?>" <?= (string) $value === (string) $v ? 'selected' : '' ?>>
