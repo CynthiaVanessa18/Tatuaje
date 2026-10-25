@@ -2,21 +2,21 @@
 
 [← Volver al README](../README.md)
 
-Capturas proporcionadas para la documentación de Persona 2. Se conservan las versiones alternativas para mostrar la evolución visual. Algunas pertenecen a versiones posteriores al código de la rama Cynthia; sus datos y pantallas son referencias, no una comprobación de funcionalidades instaladas.
+Capturas proporcionadas para la documentación de Persona 2. Se conservan las versiones alternativas para mostrar la evolución visual. La rama Cynthia integra los avances de main, incluidas las calificaciones por artista. Los datos reflejan el momento de cada captura.
 
 ## administrador
 
 <details>
-<summary><strong>Calificaciones con tarjetas por artista · referencia posterior</strong></summary>
+<summary><strong>Calificaciones con tarjetas por artista</strong></summary>
 
-![Calificaciones con tarjetas por artista · referencia posterior](capturas/administrador/calificaciones-artistas.png)
+![Calificaciones con tarjetas por artista](capturas/administrador/calificaciones-artistas.png)
 
 </details>
 
 <details>
-<summary><strong>Detalle del artista y distribución de estrellas · referencia posterior</strong></summary>
+<summary><strong>Detalle del artista y distribución de estrellas</strong></summary>
 
-![Detalle del artista y distribución de estrellas · referencia posterior](capturas/administrador/calificaciones-detalle.png)
+![Detalle del artista y distribución de estrellas](capturas/administrador/calificaciones-detalle.png)
 
 </details>
 
@@ -100,9 +100,9 @@ Capturas proporcionadas para la documentación de Persona 2. Se conservan las ve
 ## cliente
 
 <details>
-<summary><strong>Confirmación de membresía · referencia posterior</strong></summary>
+<summary><strong>Confirmación de membresía</strong></summary>
 
-![Confirmación de membresía · referencia posterior](capturas/cliente/confirmar-membresia.png)
+![Confirmación de membresía](capturas/cliente/confirmar-membresia.png)
 
 </details>
 

@@ -42,7 +42,7 @@ Tres pantallas destacadas para conocer el resultado visual del proyecto. **Haz c
 
 Este README presenta los **módulos de Persona 2** con las capturas proporcionadas. La identidad visual combina negro, vino y dorado, con una navegación diferenciada para cliente y administrador.
 
-> **Referencia de las pantallas:** las capturas muestran distintos momentos del proyecto y datos de ejemplo. Algunas vistas, como las tarjetas de calificaciones y la renovación de membresías, corresponden a avances posteriores al código de esta rama. Esta documentación visual se prepara en `Cynthia`; las imágenes no significan que esos avances ya estén integrados aquí.
+> **Referencia de las pantallas:** las capturas muestran distintos momentos del proyecto y datos de ejemplo. La rama `Cynthia` integra los avances de `main`, incluidas las calificaciones por artista y la renovación de membresías. Los importes, estados y cantidades corresponden al momento de cada captura.
 
 <a id="contenido"></a>
 ## Contenido
@@ -100,7 +100,7 @@ La vista de membresía presenta el plan contratado, su período y los beneficios
 <details>
 <summary><strong>Ver pantalla de confirmación de membresía</strong></summary>
 
-La captura reúne el resumen del plan, la modalidad, el importe y el resultado de la tarjeta de demostración. También muestra una opción de renovación de una versión posterior del proyecto; no implica cobros recurrentes reales ni que esta rama incluya esa opción.
+La captura reúne el resumen del plan, la modalidad, el importe y el resultado de la tarjeta de demostración. También muestra la opción de renovación de membresía; los pagos bancarios continúan siendo de demostración.
 
 ![Confirmación de membresía y resumen de beneficios](docs/capturas/cliente/confirmar-membresia.png)
 
@@ -121,7 +121,7 @@ El cliente puede añadir el código recibido y consultar el saldo, la emisión, 
 
 Las capturas de referencia muestran una vista por artista con retrato, estrellas, promedio y cantidad de reseñas. Al abrir el detalle, se consultan indicadores de publicación y la distribución de puntuaciones.
 
-> Esta presentación de tarjetas corresponde a una versión posterior a la base de `Cynthia`. Se conserva como referencia visual; la rama incluye la consulta de calificaciones y promedios de su versión.
+La rama `Cynthia` incluye esta vista de tarjetas por artista, sus indicadores y el detalle de reseñas.
 
 ![Referencia visual de las calificaciones organizadas por artista](docs/capturas/administrador/calificaciones-artistas.png)
 
